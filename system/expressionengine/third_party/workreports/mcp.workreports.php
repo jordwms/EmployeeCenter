@@ -20,7 +20,7 @@ class Workreports_mcp {
 
 	function check_authorization($area = NULL) {
 		if( $this->EE->axapta->axapta_connection() ) {
-			if( $employee = $this->EE->axapta->employee_info() ) {
+			if( $employee = $this->EE->axapta->employee() ) {
 				$authorized_areas = array();
 				foreach ($employee['groups'] as $company) {
 					if( in_array('WA DISP', $company)  ) {
@@ -41,7 +41,7 @@ class Workreports_mcp {
 					$this->EE->cp->set_right_nav($authorized_areas);
 					return;
 				} else {
-					show_error( $this->EE->lang->line('unauthorized_') );
+					show_error( $this->EE->lang->line('unauthorized') );
 				}
 			} else {
 				show_error( $this->EE->lang->line('invalid_employee') );
@@ -137,8 +137,8 @@ class Workreports_mcp {
 		$vars['reports'] = $this->EE->axapta->get_reports(NULL, 0);
 
 		foreach ($vars['reports'] as &$report) {
-			$report['customer_name'] = '<a href="'.$report_link.$report['id'].'" >'.$report['customer_name'].'</a>';
 			$report['project_id'] = $report['order'].'/'.$report['work_order'].'/'.$report['work_report'];
+			$report['customer_name'] = '<a href="'.$report_link.$report['id'].'" >'.$report['customer_name'].'</a>';
 			$report['execution_date'] = date('m-d-Y', $report['execution_date']);
 			$report['submission_date'] = date("m-d-Y h:i A", $report['submission_date']);
 		}
@@ -151,6 +151,10 @@ class Workreports_mcp {
 	* Renders a list of all work reports approved by an admin that had XML exported. 
 	*/
 	function history() {
+		// Checking specific account info...
+		// $var = $this->EE->axapta->customer(array('id' => '107.CUS000911')); 
+		// echo "<pre>";
+		// print_r($var);
 		$this->check_authorization('history');
 
 		$this->EE->cp->set_variable('cp_page_title', $this->EE->lang->line('workreports_history'));
@@ -396,5 +400,3 @@ class Workreports_mcp {
  
 /* End of file mcp.workreports.php */
 /* Location: ./system/expressionengine/third_party/modules/workreports/mcp.workreports.php */
-
-?>

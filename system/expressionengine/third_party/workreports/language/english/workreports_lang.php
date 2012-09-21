@@ -86,10 +86,14 @@
 //----------------------------------------
 // Dashboard
 //----------------------------------------
-		'no_connection'						=> 'No Connection to Axapta',
-		'invalid_employee'					=> 'Invalid Employee Information Returned',
-		'unauthorized'						=> 'Please contact the HR Department for Authorization'
+		'no_connection'						=> 'No Connection to Axapta. ',
+		'invalid_employee'					=> 'Invalid Employee Information Returned. ',
+		'unauthorized'						=> 'Please contact the HR Department for Authorization. ',
+//----------------------------------------
+// Error messages
+//----------------------------------------
+		'xml_error'							=> 'An error occured. Please notify your system administrator. ',
+		'dir_error'							=> 'Directory was not created properly. ',
 
-// END
-);
-?>
+
+); // END

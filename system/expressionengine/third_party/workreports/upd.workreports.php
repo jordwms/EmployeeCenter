@@ -1,6 +1,6 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 class Workreports_upd {
-	var $version = '1.0';
+	var $version = '1.1';
 
 	function __construct() {
 		$this->EE =& get_instance();
@@ -19,6 +19,21 @@ class Workreports_upd {
 		);
 
 		$this->EE->db->insert('modules', $data); // Insert data array into the 'modules' table
+
+		/********************************************************************************************
+		 *	Register Actions
+		 *******************************************************************************************/
+		$data = array(
+			array(
+				'class'     => 'Workreports' ,
+				'method'    => 'submit_for_approval'
+			), array(
+				'class'		=> 'Workreports',
+				'method'	=> 'get'
+			)
+		);
+
+		//$this->EE->db->insert('actions', $data);
 
 		/*******************************************************************************************
 		 *	Create wr_reports table
@@ -41,9 +56,8 @@ class Workreports_upd {
 			'rtd_reference'						=> array('type' => 'varchar', 	'constraint' => '50'),
 			'work_location_name'				=> array('type' => 'varchar', 	'constraint' => '50'),
 			'contact_person'					=> array('type' => 'varchar', 	'constraint' => '50'),
-			'object_description'				=> array('type' => 'varchar', 	'constraint' => '50'),
-			'order_description'					=> array('type' => 'varchar', 	'constraint' => '50'),
-			'ticket_number'						=> array('type' => 'varchar', 	'constraint' => '50'),
+			'object_description'				=> array('type' => 'text'),
+			'order_description'					=> array('type' => 'text'),
 			'remarks'							=> array('type' => 'text')
 			)
 		);
@@ -112,12 +126,26 @@ class Workreports_upd {
 		return TRUE;
 	}
 
-	function update($current = '1.0') {
-		if(version_compare($current, $version, '=')) {
+	function update($current = '') {
+		if( $current == $this->version ){
 			return FALSE;
 		}
+		if( $current < $this->version){
+			// run update code here
 
-		return FALSE;
+			// Update field names for wr_* tables
+
+			// Change wr_reports.object_description and wr_reports.order_description to 'text' type fields
+			$fields = array(
+				'object_description' 	=> array('type' => 'TEXT'),
+				'order_description'		=> array('type' => 'TEXT')
+				);
+
+			$this->EE->dbforge->modify_column('wr_reports', $fields);
+
+		}
+
+		return TRUE;
 	}
 
 	/**

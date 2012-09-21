@@ -11,15 +11,17 @@ class Workreports {
 	function dashboard() {
 		$message = '';
 		if( $this->EE->axapta->axapta_connection() ) {
-			if( $employee = $this->EE->axapta->employee_info() ) {
-				foreach ($employee['groups'] as $companies) {
-					if( in_array('WA TECH', $companies) ){
-						$message = 'You have '.$this->wrCount().' Work Reports assigned to you';
-						//$message = $this->EE->lang->line('');
-					} else {
-						//$message = 'Please Contact HRM Department for Authorization';
-						$message = $this->EE->lang->line('unauthorized');
+			if( $employee = $this->EE->axapta->employee() ) {
+				if( count($employee['groups']) > 0 ) {
+					foreach ($employee['groups'] as $companies) {
+						if( in_array('WA TECH', $companies) ){
+							$message = 'You have '.$this->wrCount().' Work Reports assigned to you';
+							//$message = $this->EE->lang->line('');
+						} 
 					}
+				} else {
+					//$message = 'Please Contact HRM Department for Authorization';
+					$message = $this->EE->lang->line('unauthorized');
 				}
 			} else {
 				//$message = 'Invalid Employee Information Returned';
@@ -49,16 +51,23 @@ class Workreports {
 			$data   = $this->EE->input->post('data');
 
 			switch ($method) {
-				case 'employee_info':
-				    $return_data = $this->EE->axapta->employee_info();
+				case 'employee': //done
+				    $return_data = $this->EE->axapta->employee(  );
 					break;
-				case 'company':
-					//$return_data = $this->EE->axapta->customer($data['customer_id']);
-					$return_data = $this->EE->axapta->company('107');
+				case 'company': //done
+					$return_data = $this->EE->axapta->company(  );
 					break;
-				case 'customers':
-					//$return_data = $this->EE->axapta->customer($data['customer_id']);
-					$return_data = $this->EE->axapta->customers(array('customer_name' => 'chev'));
+				case 'cost_center': //done?
+					$return_data = $this->EE->axapta->cost_center(  );
+					break;
+				case 'customer': //done
+					$return_data = $this->EE->axapta->customer(  );
+					break;
+				case 'work_location': //done
+					$return_data = $this->EE->axapta->work_location(  );
+					break;
+				case 'contact_person': //done
+					$return_data = $this->EE->axapta->contact_person(array('id' => '107..SYB2001380'));
 					break;
 				
 				default:
@@ -99,7 +108,7 @@ class Workreports {
 	}
 
 	function wrCount() {
-		if ( ($employee = $this->EE->axapta->employee_info()) && ($conn = $this->EE->axapta->axapta_connection()) ) {
+		if ( ($employee = $this->EE->axapta->employee()) && ($conn = $this->EE->axapta->axapta_connection()) ) {
 			/*
 			 *  Work Reports Available to Employee
 			 */
@@ -124,7 +133,7 @@ class Workreports {
 					AND (RTDPROJORDERTABLE.PROJORDERSTATUS = '2' OR RTDPROJORDERTABLE.PROJORDERSTATUS = '4')"
 			);
 			
-			$count->bindParam(':emplid', $employee['employee_id'], PDO::PARAM_STR, 12);
+			$count->bindParam(':emplid', $employee['id'], PDO::PARAM_STR, 12);
 			$count->setFetchMode(PDO::FETCH_NAMED);
 			$count->execute();
 
@@ -140,7 +149,7 @@ class Workreports {
 	 *  Work Reports Available to Employee
 	 */
 	function wrList() {
-		if ( ($employee = $this->EE->axapta->employee_info()) && $ax_conn = $this->EE->axapta->axapta_connection() ) {
+		if ( ($employee = $this->EE->axapta->employee()) && $ax_conn = $this->EE->axapta->axapta_connection() ) {
 			$tagdata = $this->EE->TMPL->tagdata;
 
 			$workReports = $ax_conn->prepare(
@@ -189,14 +198,15 @@ class Workreports {
 				ORDER BY SALESTABLE.DELIVERYDATE DESC"
 			);
 			
-			$workReports->bindParam(':emplid', $employee['employee_id'], PDO::PARAM_STR, 12);
+			$workReports->bindParam(':emplid', $employee['id'], PDO::PARAM_STR, 12);
 			$workReports->setFetchMode(PDO::FETCH_NAMED);
 			$workReports->execute();
 
 			$return_data = $workReports->fetchAll();
 
+			//fix + add start time to scheduled execution date
 			foreach ($return_data as &$wr) {
-				$wr['start_datetime'] = strtotime($wr['execution_date']) + ($wr['start_time']/1000);
+				$wr['start_datetime'] = strtotime($wr['execution_date']) + ($wr['start_time']/1000) + $this->EE->axapta->server_tzoffset;
 			}
 
 			$this->return_data = $this->EE->TMPL->parse_variables( $tagdata, $return_data);
@@ -241,7 +251,7 @@ class Workreports {
 	 *  Work Reports Details
 	 */
 	function wrDetails($projid = NULL) {
-		if ( ($employee = $this->EE->axapta->employee_info()) && $ax_conn = $this->EE->axapta->axapta_connection() ) {
+		if ( ($employee = $this->EE->axapta->employee()) && $ax_conn = $this->EE->axapta->axapta_connection() ) {
 			if(is_null($projid)) {
 				$projid = $this->EE->db->escape_str( $this->EE->TMPL->fetch_param('projid') );
 			}
@@ -293,7 +303,7 @@ class Workreports {
 			);
 			
 			$workReport->bindParam(':projid', $projid, PDO::PARAM_STR, 20);
-			$workReport->bindParam(':emplid', $employee['employee_id'], PDO::PARAM_STR, 12);
+			$workReport->bindParam(':emplid', $employee['id'], PDO::PARAM_STR, 12);
 			$workReport->setFetchMode(PDO::FETCH_NAMED);
 			$workReport->execute();
 
@@ -331,7 +341,7 @@ class Workreports {
 			);
 			
 			$salesItems->bindParam(':projid', $projid, PDO::PARAM_STR, 20);
-			$salesItems->bindParam(':emplid', $employee['employee_id'], PDO::PARAM_STR, 12);
+			$salesItems->bindParam(':emplid', $employee['id'], PDO::PARAM_STR, 12);
 			$salesItems->setFetchMode(PDO::FETCH_NAMED);
 			$salesItems->execute();
 
@@ -376,7 +386,7 @@ class Workreports {
 				'hidden_fields' => array(
 										'projid' 				=> str_replace('-', '/', $projid),
 										'DataAreaID'            => $data[0]['DataAreaID'],
-										'employee_id' 			=> $data[0]['EmployeeID'],
+										'id' 			=> $data[0]['EmployeeID'],
 										'execution_date'		=> $data[0]['ExecDate'],
 										'company_id'			=> $data[0]['CompanyID'],
 										//'customer_name'			=> $data[0]['customer_name'],
@@ -425,11 +435,11 @@ class Workreports {
 	*/ 
 	function submit_for_approval() {
 		// echo '<pre>';
-		// print_r($_POST);
+		// print_r($_POST['customer_name']);
 		// die;
 
 		// If the form has valid data process, else rerender the page with error messages.
-		if ( ($employee = $this->EE->axapta->employee_info()) ) {
+		if ( ($employee = $this->EE->axapta->employee()) ) {
 			$success = array();
 
 			$projid = explode( '/', $this->EE->input->post('projid') );
@@ -448,7 +458,7 @@ class Workreports {
 			 *	[0] => order / [1] => work_order / [2] => work_report
 			 */
 			$data = array(
-				'submitter_id'			=> $this->EE->input->post('employee_id'), #should be employee name
+				'submitter_id'			=> $this->EE->input->post('id'), #should be employee name
 				'submitter_name'		=> $employee['name_last_first'],
 				'execution_date'		=> strtotime($this->EE->input->post('execution_date')),
 				'submission_date'       => time(),
@@ -524,7 +534,7 @@ class Workreports {
 
 				// Delete all records where report_id
 			} else {
-				$this->EE->axapta->set_approval($this->EE->input->post('projid'), $this->EE->input->post('DataAreaID'), $employee['employee_id']);
+				$this->EE->axapta->set_approval($this->EE->input->post('projid'), $this->EE->input->post('DataAreaID'), $employee['id']);
 				if($status == 2) {
 					$this->EE->axapta->create_xml($report_id);
 				}
@@ -544,5 +554,3 @@ class Workreports {
 
 /* End of file mod.workreports.php */
 /* Location: ./system/expressionengine/third_party/modules/workreports/mod.workreports.php */
-
-?>
