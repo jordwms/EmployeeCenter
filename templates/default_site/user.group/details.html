@@ -1,0 +1,61 @@
+{embed="assets/header"}
+
+<div id="user">
+	{exp:member:custom_profile_data}
+	<div id="photo">
+		<img src="{photo_url}" alt="{screen_name}'s photo">
+	</div>
+	<div id="info">
+		<header>
+			<h2>{screen_name}</h2>
+		</header>
+		<div class="tabs">
+			<nav class="applus-gray no-select">
+				<a href="#about">About</a>
+				<a href="#score-card">Score Card</a>
+				<a href="#safety-scores">Cert</a>
+			</nav>
+			<div id="about">
+				<div>
+					<span class="label">User Group:</span><span class="aboutInfo">{member_group}</span>
+				</div>
+				<div>
+					<span class="label">Birthday:</span><span class="aboutInfo">{birthday}</span>
+				</div>
+				<div>
+					<span class="label">Email:</span><span class="aboutInfo">{email}</span>
+				</div>
+				<div>
+					<span class="label">Office Phone:</span><span class="aboutInfo"><a href="tel://{office_phone}">{office_phone}</a></span>
+				</div>
+				<div>
+					<span class="label">Mobile Phone:</span><span class="aboutInfo"><a href="tel://{mobile_phone}">{mobile_phone}</a></span>
+				</div>
+				<div>
+					<span class="label">Home Office:</span><span class="aboutInfo">{location}</span>
+				</div>
+			</div>
+			<div id="safety-scores">
+
+			</div>
+		</div>
+	</div>
+	{/exp:member:custom_profile_data}
+</div>
+{embed="assets/footer-page"}
+<script>
+	$(function () {
+    	var tabContainers = $('div.tabs > div');
+    
+    	$('div.tabs nav a').click(function () {
+	        tabContainers.hide().filter(this.hash).show();
+	        
+	        $('div.tabs nav a').removeClass('selected');
+	        $(this).addClass('selected');
+	        
+	        return false;
+    	}).filter(':first').click();
+	});
+</script>
+{embed="assets/scripts"}
+{embed="assets/footer-html"}

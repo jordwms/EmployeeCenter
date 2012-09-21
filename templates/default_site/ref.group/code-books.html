@@ -1,0 +1,29 @@
+{!-- Ref - Code Books --}
+{embed="assets/header"}
+
+{exp:channel:entries channel="code_books"}
+<article>
+	<header>
+		<h2>{title}</h2>
+	</header>
+	<div id="reference">
+		<table>
+			<tr>
+				<td class="ref-label">Code Year:</td>
+				<td>{code_year}</td>
+			</tr>
+			<tr>
+				<td class="ref-label">PDF:</td>
+				<td>{code_book wrap="link"}</td>
+			</tr>
+		</table>
+	</div>
+</article>
+{/exp:channel:entries}
+
+{embed="assets/footer-page"}
+{embed="assets/scripts"}
+	
+<script></script>
+	
+{embed="assets/footer-html"}

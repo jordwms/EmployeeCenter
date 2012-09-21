@@ -1,0 +1,37 @@
+{embed="assets/header"}
+	<div>
+		<header id="dashboard-header">
+			<h2>{screen_name}</h2>
+		</header>
+		<!--
+		<div id="pm_stats">
+		{if private_messages == "0" OR private_messages > "1"}
+			You have {private_messages} messages waiting.
+		{if:else}
+			You have {private_messages} message waiting.
+		{/if}
+		</div>
+		-->
+
+		<nav class="dashboard">
+			<div id="work_reports">
+				<h3>Work Reports</h3>
+				<a href="{path='workreports'}">{exp:workreports:dashboard}</a>
+			</div>
+			<div id="asset_manager">
+				<h3>Equipment Manager</h3>
+				<a href="{path='equipment_manager'}">You have {exp:equipment_manager:member_eq_count} piece(s) of equipment available to you.</a>
+			</div>
+			<div id="scores">
+				<h3>Quiz Scores</h3>
+				<a href="eequiz/score-card/SAFE">You are passing {exp:eequiz:number_passing_in_group prefix="SAFE"} of {exp:eequiz:number_in_group prefix="SAFE"} Safety Quizzes</a>
+				<a href="eequiz/score-card/RT">You are passing {exp:eequiz:number_passing_in_group prefix="RT"} of {exp:eequiz:number_in_group prefix="RT"} RT Quizzes</a>
+			</div>
+		</nav>
+	</div>
+{embed="assets/footer-page"}
+{embed="assets/scripts"}
+
+<script></script>
+	
+{embed="assets/footer-html"}

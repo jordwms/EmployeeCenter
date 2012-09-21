@@ -1,0 +1,42 @@
+<!doctype html>
+<!--[if lt IE 7]> <html class="no-js ie6 oldie" lang="en"> <![endif]-->
+<!--[if IE 7]>		<html class="no-js ie7 oldie" lang="en"> <![endif]-->
+<!--[if IE 8]>		<html class="no-js ie8 oldie" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+	<meta charset="utf-8">
+
+	<title>Employee Center</title>
+	<meta name="description" content="Applus RTD Employee Center">
+	<meta name="author" content="Applus RTD web design team">
+
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+
+	<link rel="stylesheet" href="{stylesheet='assets/login'}">
+	<!-- end CSS-->
+</head>
+<body lang="en" class="applus-gray">	
+	<header id="master-header">
+		<h1>Employee</h1><h1>Center</h1>
+		<div id="logo"></div>
+	</header>
+	<div class="applus-orange" id="border"></div>
+
+	<div id="login" class="wrapper" >
+		{exp:member:login_form return="{if segment_1}{segment_1}/{if:else}dashboard{/if}{if segment_2}{segment_2}/{/if}{if segment_3}{segment_3}/{/if}{if segment_4}{segment_4}/{/if}{if segment_5}{segment_5}/{/if}{if segment_6}{segment_6}/{/if}{if segment_7}{segment_7}/{/if}{if segment_8}{segment_8}/{/if}{if segment_9}{segment_9}/{/if}"}
+		<div id="loginBox">
+			<div class="label-wrapper"><label>Email</label></div>
+			<div class="input-wrapper">
+				<input autocorrect="off" autocapitalize="off" class="round-top" placeholder="first.last" name="username" type="text" id="username" required>
+			</div>
+			<div class="input-wrapper">
+				<input autocorrect="off" autocapitalize="off" class="round-bottom" placeholder="Password" type="password" name="password" id="password" required>
+			</div>
+			<div class="label-wrapper"><label>Password</label></div>
+			<div class="button-wrapper">
+				<button type="submit" class="round-top round-bottom">Login</button>
+			</div>
+		</div>
+		{/exp:member:login_form}
+	</div>
+</body>

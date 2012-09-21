@@ -1,0 +1,129 @@
+{!-- Reference Menu Index --}
+{embed="assets/header"}
+<div id="reference">
+	{if segment_2 != "category"}
+	<header id="new-header">
+		<h2>Reference and Documents</h2>
+	</header>
+	<div id="category-groups">
+		<div id="ref">
+			<nav class="ref-list">
+
+				<h3>MSDS</h3>
+				{exp:channel:categories channel="ref_msds" style="nested"}
+					<a href="{path='ref'}">
+						<span id="title">{category_name}</span>
+					</a>
+				{/exp:channel:categories}
+
+				<br>
+
+				<h3>Code Books</h3>
+				<ul>
+					{exp:channel:entries orderby="title" sort="asc" channel="code_books"}
+					<li>
+						<a href="{url_title_path='ref/code-books'}">
+							<span id="title">{title}</span>
+						</a>
+					</li>
+					{/exp:channel:entries}
+				</ul>
+
+				<br>
+
+				<h3>Inspection Packets</h3>
+				<ul>
+					{exp:channel:entries orderby="title" sort="asc" channel="ref_inspection_packets"}
+					<li>
+						<a href="{url_title_path='ref/inspection-packets'}">
+							<span id="title">{title}</span>
+						</a>
+					</li>
+					{/exp:channel:entries}
+				</ul>
+
+				<br>
+
+				<h3>Inspection Packet Instructions</h3>
+				{exp:channel:categories channel="ref_inspection_packet_instructions" style="nested"}
+					<a href="{path='ref'}">
+						<span id="title">{category_name}</span>
+					</a>
+				{/exp:channel:categories}
+
+				<br>
+
+				<h3>Payroll Docs</h3>
+				<ul>
+					{exp:channel:entries orderby="title" sort="asc" channel="ref_payroll_docs"}
+					<li>
+						<a href="{url_title_path='ref/payroll-docs'}">
+							<span id="title">{title}</span>
+						</a>
+					</li>
+					{/exp:channel:entries}
+				</ul>
+
+				<br>
+
+			</nav>
+		</div>
+		<hr>
+	</div>
+	{if:else}
+
+		{exp:channel:category_heading channel="ref_msds"}
+		<nav class="ref-list">
+			<header>
+				<h2>{category_name}</h2>
+				{if category_description}
+				<h3>{category_description}</h3>
+				{/if}
+			</header>
+			<ul class="ref-sub">
+				{exp:channel:entries orderby="title" sort="asc" channel="ref_msds" category="{category_id}"}
+				<li>
+					<a href="{url_title_path='ref/msds'}">
+						<span id="title">{title}</span>
+					</a>
+				</li>
+				{/exp:channel:entries}
+			</ul>
+
+			<br>
+
+		</nav>
+		{/exp:channel:category_heading}
+
+		{exp:channel:category_heading channel="ref_inspection_packet_instructions"}
+		<nav class="ref-list">
+			<header>
+				<h2>{category_name}</h2>
+				{if category_description}
+				<h3>{category_description}</h3>
+				{/if}
+			</header>
+			<ul class="ref-sub">
+				{exp:channel:entries orderby="title" sort="asc" channel="ref_inspection_packet_instructions" category="{category_id}"}
+				<li>
+					<a href="{url_title_path='ref/inspection-packet-instructions'}">
+						<span id="title">{title}</span>
+					</a>
+				</li>
+				{/exp:channel:entries}
+			</ul>
+
+			<br>
+
+		</nav>
+		{/exp:channel:category_heading}
+
+	{/if}
+</div>
+
+{embed="assets/footer-page"}
+{embed="assets/scripts"}
+	
+<script></script>
+	
+{embed="assets/footer-html"}

@@ -1,0 +1,65 @@
+{!-- Training Menu Index --}
+{embed="assets/header"}
+<div>
+	{if segment_2 != "category"}
+		<!-- Category Menu (big button thingys) -->
+		<div id="category-groups">
+			<div id="safety-group">
+				<nav class="big-buttons">
+					<header>
+						<h2>Please Select a Safety Training Path:</h2>
+					</header>
+					{exp:channel:categories channel="safety_training" category_group="1" style="nested"}
+						<a href="{path='training'}">
+							<img id="icon" src="{category_image}" height="100px" width="100px">
+							<span id="title">{category_name}</span>
+						</a>
+					{/exp:channel:categories}
+				</nav>
+			</div>
+		</div>
+	{if:else}
+		<!-- Article Listing when you click on a category button -->
+		{exp:channel:category_heading channel="safety_training"}
+		<nav class="big-buttons">
+			<header>
+				<h2>{category_name}</h2>
+				{if category_description}
+				<h3>{category_description}</h3>
+				{/if}
+			</header>
+			<ul>
+				<!-- we get the articles in a category by wrapping this code in the "category_heading" tags -->
+				{exp:channel:entries orderby="title" sort="asc" channel="safety_training" category="{category_id}"}
+				<li>
+					<a href="{url_title_path='training/article-view'}">
+						<img id="icon" src="{icon}">
+						<span id="title">{title}</span>
+					</a>
+				</li>
+				{/exp:channel:entries}
+			</ul>
+		</nav>
+		{/exp:channel:category_heading}
+	{/if}
+</div>
+{embed="assets/footer-page"}
+{embed="assets/scripts"}
+	
+<script>
+  	$(document).ready(function () { 
+
+  		$("ul.nav_categories li ul").addClass('slideMenu');
+
+  		$(".slideMenu").parent().addClass('slideParent');
+
+  		$(".slideParent > a").attr('href', '#');
+
+		$(".slideParent").click(function () {
+			$(this).children(".slideMenu").slideToggle(300);
+	 	});
+	 	
+	});
+</script>
+	
+{embed="assets/footer-html"}

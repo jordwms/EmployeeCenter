@@ -1,0 +1,38 @@
+{!-- Ref - MSDS --}
+{embed="assets/header"}
+
+{exp:channel:entries channel="ref_msds"}
+<article>
+	<header>
+		<h2>{title}</h2>
+	</header>
+	<div id="reference">
+		<h3>{description}</h3>
+		<table>
+			<tr>
+				<td class="ref-label">CAS Numbers:</td>
+				<td>{cas_numbers}</td>
+			</tr>
+			<tr>
+				<td class="ref-label">Manufacturer:</td>
+				<td>{manufacturer}</td>
+			</tr>
+			<tr>
+				<td class="ref-label">NFPA:</td>
+				<td>{nfpa wrap="image"}{photo wrap="image"}</td>
+			</tr>
+			<tr>
+				<td class="ref-label">PDF:</td>
+				<td>{msds wrap="link"}</td>
+			</tr>
+		</table>
+	</div>
+</article>
+{/exp:channel:entries}
+
+{embed="assets/footer-page"}
+{embed="assets/scripts"}
+	
+<script></script>
+	
+{embed="assets/footer-html"}

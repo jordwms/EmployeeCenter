@@ -1,0 +1,69 @@
+<!doctype html>
+<!--[if lt IE 7]> <html class="no-js ie6 oldie" lang="en"> <![endif]-->
+<!--[if IE 7]>      <html class="no-js ie7 oldie" lang="en"> <![endif]-->
+<!--[if IE 8]>      <html class="no-js ie8 oldie" lang="en"> <![endif]-->
+<!-- Consider adding an manifest.appcache: h5bp.com/d/Offline -->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+	<meta charset="utf-8">
+
+	<link rel="dns-prefetch" href="//ajax.googleapis.com">
+
+	<title>Employee Center</title>
+	<meta name="description" content="Applus RTD Employee Center">
+	<meta name="author" content="Applus RTD web design team">
+
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+
+	<link rel="stylesheet" href="{stylesheet='assets/login'}">
+	<!-- end CSS-->
+</head>
+<body lang="en" class="applus-gray">    
+	<header id="master-header">
+		<h1>Employee Center</h1>
+		<div id="logo"></div>
+	</header>
+	<div class="applus-orange" id="border"></div>
+
+	<div id="login" class="wrapper" >
+		{exp:authenticate:forgot_password username_field="email" auth_type="email"}
+		<div id="loginBox">
+			{if total_global_errors > 0}
+			<div class="errors">
+
+				<h3>Authentication Errors</h3>
+
+				<ul class="bullets">
+					{global_errors}
+					<li>{error}</li>
+					{/global_errors}
+				</ul>
+
+			</div>
+			{/if}
+
+			{if total_field_errors > 0}
+			<div class="errors">
+
+				<h3>Field Errors</h3>
+
+				<ul class="bullets">
+					{field_errors}
+					<li>{error}</li>
+					{/field_errors}
+				</ul>
+
+			</div>
+			{/if}
+
+			<div class="input-wrapper">
+				<label for="password">E-mail</label>
+				<input class="round-top round-bottom" type="text" name="email" value="" id="email" placeholder="first.last@applusrtd.com">
+			</div>
+			<div class="button-wrapper">
+				<button type="submit" class="black-button margin-top">Send E-mail</button>
+			</div>
+			{/exp:authenticate:forgot_password}
+		</div>
+	</div>
+</body>

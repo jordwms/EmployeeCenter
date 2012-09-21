@@ -1,0 +1,26 @@
+{!-- Training Menu Index --}
+{embed="assets/header"}
+<div>
+	<header id="new-header">
+		<h2>Applus News</h2>
+	</header>
+	{exp:channel:entries orderby="date" sort="desc" channel="news"}
+	<article class="news">
+		<header>
+			<h3>
+				<a href="{url_title_path='news/article-view'}">{title}</a>
+			</h3>
+			<p class="newsDate">Posted {entry_date format='%l %F %d, %Y'}.</p>
+		</header>
+		<div>
+			<p>{body}</p>
+		</div>
+	</nav>
+	{/exp:channel:entries}
+</div>
+{embed="assets/footer-page"}
+{embed="assets/scripts"}
+	
+<script></script>
+	
+{embed="assets/footer-html"}

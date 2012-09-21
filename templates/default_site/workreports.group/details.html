@@ -1,0 +1,255 @@
+{embed="assets/header"}
+<div id="work_reports_details">
+	{exp:workreports:wrDetails projid="{segment_3}"}
+	{form_open}
+	<fieldset id="topOfTicket">
+		<header>
+			<h3>Work Report {ProjectID}</h3>
+			<div class="row">
+				<div class="span4"></div>
+				<div class="span4">
+					<table>
+						<tr>
+							<th>RTD Ref#:</th>
+							<td><input type="text" name="rtd_ref" value="{RTDRef}" /></td>
+						</tr>
+						<tr>
+							<th>Execution Date:</th>
+							<td><input type="date" name="execution_date" value="{ExecDate format="%Y-%m-%d"}" /></td>
+						</tr>
+					</table>
+				</div>
+				<div class="span4"></div>
+			</div>
+			<div class="row">
+				<div class="span4">
+					<table>
+						<thead>
+							<tr>
+								<th colspan="2">Customer Info</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<th>Name:</th>
+								<td><input type="text" name="customer_name" value="{CustomerName}" /></td>
+							</tr>
+							<tr>
+								<th>Customer Ref#:</th>
+								<td><input type="text" name="customer_reference" value="{CustomerRef}" /></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<div class="span4">
+					<table>
+						<thead>
+							<tr>
+								<th colspan="2">Contact Person</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<th>Name:</th>
+								<td><input type="text" name="customer_contact_person_name" value="{CustomerContactPersonName}" /></td>
+							</tr>
+							<tr>
+								<th>Email:</th>
+								<td>{CustomerContactPersonEmail}</td>
+							</tr>
+							<tr>
+								<th>Phone:</th>
+								<td>{CustomerContactPersonPhone}</td>
+							</tr>
+							<tr>
+								<th>Cell:</th>
+								<td>{CustomerContactPersonCellPhone}</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<div class="span4">
+					<table>
+						<thead>
+							<tr>
+								<th colspan="2">Work Location</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<th>Location:</th>
+								<td><input type="text" name="work_location_name" value="{DeliveryName}" /></td>
+							</tr>
+							<tr>
+								<th>Address:</th>
+								<td>{DeliveryAddress}</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</header>
+	</fieldset>
+
+	<fieldset id="resources" class="single-numeric">
+		<h3>Resources</h3>
+		<div class="row-fluid">
+			<div class="span12">
+				<table>
+					{resources}
+					<tr>
+						<td>
+							<input type="hidden" name="resources[{resource_id}][resource_id]" value="{resource_id}">
+							<input type="hidden" name="resources[{resource_id}][name]" value="{name}">
+							<input type="number" name="resources[{resource_id}][qty]" min="0" step=".1" size="5" placeholder="Hours">
+						</td>
+						<td>Total Hours</td>
+						<td>{name}</td>
+					</tr>
+					{/resources}
+				</table>
+			</div>
+		</div>
+	</fieldset>
+
+	<fieldset id="salesItems" class="single-numeric">
+		<h3>Sales Items</h3>
+		<div class="row-fluid">
+			<div class="span12">
+				<table>
+					{salesItems}
+					<tr>
+						<td>
+							<input type="hidden" name="salesItems[{dimension_id}|{item_id}][dimension_id]" value="{dimension_id}" />
+							<input type="hidden" name="salesItems[{dimension_id}|{item_id}][item_id]" value="{item_id}" />
+							<input type="hidden" name="salesItems[{dimension_id}|{item_id}][name]" value="{name}" />
+							<input type="hidden" name="salesItems[{dimension_id}|{item_id}][unit]" value="{unit}" />
+							<input type="number" name="salesItems[{dimension_id}|{item_id}][qty]" min="0" step=".1" size="5" placeholder="Qty" />
+						</td>
+						<td>{unit}</td>
+						<td>{name}</td>
+					</tr>
+					{/salesItems}
+				</table>
+			</div>
+		</div>
+	</fieldset>
+
+	<fieldset id="materials" class="single-numeric">
+		<h3>Material Consumption</h3>
+		<div class="row-fluid">
+			<div class="span12">
+				<table>
+					{materials}
+					<tr>
+						<td>
+							<input type="hidden" name="materials[{dimension_id}|{item_id}][dimension_id]" value="{dimension_id}">
+							<input type="hidden" name="materials[{dimension_id}|{item_id}][item_id]" value="{item_id}">
+							<input type="hidden" name="materials[{dimension_id}|{item_id}][name]" value="{name}">
+							<input type="hidden" name="materials[{dimension_id}|{item_id}][unit]" value="{unit}">
+							<input type="number" name="materials[{dimension_id}|{item_id}][qty]" min="0" step=".1" placeholder="Qty" />
+						</td>
+						<td>{unit}</td>
+						<td>{name}</td>
+					</tr>
+					{/materials}
+				</table>
+			</div>
+		</div>
+	</fieldset>
+
+	<fieldset id="remarks" class="textarea">
+		<div class="row-fluid">
+			<div class="span12">
+				<table>
+					<tr>
+						<td>
+							<textarea name="remarks"></textarea>
+						</td>
+						<td>Remarks</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</fieldset>
+	<fieldset id="object_description" class="textarea">
+		<div class="row-fluid">
+			<div class="span12">
+				<table>
+					<tr>
+						<td>
+							<textarea name="object_description">{ObjectDescription}</textarea>
+						</td>
+						<td>Object Description</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</fieldset>
+	<fieldset id="order_description" class="textarea">
+		<div class="row-fluid">
+			<div class="span12">
+				<table>
+					<tr>
+						<td>
+							<textarea name="order_description">{OrderDescription}</textarea>
+						</td>
+						<td>Order Description</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</fieldset>
+
+	<div class="details_submit">
+		<input type="submit" class="btn" value="Submit">
+	</div>
+	{form_close}
+	{/exp:workreports:wrDetails}
+</div>
+{embed="assets/footer-page"}
+{embed="assets/scripts"}
+
+<script type="text/javascript" src="{path="assets/bootstrap-typeahead"}"></script>
+<script type="text/javascript" src="{path="assets/jQueryFormValidator"}"></script>
+
+<script type="text/javascript">
+	$('input[name="customer_contact_person_name"]').typeahead({
+		source: function (typeahead, query) {
+	        return $.post('/?ACT=43&method=customerInfo', { query: query }, function (data) {
+	            return typeahead.process(data);
+	        });
+	    }
+	});
+
+	$('input,textarea').focus(function() {
+	    $(this).parent().parent().addClass('backgroundImage');
+	});
+	$('#topOfTicket input').focus(function() {
+		$(this).parent().parent().removeClass('backgroundImage');
+	});
+	$('input,textarea').blur(function() {
+	    $(this).parent().parent().removeClass('backgroundImage');
+	});
+
+	$(window).resize(function() {
+		var width = $(window).width();
+		if(width > 800) {
+			$('#topOfTicket .span4').parent().removeClass('row').addClass('row-fluid');
+		}
+		else {
+			$('#topOfTicket .span4').parent().removeClass('row-fluid').addClass('row');
+		}
+	})
+	.resize();
+
+	$('#work_reports_details').parent().parent().addClass('details_background');
+
+	$('.single-numeric tr,.textarea tr').click(function() {
+	    $(this).find("input,textarea").focus();
+	});
+
+
+</script>
+	
+{embed="assets/footer-html"}

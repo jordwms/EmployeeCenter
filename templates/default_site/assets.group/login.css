@@ -1,0 +1,214 @@
+.round-top {
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+	-o-border-top-left-radius: 5px;
+	-o-border-top-right-radius: 5px;
+	-moz-border-top-left-radius: 5px;
+	-moz-border-top-right-radius: 5px;
+	-webkit-border-top-left-radius: 5px;
+	-webkit-border-top-right-radius: 5px;
+}
+.round-bottom {
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
+	-o-border-bottom-left-radius: 5px;
+	-o-border-bottom-right-radius: 5px;
+	-moz-border-bottom-left-radius: 5px;
+	-moz-border-bottom-right-radius: 5px;
+	-webkit-border-bottom-left-radius: 5px;
+	-webkit-border-bottom-right-radius: 5px;
+}
+
+html,body {
+	font-family: sans-serif;
+	margin: 0;
+	width: 100%;
+	height: 100%;
+}
+
+
+/*****************************
+ *  Master Header/Footer
+ *****************************/
+
+header {
+	text-align: center;
+	vertical-align: middle;
+}
+#master-header {
+	overflow: auto;
+	padding: 1em;
+}
+h1,h2,h3,h4,label {
+	font-weight: 500;
+	margin: 0;
+}
+h1 { /* Page Title */
+	float: left;
+	font-size: 22px;
+	line-height: 26px;
+	color: rgb(129,101,92);
+	font-weight: 550;
+}
+h1::first-letter {
+	color: rgb(255,100,7);
+}
+#border {
+	height: 3px;
+}
+#logo {
+	float: right;
+	display: block;
+	background-repeat: no-repeat;
+	background-image: url('/media/site-images/a+.png');
+	height: 26px;
+	width: 40px;
+}
+#login a {
+	color: rgb(60,60,60);
+	text-decoration: none;
+	font-size: 80%;
+}
+#login a:hover {
+	color: rgb(255,100,7);
+}
+#login.wrapper {
+	text-align: center;
+}
+#loginBox {
+	width: 230px;
+	margin: 0 auto;
+	padding: 15px 0 15px 0;
+	text-align: left;
+}
+
+input[type=text], input[type=email], input[type=password] {
+	background: rgba(255, 255, 255, 0.7);
+	border: 1px solid rgb(129,101,92);
+	font-size: 1.2em;
+	line-height: 1.2em;
+
+	outline: none;
+	width: 206px;
+	-webkit-box-flex: 1;
+	-webkit-box-shadow: none;
+
+	padding: 11px 11px 12px 11px;
+	height: 1.2em;
+	vertical-align: middle;
+}
+input[type=password] {
+	border-top: none;
+}
+
+.label-wrapper {
+	text-align: center;
+	display: none;
+	visibility: hidden;
+}
+.oldie .label-wrapper {
+	display: block;
+	visibility: visible;
+}
+.oldie #logo {
+	display: none;
+	visibility: hidden;
+}
+label {
+	color: rgb(51,51,51);
+	font-size: 1em;
+	height: 100%;
+	line-height: 30px;
+}
+button {
+	font-size: 1.2em;
+	color: rgb(255,255,255);
+	border-style: none;
+	background-color: rgb(129,101,92);
+	padding: 8px;
+	width: 230px;
+}
+button:active, button:hover {
+	background-color: rgb(255,100,7);
+}
+.button-wrapper{
+	margin-top: 12px;
+}
+
+.errors {
+	border: 1px none rgb(129,101,92);
+	color: rgb(255,255,255);
+	font-size: .8em;
+	margin-bottom: 15px;
+	padding: 11px 11px 12px 11px;
+	text-align: center;
+	width: 206px;
+}
+
+
+@media only screen and (min-width: 540px) {
+	#loginBox {
+		padding-top: 50px;
+		width: 460px;
+	}
+	input[type=text], input[type=email], input[type=password] {
+		width: 440px;
+	}
+	.errors {
+		width: 440px;
+	}
+	button {
+		width: 464px;
+	}
+}
+
+
+@media only screen and (min-width: 768px) {
+	#master-header h1 {
+		font-size: 30px;
+		margin-top: 5px;
+	}
+	#logo {
+		background-image: url('/media/site-images/ApplusRTD_179x34.png');
+		height: 34px;
+		width: 179px;
+	}
+	input[type=text], input[type=email], input[type=password] {
+		border: 1px solid rgb(129,101,92);
+	}
+	.input-wrapper {
+		margin-bottom: 1.5em;
+	}
+}
+
+/* ==== Applus Colors =======================================================
+   != cool
+   ========================================================================== */
+
+.applus-gray {
+  background-color: rgb(232,232,232);
+}
+.applus-gray-text {
+  color: rgb(232,232,232);
+}
+
+.applus-orange {
+  background-color: rgb(255,100,7);
+}
+.applus-orange-text {
+  color: rgb(255,100,7);
+}
+
+.applus-blue {
+  background-color: rgb(56,0,147);
+}
+.applus-blue-text {
+  color: rgb(56,0,147);
+}
+
+.applus-brown {
+  background-color: rgb(129,101,92);
+}
+.applus-brown-text {
+  color: rgb(129,101,92);
+}

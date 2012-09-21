@@ -1,0 +1,18 @@
+{embed="assets/header"}
+<!-- Article Listing when you click on one -->	
+<!-- Article -->
+{exp:channel:entries channel="ref_msds"}
+<article>
+	<header>
+		<h2>{title}</h2>
+	</header>
+	<div id="body">
+		{msds}
+	</div>
+</article>
+{/exp:channel:entries}
+
+{embed="assets/footer-page"}
+{embed="assets/scripts"}
+
+{embed="assets/footer-html"}

@@ -1,0 +1,29 @@
+{embed="assets/header"}
+<table>
+	<thead>
+		<th>Name</th>
+		<th>Group</th>
+		<th>Email</th>
+		<th>Office #</th>
+		<th>Mobile #</th>
+	</thead>
+	{exp:query sql="SELECT exp_members.*, exp_member_groups.group_title, m_field_id_1 as office_phone, m_field_id_2 as mobile_phone
+	FROM (exp_members)
+	LEFT JOIN exp_member_data ON exp_members.member_id=exp_member_data.member_id
+	LEFT JOIN exp_member_groups on exp_members.group_id=exp_member_groups.group_id
+	WHERE exp_members.group_id IN ('6', '7', '8')"
+	limit="100"}
+		<tr>
+			<td>{screen_name}</td>
+			<td>{group_title}</td>
+			<td>{email}</td>
+			<td>{office_phone}</td>
+			<td>{mobile_phone}</td>
+		</tr>
+		{paginate}
+			<tr><td colspan=5>{pagination_links}</td></tr>
+		{/paginate}
+	{/exp:query}
+</table>
+{embed="assets/scripts"}
+{embed="assets/footer-html"}

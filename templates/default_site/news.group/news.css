@@ -1,0 +1,30 @@
+/*****************************
+*  News
+*****************************/
+
+#new-header {
+}
+.news {
+	margin-bottom: 2em;
+}
+.news h3 {
+	text-align: left;
+	margin-bottom: 0;
+}
+.news h3 a, .news h3 a:visited {
+	color: rgb(0,0,0);
+	text-decoration: none;
+}
+.news h3 a:hover, .news h3 a:active {
+	text-decoration: underline;
+}
+.newsDate {
+	text-align: left;
+	margin: .4em 0 0 0;
+	font-style: italic;
+	color: rgb(150,150,150);
+	font-size: 13px;
+}
+.news p {
+	margin-left: 0;
+}

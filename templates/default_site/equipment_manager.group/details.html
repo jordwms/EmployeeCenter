@@ -1,0 +1,54 @@
+{embed="assets/header"}
+	<header>
+		<h2>Equipment Manager</h2>
+	</header>
+	<div id="details">
+		<table>
+			{exp:equipment_manager:equipment_details equipment_id="{segment_3}"}
+			<tr>
+				<td><h4>Type:</h4></td>
+				<td>{type}</td>
+			</tr>
+			<tr>
+				<td><h4>Serial #:</h4></td>
+				<td>{serialnum}</td>
+			</tr>
+			<tr>
+				<td><h4>Description:</h4></td>
+				<td>{description}</td>
+			</tr>
+			<tr>
+				<td><h4>Children:</h4></td>
+				<td>
+					{children}
+					<table id="details_table">
+						<tr>
+							<th>Serial#</th>
+							<th class="dark">Activity</th>
+							<th>Equipment Type</th>
+						</tr>
+						<tr>
+							<td>{child_serialnum}</td>
+							<td class="dark">{child_current_activity} {child_activity_units}</td>
+							<td>{child_type}</td>
+						</tr>
+					</table>
+					{/children}
+				</td>
+			</tr>
+			<tr>
+				<td><h4>Storage Facility:</h4></td>
+				<td>{assigned_facility_name}</td>
+			</tr>
+			<tr>
+				<td colspan="2" class="actions">{actions}</td>
+			</tr>
+			{/exp:equipment_manager:equipment_details}
+		</table>
+	</div>
+{embed="assets/footer-page"}
+{embed="assets/scripts"}
+
+<script></script>
+	
+{embed="assets/footer-html"}

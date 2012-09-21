@@ -1,0 +1,96 @@
+{embed="assets/header"}
+<!-- Article Listing when you click on one -->	
+<!-- Article -->
+{exp:channel:entries channel="safety_training|inspection_training"}
+<article>
+	<header>
+		<h2>{title}</h2>
+	</header>
+	<div id="body">
+		<div id="textChanger">
+			<p>Text Size</p>
+			<a href="#" id="bigger"><img src="/media/site-images/text+" /></a>
+			<a href="#" id="smaller"><img src="/media/site-images/text-" /></a>
+		</div>
+		{training_body}
+	</div>
+</article>
+{if quiz_id}
+<nav id="takeQuiz">
+	<div>
+		<a href="{path=eequiz/take_quiz/{quiz_id}}/">Take Quiz</a>
+	</div>
+</nav>
+{/if}
+{/exp:channel:entries}
+
+<!-- Comments -->
+<div id="comments" class="applus-gray">
+	<header>
+		<h3>Comments:</h3>
+	</header>
+	<div id="comments-container">
+		{exp:comment:entries limit="20"}
+		<div class="comment" id="comment_{comment_id}">
+			<div class="comment_body">
+				{comment}
+			</div>
+
+			{if editable}
+			<a href="#" class="edit_link">Edit</a>
+			<div class="editCommentBox" style="display: none;">
+				<div id="editComment">
+					<textarea>{comment_stripped}</textarea>
+				</div>
+				<div id="editCommentSubmit" class="submit">
+					<input type="submit" name="cancel" value="Cancel" class="cancel_edit">
+					<input type="submit" name="save" value="Save" class="submit_edit">
+				</div>
+			</div>
+			{/if}
+
+			{if can_moderate_comment}
+			<a href="#" class="mod_link">Close</a>
+			{/if}
+		</div>
+		{/exp:comment:entries}
+	</div>
+
+	<!-- Add A Comment -->
+	<div id="comment">
+		{exp:comment:form channel="Training" preview="channel/preview"}
+		<div id="newCommentBox">
+			<label for="comment">Add a Comment:</label><br />
+			<textarea name="comment">{comment}</textarea>
+		</div>
+		<div id="newCommentBoxSubmit" class="submit">
+			<span><input type="submit" name="submit" value="Submit" /></span>
+			<span><input type="submit" name="preview" value="Preview" /></span>
+		</div>
+		{/exp:comment:form}
+	</div>
+</div>
+{embed="assets/footer-page"}
+{embed="assets/scripts"}
+
+<script>
+$(document).ready(function(){
+	function resizeText(multiplier) {
+		var currentFontSize = $('div#body').css('font-size');
+		var currentFontSizeNum = parseFloat(currentFontSize, 10);
+		var newFontSize = currentFontSizeNum * multiplier;
+		$('div#body').css('font-size', newFontSize);
+		console.log(this);
+		return false;
+	}
+
+	$("#textChanger #bigger").click(function(){
+		resizeText(1.1);
+	});
+	$("#textChanger #smaller").click(function(){
+		resizeText(0.8);
+	});
+});
+</script>
+
+{embed="assets/footer-html"}

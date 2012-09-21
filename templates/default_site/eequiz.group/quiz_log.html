@@ -1,0 +1,36 @@
+<div id="score-card">
+	<header>Quiz Log:</header>
+	<table>
+	<thead>
+		<tr>
+			<th id="member"><p>Member Name</p></th>
+			<th id="quiz"><p>Quiz Name</p></th>
+			<th id="score"><p>Score</p></th>
+			<th id="duration"><p>Duration</p></th>
+			<th id="date"><p>Date</p></th>
+		</tr>
+	</thead>
+	{exp:query sql="SELECT screen_name, title AS quiz_title, exp_eequiz_mappings.quiz_id AS quiz_id, MAX(exp_eequiz_progress.time) AS last_answer_time, ROUND(exp_eequiz_cached_scores.percent*100) AS grade_percent, IF (exp_eequiz_cached_scores.percent*100 > exp_eequiz_quizzes.passing_grade, 'true', '') as passing, SEC_TO_TIME( MAX(exp_eequiz_progress.time)-MIN(exp_eequiz_progress.time) ) AS duration
+	FROM exp_eequiz_mappings
+	INNER JOIN exp_eequiz_progress ON exp_eequiz_progress.mapping_id=exp_eequiz_mappings.mapping_id
+	INNER JOIN exp_members ON exp_members.member_id=exp_eequiz_progress.member_id
+	INNER JOIN exp_eequiz_quizzes ON exp_eequiz_quizzes.quiz_id=exp_eequiz_mappings.quiz_id
+	INNER JOIN exp_eequiz_cached_scores ON exp_eequiz_cached_scores.quiz_id=exp_eequiz_mappings.quiz_id
+	GROUP BY exp_eequiz_progress.member_id, exp_eequiz_mappings.quiz_id
+	ORDER BY last_answer_time"
+	limit="30"}
+	<tr>
+		<td>{screen_name}</a></td>
+		<td><a href="{path=eequiz/take_quiz/{quiz_id}/retake}">{quiz_title}</a></td>
+		<td{if passing} class="passing"{/if}>{grade_percent}</td>
+		<td>{duration}</td>
+		<td>{last_answer_time format="%m-%d-%Y"}</td>
+	</tr>
+	{paginate}
+	<tfoot>
+		<tr><td colspan=5>{pagination_links}</td></tr>
+	{/paginate}
+	</tfoot>
+	{/exp:query}
+	</table>
+</div>

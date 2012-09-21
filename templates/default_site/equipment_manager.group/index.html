@@ -1,0 +1,45 @@
+{embed="assets/header"}
+	
+	<div id="member_equipment_list">
+		<header>
+			<h2>Equipment Manager</h2>
+		</header>
+		{exp:equipment_manager:member_eq_list}
+		<div id="{id}" class="type">
+			<div id="parent_details">
+				<h3>{type}</h3>
+				<h4>Serial #:</h4>
+				<span><a href="details/{id}">{serialnum}</a></span>
+				<h4>Status:</h4>
+				<span>{status}</span>
+				<h4>Storage Facility:</h4>
+				<span>{assigned_facility_name}</span>
+			</div>
+			<div id="children">
+			<h4>Children:</h4>
+			{children}
+				<table>
+					<tr>
+						<th>Type</th>
+						<th class="dark">Serial#</th>
+						<th>Description</th>
+						<th class="dark">Activity</th>
+					</tr>
+					<tr>
+						<td>{child_type}</td>
+						<td class="dark">{child_serialnum}</td>
+						<td>{child_description}</td>
+						<td class="dark">{child_current_activity} {child_activity_units}</td>
+					</tr>
+				</table>
+			{/children}
+			</div>
+		</div>
+		{/exp:equipment_manager:member_eq_list}
+	</div>
+{embed="assets/footer-page"}
+{embed="assets/scripts"}
+
+<script></script>
+	
+{embed="assets/footer-html"}

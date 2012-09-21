@@ -1,0 +1,40 @@
+{embed="assets/header"}
+<div id="score-card">
+	<header>Score Card:</header>
+	<table>
+		<thead>
+			<tr>
+				<th>Quiz Name</th>
+				<th>Score</th>
+				<th>Date Completed</th>
+			</tr>
+		</thead>
+		{exp:eequiz:score_card2 prefix="{segment_3}"}
+		<tr class="{switch='even|odd'}">
+			<td><a href="{path=eequiz/take_quiz/{quiz_id}}">{quiz_title}</a></td>
+			{if user_grade}
+			<td{if user_grade >= passing_grade } class="passing"{/if}>{user_grade}%</td>
+			{if:else}
+			<td></td>
+			{/if}
+			{if attempted_all_required}
+			<td{if days_since_last_answer > 365} class="pastdue"{/if}>{last_answer_time format="%F %d %Y"}</td>
+			{if:else}
+			<td></td>
+			{/if}
+		</tr>
+		{/exp:eequiz:score_card2}
+	</table>
+	<div id="signature-box" class="print-only">
+		<div><hr class"black"></div>
+		<div>{screen_name}</div>
+		<div>{date}</div>
+	</div>
+</div>
+
+{embed="assets/footer-page"}
+{embed="assets/scripts"}
+	
+<script></script>
+	
+{embed="assets/footer-html"}

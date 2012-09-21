@@ -1,0 +1,1539 @@
+/* ==== normalize ======================================================== */
+
+article, aside, details, figcaption, figure, footer, header, hgroup, nav, section { display: block; }
+audio, canvas, video { display: inline-block; *display: inline; *zoom: 1; }
+audio:not([controls]) { display: none; }
+[hidden] { display: none; }
+
+/* ==== Base ============================================================= */
+
+html { font-size: 100%; overflow-y: scroll; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+body { margin: 0; font-size: 13px; line-height: 1.231; }
+body, button, input, select, textarea { font-family: sans-serif; color: rgb(51,51,51); }
+
+/* ==== Selection ======================================================== */
+
+::-moz-selection { background: rgb(255,255,158); color: rgb(0,0,0); text-shadow: none; }
+::selection { background: rgb(255,255,158); color: rgb(0,0,0); text-shadow: none; }
+body {-webkit-tap-highlight-color: rgb(255,255,158); color: rgb(0,0,0); }
+img::selection { background: transparent; }
+img::-moz-selection { background: transparent; }
+
+/* ==== Links ============================================================ */
+
+a { color: rgb(0,0,110); }
+a:visited { color: rgb(85,26,139); }
+a:hover { color: rgb(34,51,172); text-decoration: none; }
+a:focus { outline: thin dotted; }
+
+/* Improve readability when focused and hovered in all browsers: h5bp.com/h */
+a:hover, a:active { outline: 0; }
+
+/* ==== Typography ======================================================= */
+
+abbr[title] { border-bottom: 1px dotted; }
+b, strong { font-weight: bold; }
+blockquote { margin: 1em 40px; }
+dfn { font-style: italic; }
+hr { display: block; height: 1px; border: 0; border-top: 1px solid rgb(0,12,204); margin: 1em 0; padding: 0; }
+ins { background: rgb(0,15,249); color: rgb(0,0,0); text-decoration: none; }
+mark { background: rgb(0,15,240); color: rgb(0,0,0); font-style: italic; font-weight: bold; }
+
+/* Redeclare monospace font family: h5bp.com/j */
+pre, code, kbd, samp { font-family: monospace, monospace; _font-family: 'courier new', monospace; font-size: 1em; }
+
+/* Improve readability of pre-formatted text in all browsers */
+pre { white-space: pre; white-space: pre-wrap; word-wrap: break-word; }
+
+q { quotes: none; }
+q:before, q:after { content: ""; content: none; }
+
+small { font-size: 95%; }
+
+/* Position subscript and superscript content without affecting line-height: h5bp.com/k */
+sub, sup { font-size: 85%; line-height: 0; position: relative; vertical-align: baseline; }
+sup { top: -0.5em; }
+sub { bottom: -0.25em; }
+
+/* ==== Lists ============================================================ */
+
+ul, ol { margin: 1em 0; padding: 0 0 0 40px; }
+dd { margin: 0 0 0 40px; }
+nav ul, nav ol { list-style: none; list-style-image: none; margin: 0; padding: 0; }
+
+/* ==== Embeded Content ================================================== */
+
+img { border: 0; -ms-interpolation-mode: bicubic; vertical-align: middle; }
+svg:not(:root) { overflow: hidden; }
+
+/* ==== Figures ========================================================== */
+
+figure { margin: 0; }
+
+/* ==== Forms ============================================================ */
+
+form { margin: 0; }
+fieldset { border: 0; margin: 0; padding: 0; }
+label { cursor: pointer; }
+legend { border: 0; *margin-left: -7px; padding: 0; }
+button, input, select, textarea { font-size: 100%; margin: 0; vertical-align: baseline; *vertical-align: middle; }
+button, input { line-height: normal; *overflow: visible; }
+table button, table input { *overflow: auto; }
+button, input[type="button"], input[type="reset"], input[type="submit"] { cursor: pointer; -webkit-appearance: button; }
+
+input[type="checkbox"], input[type="radio"] { box-sizing: border-box; }
+input[type="search"] { -webkit-appearance: textfield; -moz-box-sizing: content-box; -webkit-box-sizing: content-box; box-sizing: content-box; }
+input[type="search"]::-webkit-search-decoration { -webkit-appearance: none; }
+
+button::-moz-focus-inner, input::-moz-focus-inner { border: 0; padding: 0; }
+
+textarea { overflow: auto; vertical-align: top; resize: vertical; }
+
+/* Colors for form validity */
+input:valid, textarea:valid {  }
+input:invalid, textarea:invalid { background-color: rgb(240,221,221); }
+
+/* ==== Tables =========================================================== */
+
+table { border-collapse: collapse; border-spacing: 0; }
+td { vertical-align: top; }
+
+
+/* ==== Primary Styles =================================================== */
+/* Defaults / iPhone / 320px mobile browser */
+/* Styles are built "up" as screen width increases */
+
+/**** Typography / Headings ****/
+
+h1,h2,h3,h4,label {
+	font-weight: 500;
+	margin: 0;
+}
+h1 { /* Page Title */
+	float: left;
+	font-size: 22px;
+	line-height: 26px;
+	color: rgb(129,101,92);
+	font-weight: 550;
+}
+h1::first-letter {
+	color: rgb(255,100,7);
+}
+
+h2 { /* Nav/Content Headings */
+	font-size: 18px;
+	margin: 0.8em 0;
+	font-size: 150%;
+}
+h3 { /* Article Headings/sub headings */
+	margin: 0.7em 0;
+	border-bottom: 1px solid rgb(207,207,207);
+	font-size: 125%;
+}
+h4,label { /* Section Headings */
+	font-size: 110%;
+	margin: 0 0 0.4em 0;
+}
+article {
+	font-size: 100%;
+}
+article p {
+	font-size: 110%;
+}
+
+
+/* Master Header/Footer */
+
+header {
+	text-align: center;
+	vertical-align: middle;
+}
+#master-header {
+	overflow: auto;
+	padding: 1em;
+}
+footer #copyright {
+	font-size: 9px;
+	color: rgb(129,101,92);
+	padding: 1em;
+	text-align: center;
+}
+#border {
+	height: 3px;
+}
+#logo {
+	float: right;
+	display: block;
+	background-repeat: no-repeat;
+	background-image: url('/media/site-images/a+.png');
+	height: 26px;
+	width: 40px;
+}
+
+
+/*****************************
+*  Nav Bars
+*****************************/
+
+nav {
+	overflow: auto;
+	margin-bottom: 1.5em;
+}
+nav .right {
+	float: right;
+}
+nav ul li {
+	display: inline-block;
+}
+nav li>ul {
+	top: auto;
+	left: 0;
+	width: 100%;
+}
+nav li ul {
+	display: none;
+	position: absolute;
+}
+nav li:hover ul {
+	display: inline-block;
+}
+nav a {
+	display: inline-block;
+	line-height: 100%;
+	font-weight: 300;
+	padding: 1em;
+	text-decoration: none;
+	vertical-align: middle;
+	color: rgb(129,101,92);
+}
+nav a:hover {
+	text-shadow: rgb(129,101,92) 0 0 1px;
+}
+nav a:visited {
+	color: rgb(129,101,92);
+}
+nav select {
+	display: inline-block;
+	margin: 8px 0 0 10px;
+}
+nav span.left, 
+nav .iPhone_hide {
+	display: none;
+}
+
+
+/*****************************
+*  Big Buttons
+*  32px icons, list layout, 
+*  labels to the right
+*****************************/
+
+nav.big-buttons>ul>li {
+	margin: 10px 0;
+	display: block;
+}
+nav.big-buttons #icon {
+	margin: 0 1em;
+	display: inline-block;
+}
+nav.big-buttons img {
+	height: 32px;
+	width: 32px;
+}
+nav.big-buttons a {
+	text-decoration: none;
+	padding: 0;
+	color: rgb(0,0,0);
+}
+nav.big-buttons #title {
+	display: inline-block;
+	text-align: left;
+	line-height: 32px;
+	font-size: 13px;
+	vertical-align: middle;
+}
+ul.nav_categories ul {
+	display: none;
+	position: relative;
+}
+ul.nav_categories ul #title:before {
+	content: "- ";
+}
+ul.nav_categories ul img {
+	visibility: hidden;
+}
+ul.nav_categories li:hover ul {
+	display: none;
+}
+
+
+/*****************************
+*  Reference
+*****************************/
+
+nav.ref-list {
+	overflow: visible;
+	text-align: center;
+}
+nav.ref-list ul li {
+	display: block;
+	margin: 0 10px;
+}
+nav.ref-list a {
+	text-decoration: none;
+	padding: 0;
+	color: rgb(0,0,0);
+}
+nav.ref-list #title {
+	display: inline-block;
+	text-align: left;
+	line-height: 22px;
+	font-size: 12px;
+	vertical-align: middle;
+}
+#reference table {
+	margin-bottom: 1em;
+}
+#reference table td {
+	font-size: 12px;
+	vertical-align: top;
+	padding: 3px;
+}
+#reference table td.ref-label {
+	text-align: right;
+	font-weight: bold;
+}
+
+
+/*****************************
+*  Dashboard
+*****************************/
+
+nav.dashboard {
+	margin: 0 10px;
+	overflow: visible;
+}
+nav.dashboard a {
+	font-size: 1.2em;
+	line-height: 1.3em;
+	display: block;
+	padding: 0;
+	margin-bottom: .6em;
+	text-decoration: none;
+	color: rgb(0,0,0);
+}
+nav.dashboard div#scores,
+nav.dashboard div#asset_manager {
+	margin-bottom: 20px;
+}
+div#work_reports button {
+	margin-bottom: 1em;
+}
+div#work_reports a,
+div#scores a {
+	height: 30px;
+}
+
+
+/*****************************
+*  Equipment Manager
+*****************************/
+
+div.type {
+	background-color: rgb(237,237,237);
+	padding: 0.1em 1em 1em 1em;
+	margin: 0 1em 1em 1em;
+	font-size: 90%;
+}
+div.type h4 {
+	display: inline-block;
+	margin: 0 0.3em 0 0;
+}
+div.type span {
+	color: rgb(110,110,110);
+	margin-right: 1em;
+}
+#details {
+	font-size: 90%;
+}
+#children h4 {
+	margin: 0.4em 0.5em 0 0;
+}
+#children table,
+#details table#details_table {
+	background-color: rgb(250,250,250);
+	border: 0.5em solid rgb(250,250,250);
+	margin-top: 0.5em;
+	width: 100%;
+}
+#children table th,
+#children table td,
+#details table#details_table th,
+#details table#details_table td {
+	text-align: left;
+	width: 25%;
+	font-size: 90%;
+}
+table .dark {
+	background-color: rgb(240,240,240);
+}
+#member_equipment_list h3:first-letter,
+#children td:first-letter,
+#details td:first-letter{
+	text-transform: uppercase;
+}
+#details {
+	margin-bottom: 2em;
+}
+#details h4 {
+	margin: 0 0.5em 0 0;
+	text-align: right;
+}
+#details > table,
+#details label {
+	margin-left: 0.5em;
+}
+#details > table {
+	width: 100%;
+	margin-bottom: 1em;
+}
+#details > table tr td:nth-child(1) {
+	width: 30%;
+}
+#details > table tr td:nth-child(2) {
+	width: 70%;
+}
+#details select,
+#details input {
+	margin: 1em 1em 0 0.5em;
+	display: block;
+}
+#details input#status_checkbox {
+	display: inline;
+}
+#details p {
+	color: red;
+	margin: 0.5em;
+}
+
+
+/*****************************
+*  Work Reports
+*****************************/
+
+#work_reports_index h3 {
+	font-size: 100%;
+	margin: 0;
+	font-weight: bold;
+	border-bottom: none;
+	display: inline;
+	line-height: 1.5em;
+}
+#work_reports_index p {
+	margin: 0;
+}
+a.work_reports:link,
+a.work_reports:visited,
+a.work_reports:active,
+a.work_reports:hover {
+	color: rgb(51,51,51);
+	text-decoration: none;
+}
+a.work_reports {
+	padding: 0.5em 1em;
+	font-size: 90%;
+	display: block;
+	position: relative;
+	height: auto;
+	border-bottom: 1px solid rgb(207,207,207);
+
+	background-image: linear-gradient(bottom, rgb(227,227,227) 24%, rgb(240,240,240) 50%);
+	background-image: -o-linear-gradient(bottom, rgb(227,227,227) 24%, rgb(240,240,240) 50%);
+	background-image: -moz-linear-gradient(bottom, rgb(227,227,227) 24%, rgb(240,240,240) 50%);
+	background-image: -webkit-linear-gradient(bottom, rgb(227,227,227) 24%, rgb(240,240,240) 50%);
+	background-image: -ms-linear-gradient(bottom, rgb(227,227,227) 24%, rgb(240,240,240) 50%);
+
+	background-image: -webkit-gradient(
+		linear,
+		left bottom,
+		left top,
+		color-stop(0.24, rgb(227,227,227)),
+		color-stop(0.5, rgb(240,240,240))
+	);
+}
+a.work_reports:hover {
+	background: rgb(227,238,255) !important;
+}
+a.work_reports:after {
+	clear: both;
+	float: none;
+	content: ".";
+	height: 0;
+	visibility: hidden;
+	display: block;
+}
+a.work_reports span {
+	color: rgb(0,0,110);
+	text-decoration: underline;
+}
+
+/*** Details ***/
+
+#work_reports_details {
+	margin: 0 5px;
+}
+#work_reports_details input,
+#work_reports_details textarea {
+	border-color: rgb(132,132,132);
+}
+.details_background {
+	background-color: rgb(240,240,240);
+}
+#work_reports_details h3 {
+	border-bottom-color: rgb(177,177,177);
+}
+
+fieldset#topOfTicket .row-fluid {
+	margin: 1em 0;
+}
+fieldset#topOfTicket td {
+	width: 60%;
+	text-align: left;
+	padding-left: 0.5em;
+}
+fieldset#topOfTicket th {
+	width: 40%;
+	text-align: right;
+	font-weight: normal;
+}
+fieldset#topOfTicket thead th {
+	text-align: center;
+	font-weight: bold;
+	padding-bottom: 0.8em;
+	font-size: 110%;
+}
+fieldset#topOfTicket input {
+	width: 150px;
+	height: 2em;
+	margin: 0.4em 0;
+}
+fieldset#topOfTicket table {
+	width: 100%;
+}
+#topOfTicket .span4 {
+	float: none;
+	padding-top: 0.4em;
+	margin: 0 auto;
+}
+
+.single-numeric table,
+div.details_submit {
+	margin: 1em 1em 2em 0.5em;
+}
+.single-numeric table,
+.textarea table {
+	width: 96%;
+}
+.single-numeric input {
+	width: 57px;
+	height: 2em;
+	margin: 0.4em;
+}
+.single-numeric td,
+.textarea td {
+	vertical-align: middle;
+	border-bottom: 1px solid rgb(207,207,207);
+}
+.single-numeric tr,
+.textarea tr {
+	background-image: linear-gradient(bottom, rgb(227,227,227) 24%, rgb(240,240,240) 50%);
+	background-image: -o-linear-gradient(bottom, rgb(227,227,227) 24%, rgb(240,240,240) 50%);
+	background-image: -moz-linear-gradient(bottom, rgb(227,227,227) 24%, rgb(240,240,240) 50%);
+	background-image: -webkit-linear-gradient(bottom, rgb(227,227,227) 24%, rgb(240,240,240) 50%);
+	background-image: -ms-linear-gradient(bottom, rgb(227,227,227) 24%, rgb(240,240,240) 50%);
+
+	background-image: -webkit-gradient(
+		linear,
+		left bottom,
+		left top,
+		color-stop(0.24, rgb(227,227,227)),
+		color-stop(0.5, rgb(240,240,240))
+	);
+}
+
+.single-numeric td:nth-child(1) {
+	width: 68px;
+}
+.single-numeric td:nth-child(2) {
+	width: 52px;
+	padding: 0 5px;
+}
+.single-numeric td:nth-child(3) {
+	padding: 0.4em 0.8em;
+}
+.backgroundImage {
+	background: rgb(227,238,255) !important;
+}
+
+.textarea table {
+	margin: 0 1em 0 0.5em;
+}
+.textarea table td:nth-child(1) {
+	width: 170px;
+}
+.textarea textarea {
+	height: 4em;
+	margin: 0.4em;
+	width: 150px;
+}
+
+
+/*****************************
+*  Content
+*****************************/
+hr {
+	border: 0;
+	color: #E8E8E8;
+	background-color: #E8E8E8;
+	height: 1px;
+}
+
+
+/*****************************
+*  Articles
+*****************************/
+
+article { /* Section Headings */
+	padding: 0 1em;
+	line-height: 1.4;
+}
+article p {
+	margin-left: 0.7em;
+}
+article li {
+	margin-bottom: 0.5em;
+}
+article ul {
+	list-style-type: none;
+}
+article section {
+	height: auto;
+}
+article section:after {
+	clear: both;
+	content: ".";
+	height: 0;
+	visibility: hidden;
+}
+article img {
+	max-width: 300px;
+	height: auto;
+	display: inline-block;
+	margin: 0 auto;
+}
+article figure {
+	width: 300px;
+	margin: 0 auto;
+	text-align: center;
+}
+article figure img {
+	margin-bottom: 2em;
+}
+
+
+/*****************************
+*  Article Text Size Changer
+*****************************/
+
+#textChanger {
+	width: 121px;
+	height: 72px;
+	background-color: rgb(232,232,232);
+	border-radius: 10px;
+	margin: 0 auto;
+	text-align: center;
+	padding: 16px 0 20px 20px;
+	vertical-align: middle;
+}
+#textChanger a, 
+#textChanger a:link, 
+#textChanger a:visited {
+	width: 35px;
+	height: 35px;
+	display: inline-block;
+	background-color: rgb(129,101,92);
+	border-radius: 5px;
+	margin-right: 20px;
+}
+#textChanger a:hover, 
+#textChanger a:active {
+	background-color: rgb(255,100,7);
+}
+#textChanger p {
+	margin: 0 20px 5px 0;
+	font-weight: bold;
+	color: rgb(255,100,7);
+	font-size: 20px;
+	display: block;
+}
+
+
+/*****************************
+*  Quizes
+*****************************/
+
+/* Take Quiz Button */
+#takeQuiz div { 
+	border-radius: 5px;
+	background-color: rgb(129,101,92);
+	width: 180px;
+	margin: 1em;
+	text-align: center;
+	font-size: 160%;
+}
+#takeQuiz a, 
+#takeQuiz a:link, 
+#takeQuiz a:visited {
+	width: 140px;
+	display: block;
+	border-radius: 5px;
+	color: rgb(255,255,255);
+	font-weight: bold;
+}
+#takeQuiz a:hover, 
+#takeQuiz a:active {
+	background-color: rgb(255,100,7);
+}
+
+/* Quiz Questions */
+#quizQuestions { 
+	margin: 3em 1em;
+}
+#quizQuestions label {
+	margin: 0 1.7em 0 .3em;
+}
+.questionProgress {
+	margin: 0.7em 0;
+	border-bottom: 1px solid rgb(207,207,207);
+	font-size: 200%;
+}
+.questionText,
+.questionControls {
+	font-size: 160%;
+	margin-bottom: 1em;
+}
+.questionText {
+	color: rgb(51,51,51);
+}
+.answer_section {
+	color: rgb(68,68,68);
+}
+.answer_section li {
+	margin-bottom: 1.3em;
+}
+.correct_mark,
+.incorrect_mark {
+	font-size: 180%;
+	margin-top: .8em;
+}
+.correct_mark {
+	color: rgb(8,174,0);
+}
+.incorrect_mark {
+	color: rgb(255,0,0);
+}
+input.submit_answer_button {
+	font-size: 1.2em;
+	color: rgb(255,255,255);
+	border-radius: 10px;
+	border-style: none;
+	background-color: rgb(129,101,92);
+	padding: 10px;
+	margin-top: 1em;
+}
+input.submit_answer_button:active, 
+input.submit_answer_button:hover {
+	background-color: rgb(255,100,7);
+}
+
+
+/*****************************
+*  Quiz Score Card
+*****************************/
+
+/* Quiz Score Card */
+.even {
+	background-color: rgb(249,249,249);
+}
+#score-card header {
+	font-size: 150%;
+	font-weight: bold;
+	margin: 0;
+}
+#score-cardPrint header {
+	margin-top: 2em;
+}
+#score-card table {
+	background-color: rgb(232,232,232);
+	margin: 0 auto;
+}
+#score-card td {
+	padding: 5px;
+}
+
+
+/*****************************
+*  Comments
+*****************************/
+
+#comment, 
+#new-comment, 
+#comments-container {
+	padding: 1em 0;
+}
+#comment textarea {
+	width: 100%;
+}
+
+
+/*****************************
+*  User Details/Profile
+*****************************/
+
+/* My Details Info */
+#user {
+	overflow: hidden;
+	margin: 2em auto;
+}
+#user header {
+	margin-bottom: 1.5em;
+}
+#user h2 {
+	margin: 0;
+}
+#user #photo {
+	display: block;
+	width: 200px;
+	vertical-align: top;
+	margin: 0 auto 1em auto;
+}
+#user #photo img {
+	width: 200px;
+}
+#user #info {
+	display: block;
+	width: 300px;
+	vertical-align: top;
+	padding: 0 1em;
+	margin: 0 auto;
+}
+#user #info .label {
+	display: inline-block;
+	text-align: right;
+	padding-right: .5em;
+	width: 95px;
+	font-size: 100%;
+	margin-bottom: .3em;
+	font-weight: bold;
+}  
+#user #info .aboutInfo {
+	font-size: 100%;
+	color: rgb(51,51,51);
+}
+
+
+/* ==== primary styles =====================================================
+iPhone Landscape
+========================================================================== */
+@media only screen and (min-width: 480px) {
+	/*****************************
+	*  Nav Bar
+	*****************************/
+
+	nav select {
+		display: none;
+	}
+	nav span.left, 
+	nav .iPhone_hide {
+		display: inline-block;
+	}
+
+
+	/*****************************
+	*  Big Buttons
+	*****************************/
+
+	nav.big-button #title {
+		font-size: 16px;
+	}
+
+
+	/*****************************
+	*  Font Size Adjuster
+	*****************************/
+
+	#textChanger {
+		float: right;
+		margin: 0 0 10px 20px;
+	}
+
+
+	/*****************************
+	*  Quiz Score Card
+	*****************************/
+
+	#scoreCard table td {
+		padding: 15px;
+	}
+	#scoreCard h3 {
+		font-size: 200%;
+	}
+	.quizTitle {
+		font-size: 130%;
+	}
+	.quizGrade {
+		font-size: 130%;
+	}
+	.quizDate {
+		font-size: 130%;
+	}
+	.quizGradeNull {
+		font-size: 130%;
+	}
+	.quizDateNull {
+		font-size: 130%;
+	}
+
+
+	/*****************************
+	*  My Details Info
+	*****************************/
+
+	#user #info {
+		width: 370px;
+	}
+
+
+	/*****************************
+	*  Work Reports
+	*****************************/
+
+	#work_reports_index {
+		margin: 20px 10%;
+	}
+
+
+}
+
+/* ==== primary styles =====================================================
+Android/HD mobile styles
+========================================================================== */
+@media only screen and (min-width: 540px) {
+
+	/*****************************
+	*  Big Buttons
+	*****************************/
+
+	nav.big-buttons {
+		padding: 0 10%;
+	}
+	nav.big-buttons #title {
+		font-size: 18px;
+	}
+	nav.big-button li {
+		margin: 18px 0;
+	}
+
+
+	/*****************************
+	*  Reference
+	*****************************/
+
+	nav.dashboard,
+	#reference,
+	#member_equipment_list,
+	#details,
+	#work_reports_details {
+		margin: 0 5%;
+	}
+	nav.ref-list #title {
+		font-size: 16px;
+		line-height: 28px;
+	}
+	#reference table td {
+		font-size: 14px;
+		padding: 3px;
+	}
+
+
+	/*****************************
+	*  Articles
+	*****************************/
+
+	article figure {
+		display: table-cell;
+	}
+	article section div {
+		display: table-cell;
+		min-width: 300px;
+		vertical-align: top;
+		padding-left: 15px;
+	}
+	article, 
+	#takeQuiz, 
+	#scoreCard {
+		margin: 0 5%;
+	}
+	article > #reference {
+		margin: 0;
+	}
+
+
+	/*****************************
+	*  Comments
+	*****************************/
+
+	#comment, 
+	#new-comment, 
+	#comments-container {
+		margin: 0 5%;
+	}
+
+
+	/*****************************
+	*  Quizes
+	*****************************/
+	#quizQuestions {
+		margin: 3em 5%;
+	}
+
+
+	/*****************************
+	*  My Details Info
+	*****************************/
+
+	#user #photo {
+		display: inline-block;
+		width: 200px;
+	}
+	#user #photo img {
+		width: 200px;
+	}
+	#user #info {
+		display: inline-block;
+		width: 370px;
+		margin: 0;
+	}
+	#user {
+		width: 600px;
+	}
+	#user #photo {
+		margin: 0;
+	}
+	#user header {
+		text-align: left;
+	}
+	#user nav {
+		text-align: left;
+	}
+	#user #info .label {
+		padding-right: 1em;
+		width: 120px;
+		font-size: 130%;
+	}  
+	#user #info .aboutInfo {
+		font-size: 130%;
+	}
+
+
+	/*****************************
+	*  Work Reports
+	*****************************/
+
+	#work_reports_index {
+		margin: 20px 15%;
+	}
+
+	.textarea table td:nth-child(1) {
+		width: 290px;
+	}
+	.textarea textarea {
+		width: 280px;
+		height: 6em;
+	}
+
+
+}
+
+@media only screen and (min-width: 800px) {
+	/* ==== primary styles =====================================================
+	iPad Portrait and Android HD landscape
+	========================================================================== */
+
+	/*****************************
+	*  Headers/Headings
+	*****************************/
+
+	h1 {
+		font-size: 30px;
+		margin-top: 4px;
+	}
+
+
+	/*****************************
+	*  Logo
+	*****************************/
+
+	#logo {
+		background-image: url('/media/site-images/ApplusRTD_179x34.png');
+		height: 34px;
+		width: 179px;
+	}
+
+
+	/*****************************
+	*  Big Buttons
+	*  64px icons
+	*  labels bellow icons
+	*****************************/
+
+	nav.big-buttons {
+		padding: 0;
+		text-align: center;
+		overflow: visible;
+	}
+	nav.big-buttons ul {
+		list-style-type: none;
+		margin: 0;
+	}
+	nav.big-buttons>ul>li {
+		display: inline-block;
+		padding: 0.75em;
+		margin: 0 -2px;
+		width: 135px;
+		position: relative;
+	}
+	nav.big-buttons a {
+		padding: 0;
+		width: auto;
+	}
+	nav.big-buttons #icon {
+		margin: 0;
+	}
+	nav.big-buttons img {
+		height: 50px;
+		width: 50px;
+	}
+	nav.big-buttons #title {
+		font-size: 13px;
+		line-height: 1.5em;
+		height: 3em;
+		text-align: center;
+		width: 100%;
+		display: inline-block;
+		vertical-align: middle;
+	}
+	ul.nav_categories ul {
+		display: none;
+		position: absolute;
+		left: 35px;
+		top: 35px;
+	}
+
+
+	/*****************************
+	*  Dashboard
+	*****************************/
+
+	div#details select,
+	div#details input {
+		margin: 1em 1em 0 0.5em;
+		display: inline-block;
+	}
+
+
+	/*****************************
+	*  Reference
+	*****************************/
+
+	nav.ref-list {
+		margin-bottom: 1em;
+	}
+	nav.ref-list ul {
+		width: 90%;
+		margin: 0 auto;
+	}
+	nav.ref-list ul li {
+		float: left;
+		width: 30%;
+	}
+	nav.ref-list br {
+		clear: left;
+	}
+	nav.ref-list #title {
+		font-size: 16px;
+		line-height: 22px;
+		margin-bottom: 15px;
+		border: 1px solid rgb(215,215,215);
+		background-color: rgb(240,240,240);
+		padding: 5px 8px;
+	}
+	nav.ref-list ul.ref-sub {
+		text-align: center;
+	}
+	nav.ref-list ul.ref-sub li {
+		float: none;
+		width: 100%;
+		margin: 0 auto;
+	}
+	nav.ref-list ul.ref-sub #title {
+		font-size: 16px;
+		line-height: 30px;
+		margin-bottom: 0;
+		border: none;
+		background: none;
+	}
+	#reference table td {
+		font-size: 16px;
+		padding: 5px;
+	}
+
+
+	/*****************************
+	*  My Details Info
+	*****************************/
+
+	#user #photo {
+		display: inline-block;
+		width: 270px;
+	}
+	#user #photo img {
+		width: 270px;
+	}
+	#user {
+		width: 700px;
+	}
+
+
+	/*****************************
+	*  Equipment Manager
+	*****************************/
+
+	div#children table,
+	div#details > table {
+		width: 90%;
+	}
+
+
+	/*****************************
+	*  Work Reports
+	*****************************/
+
+	#work_reports_index {
+		margin: 20px 5%;
+	}
+	a.work_reports > div {
+		width: 50%;
+		float: left;
+	}
+	a.work_reports > div:nth-child(2):after {
+		clear: both;
+		float: none;
+		content: ".";
+		height: 0;
+		visibility: hidden;
+		display: block;
+	}
+	a.work_reports > div:nth-child(4) {
+		float: left;
+	}
+
+	#topOfTicket .span4 {
+		float: left;
+	}
+
+	.single-numeric tr:hover,
+	.textarea tr:hover {
+		background: rgb(227,238,255);
+	}
+
+	.details_submit input {
+		font-size: 1.3em;
+	}
+
+
+
+}
+
+
+@media only screen and (min-width: 1024px) {
+	/* ==== primary styles =====================================================
+	iPad landscape/Average Desktop
+	========================================================================== */
+
+	/*****************************
+	*  Big Buttons
+	*****************************/
+
+	nav.big-buttons #title {
+		font-size: 14px;
+	}
+
+
+	/*****************************
+	*  Reference
+	*****************************/
+
+	nav.dashboard,
+	#reference,
+	#member_equipment_list,
+	#details,
+	#work_reports_details {
+		margin: 0 12.5%;
+	}
+
+
+	/*****************************
+	*  Articles
+	*****************************/
+
+	article, 
+	#takeQuiz, 
+	#scoreCard {
+		margin: 0 12.5%;
+	}
+	article > #reference {
+		margin: 0;
+	}
+
+
+	/*****************************
+	*  Comments
+	*****************************/
+
+	#comment, 
+	#new-comment, 
+	#comments-container {
+		margin: 0 12.5%;
+	}
+
+
+	/*****************************
+	*  Quizes
+	*****************************/
+
+	#quizQuestions {
+		margin: 3em 12.5%;
+	}
+
+
+	/*****************************
+	*  Equipment Manager
+	*****************************/
+
+	div#children table,
+	div#details > table {
+		width: 80%;
+	}
+
+	/*****************************
+	*  Work Reports
+	*****************************/
+
+	#work_reports_index {
+		margin: 20px 12.5%;
+	}
+	a.work_reports {
+		font-size: 85%;
+	}
+	a.work_reports > div {
+		float: left;
+		width: 30%;
+	}
+	a.work_reports > div:nth-child(2) {
+		width: 40%;
+	}
+	a.work_reports > div:nth-child(3) {
+		float: left;
+	}
+
+
+}
+
+@media only screen and (min-width: 1280px) {
+	/* ==== primary styles =====================================================
+	Wide/HD Desktop Displays
+	========================================================================== */
+
+	/*****************************
+	*  Big Buttons
+	*****************************/
+
+	nav.big-buttons li {
+		width: 175px;
+	}
+	nav.big-buttons #title {
+		font-size: 16px;
+	}
+	ul.nav_categories ul {
+		left: 20px;
+	}
+
+
+	/*****************************
+	*  Reference
+	*****************************/
+
+	nav.dashboard,
+	#reference,
+	#member_equipment_list,
+	#details,
+	#work_reports_details {
+		margin: 0 16%;
+	}
+
+
+	/*****************************
+	*  Articles
+	*****************************/
+
+	article, 
+	#takeQuiz, 
+	#scoreCard {
+		margin: 0 16%;
+	}
+	article > #reference {
+		margin: 0;
+	}
+
+
+	/*****************************
+	*  Comments
+	*****************************/
+
+	#comment, 
+	#new-comment, 
+	#comments-container {
+		margin: 0 16%;
+	}
+
+
+	/*****************************
+	*  Quizes
+	*****************************/
+
+	#quizQuestions {
+		margin: 3em 16%;
+	}
+
+
+	/*****************************
+	*  Work Reports
+	*****************************/
+
+	#work_reports_index {
+		margin: 20px 16%;
+	}
+	a.work_reports {
+		font-size: 90%;
+	}
+
+
+}
+
+/* ==== Round Corners ===================================================== */
+
+.round-top {
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+	-o-border-top-left-radius: 5px;
+	-o-border-top-right-radius: 5px;
+	-moz-border-top-left-radius: 5px;
+	-moz-border-top-right-radius: 5px;
+	-webkit-border-top-left-radius: 5px;
+	-webkit-border-top-right-radius: 5px;
+}
+.round-bottom {
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
+	-o-border-bottom-left-radius: 5px;
+	-o-border-bottom-right-radius: 5px;
+	-moz-border-bottom-left-radius: 5px;
+	-moz-border-bottom-right-radius: 5px;
+	-webkit-border-bottom-left-radius: 5px;
+	-webkit-border-bottom-right-radius: 5px;
+}
+
+/* ==== Applus Colors ===================================================== */
+
+.applus-gray {
+	background-color: rgb(232,232,232);
+}
+.applus-orange {
+	background-color: rgb(255,100,7);
+}
+.applus-blue {
+	background-color: rgb(56,0,147);
+}
+.applus-brown {
+	background-color: rgb(129,101,92);
+}
+
+/* ==== non-semantic helper classes ====================================== */
+/* Please define your styles before this section. */
+
+/* For image replacement */
+.ir { display: block; border: 0; text-indent: -999em; overflow: hidden; background-color: transparent; background-repeat: no-repeat; text-align: left; direction: ltr; }
+.ir br { display: none; }
+
+/* Hide from both screenreaders and browsers: h5bp.com/u */
+.hidden { display: none !important; visibility: hidden; }
+
+/* Hide only visually, but have it available for screenreaders: h5bp.com/v */
+.visuallyhidden { border: 0; clip: rect(0 0 0 0); height: 1px; margin: -1px; overflow: hidden; padding: 0; position: absolute; width: 1px; }
+
+/* Extends the .visuallyhidden class to allow the element to be focusable when navigated to via the keyboard: h5bp.com/p */
+.visuallyhidden.focusable:active, .visuallyhidden.focusable:focus { clip: auto; height: auto; margin: 0; overflow: visible; position: static; width: auto; }
+
+/* Hide visually and from screenreaders, but maintain layout */
+.invisible { visibility: hidden; }
+
+/* Contain floats: h5bp.com/q */ 
+.clearfix:before, .clearfix:after { content: ""; display: table; }
+.clearfix:after { clear: both; }
+.clearfix { zoom: 1; }
+
+.no-select {
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+/* ==|== print styles =======================================================
+Print styles.
+Inlined to avoid required HTTP connection: h5bp.com/r
+========================================================================== */
+
+@media print {
+	* { background: transparent !important; color: black !important; text-shadow: none !important; filter:none !important; -ms-filter: none !important; } /* Black prints faster: h5bp.com/s */
+	a, a:visited { text-decoration: underline; }
+	a[href]:after { content: " (" attr(href) ")"; }
+	abbr[title]:after { content: " (" attr(title) ")"; }
+	.ir a:after, a[href^="javascript:"]:after, a[href^="#"]:after { content: ""; } /* Don't show links for images, or javascript/internal links */
+	pre, blockquote { border: 1px solid #999; page-break-inside: avoid; }
+	thead { display: table-header-group; } /* h5bp.com/t */
+	tr, img { page-break-inside: avoid; }
+	img { max-width: 100% !important; }
+	@page { margin: 0.5cm; }
+	p, h2, h3 { orphans: 3; widows: 3; }
+	h2, h3 { page-break-after: avoid; }
+
+	#user .tabs nav, .applus-gray, .applus-orange { display: none; visibility: hidden; }
+	#user a[href]:after { content: "."; }
+	#score-cardPrint { visibility: visible; display: block; }
+	#user #photo { display: inline-block; }
+	#user #info { display: inline-block; }
+}

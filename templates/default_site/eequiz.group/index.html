@@ -1,0 +1,41 @@
+{!-- User Detials Home --}
+{embed="assets/header"}
+<div id="scoreCard">
+	<header>
+		<h2>Score Card:</h2>
+	</header>
+	<table>
+	<tr class="quizHeader">
+		<td class="quizName">
+			<h3>Quiz Name</h3>
+		</td>
+		<td>
+			<h3>Score</h3>
+		</td>
+		<td>
+			<h3>Date</h3>
+		</td>
+	</tr>
+
+	{exp:eequiz:quizzes}
+	{if attempted_all_mandatory}
+	<tr>
+		<td class="quizTitle"><a href="{path=eequiz/take_quiz/{quiz_id}}">{quiz_title}</a></td>
+		<td class="quizGrade">{grade_percent}</td>
+		<td class="quizDate">{last_answer_time format="m/d/Y"}</td>
+	</tr>
+	{/if}
+	{/exp:eequiz:quizzes}
+	</table>
+</div>
+
+{embed="assets/scripts"}
+
+	<script>
+		$(function() {
+    		$('tr:nth-child(2n+1)').addClass('even');
+		});
+	</script>
+
+{embed="assets/footer-page"}
+{embed="assets/footer-html"}
