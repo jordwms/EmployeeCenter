@@ -1,4 +1,0 @@
-EmployeeCenter
-=================
-
-ExpressionEngine based EmployeeCenter
