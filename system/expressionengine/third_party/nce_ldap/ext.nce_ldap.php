@@ -77,27 +77,7 @@ class Nce_ldap_ext {
 
 
 // ----------------------
-	
-	/**
-	 * Member Logout
-	 *
-	 * Remove the ugly redirect screen on logout
-	 *
-	 * @access	public
-	 * @return	string
-	 */
-	public function member_member_logout()
-	{		
-		$this->EE->load->config('config');
-		
-		$url	  = $this->EE->input->get('return');
-		$return   = $url ? $url : config_item('site_url');
-		
-		if(config_item('remove_redirect_screen'))
-		{
-			$this->EE->functions->redirect($return);
-		}
-	}
+
 
 	/**
 	* EE method called when the extension is activated
@@ -263,9 +243,7 @@ class Nce_ldap_ext {
 	function sync_user_details($user_info)
 	{
 			// Sync EE password to match LDAP (if account exists)
-			//$encrypted_password = $this->EE->functions->hash(stripslashes($user_info['password']));
-			$this->EE->load->helper('security');
-			$encrypted_password = do_hash(stripslashes($user_info['password']));
+			$encrypted_password = $this->EE->functions->hash(stripslashes($user_info['password']));
 			$sql = 'UPDATE exp_members SET password = \''.$this->EE->db->escape_str($encrypted_password).'\' WHERE username = \''.$this->EE->db->escape_str($user_info['username']).'\'';
 			$this->debug_print('Updating user with SQL: '.$sql);
 			$this->EE->db->query($sql);
@@ -292,9 +270,8 @@ class Nce_ldap_ext {
 		if ($query->num_rows === 0)
 		{
 			$this->debug_print('Using LDAP for account creation...');
-			
-			//$data['screen_name']      = $user_info['cn'][0];  //Returned as Last, First
-			$data['screen_name']      = $user_info['givenname'][0];
+
+			$data['screen_name']      = $user_info['cn'][0];
 			$data['username']         = $user_info['username'];
 			$data['password']         = $encrypted_password;
 			$data['email']            = $user_info['mail'][0];
@@ -305,7 +282,6 @@ class Nce_ldap_ext {
 			$data['timezone']         = 'UTC';
 			$data['daylight_savings'] = 'n';
 			$data['time_format']      = 'eu';
-			$data['location']         = $user_info['physicaldeliveryofficename'][0];
 			$data['group_id']         = $this->settings['created_user_group'];
 
 			$this->debug_print('Inserting user with data: '.print_r($data, TRUE));
@@ -331,11 +307,11 @@ class Nce_ldap_ext {
 				$headers = 'From: '.$this->settings['from_email']."\r\n" .
 									 'X-Mailer: PHP/' . phpversion();
 				$success = mail(
-					$this->settings['admin_email'], 
-					'New member \''.$user_info['username'].'\' on http://'.$_SERVER['HTTP_HOST'],
-					$this->settings['mail_message'],
-					$headers
-				);
+													$this->settings['admin_email'], 
+													'New member \''.$user_info['username'].'\' on http://'.$_SERVER['HTTP_HOST'],
+													$this->settings['mail_message'],
+													$headers
+												);
 				$this->EE->session->userdata['ldap_message'] = $this->settings['first_time_login_message'];
 			}
 			else
@@ -399,13 +375,6 @@ class Nce_ldap_ext {
 		$this->debug_print('Connecting to LDAP...');
 		$conn = ldap_connect($ldap_host, $ldap_port) or
 			die('Could not connect to host: '.$ldap_host.':'.$ldap_port.'<br/>'."\n");
-
-// SV - must have these two options set for querying Active Directory via LDAP
-
-ldap_set_option($conn, LDAP_OPT_PROTOCOL_VERSION, 3);
-ldap_set_option($conn, LDAP_OPT_REFERRALS, 0);
-
-
 		$this->debug_print('connect result is '.$conn);
 
 		// Perform bind with search user
