@@ -1,4 +1,4 @@
-EE-EmployeeCenter
+EmployeeCenter
 =================
 
 ExpressionEngine based EmployeeCenter
