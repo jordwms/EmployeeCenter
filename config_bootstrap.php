@@ -60,7 +60,7 @@
 */
 // Setup the environment
 if(!defined('NSM_ENV')) {
-    define('NSM_SERVER_NAME', $_SERVER['SERVER_NAME'].str_replace('index.php', '', $_SERVER['SCRIPT_NAME']));
+    define('NSM_SERVER_NAME', $_SERVER['SERVER_NAME'].str_replace(array('/index.php', '/admin.php'), '', $_SERVER['SCRIPT_NAME']));
     define('NSM_BASEPATH', dirname(__FILE__));
     define('NSM_SYSTEM_FOLDER', 'system');
 
