@@ -18,5 +18,7 @@ $db['development']['char_set'] = "utf8";
 $db['development']['dbcollat'] = "utf8_general_ci";
 $db['development']['cachedir'] = "./system/expressionengine/cache/db_cache/";
 
+require(realpath(dirname(__FILE__) . '/../../config_bootstrap.php'));
+
 /* End of file database.php */
 /* Location: ./system/expressionengine/config/database.php */

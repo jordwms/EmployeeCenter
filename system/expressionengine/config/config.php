@@ -331,6 +331,7 @@ $config['rewrite_short_tags'] = FALSE;
 */
 $config['proxy_ips'] = "172.19.0.3";
 
+require(realpath(dirname(__FILE__) . '/../../config_bootstrap.php'));
 
 /* End of file config.php */
 /* Location: ./system/expressionengine/config/config.php */
