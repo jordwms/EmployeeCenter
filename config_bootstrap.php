@@ -1,5 +1,4 @@
 <?php
-
 /**
 * Custom configuration bootsrtap file for ExpressionEngine
 *
@@ -59,19 +58,18 @@
 *     - Added $config['base_url']
 *     - Moved webmaster_email config into dev environment
 */
-
 // Setup the environment
 if(!defined('NSM_ENV')) {
-    define('NSM_SERVER_NAME', $_SERVER['SERVER_NAME']);
+    define('NSM_SERVER_NAME', $_SERVER['SERVER_NAME'].str_replace('index.php', '', $_SERVER['SCRIPT_NAME']));
     define('NSM_BASEPATH', dirname(__FILE__));
     define('NSM_SYSTEM_FOLDER', 'system');
 
-    if (!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] != "on") { 
-        define('NSM_SITE_URL', "http://".NSM_SERVER_NAME);
-    } else {
+    // it's a nice thought... but this doesn't work behind a Reverse Proxy... We'll hardcode it to https://
+    //if (!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] != "on") { 
+    //    define('NSM_SITE_URL', "http://".NSM_SERVER_NAME);
+    //} else {
         define('NSM_SITE_URL', "https://".NSM_SERVER_NAME);
-    }
-
+    //}
     // Set the environment
     if ( strstr( NSM_SERVER_NAME, 'local.' ) ) define('NSM_ENV', 'local');
     elseif( strstr( NSM_SERVER_NAME, 'ec.applusrtd' ) ) define('NSM_ENV', 'production');
@@ -320,12 +318,9 @@ if(isset($config)) {
         'nsm_htaccess_generator_path' => array(NSM_BASEPATH . "/content/.htaccess")
     );
 
-
-
     // Build the new config object
     $config = array_merge($config, $default_config, $env_config);
 }
-
 // DB bootsrap... GO!
 if(isset($db['expressionengine']))
 {
