@@ -100,14 +100,17 @@ if (NSM_ENV == 'local') {
         'global:cm_subscriber_list_slug' => ''
     );
 }
-elseif(NSM_ENV == 'development') {
+elseif(NSM_ENV == 'production') {
     $env_db_config = array(
-        'hostname' => 'localhost',
+        'hostname' => 'mysql-server',
         'username' => 'employee_center',
         'password' => 'gi0kQ#vdmw7b',
-        'database' => 'employee_center',
+        'database' => 'training_center',
     );
-    $env_global_vars = array();
+    $env_global_vars = array(
+        'global:cm_subscriber_list_slug' => '',
+        'global:google_analytics_key' => 'XX-XXXX'
+    );
 }
 elseif(NSM_ENV == 'staging') {
     $env_db_config = array(
@@ -128,15 +131,12 @@ elseif(NSM_ENV == 'staging') {
 }
 else {
     $env_db_config = array(
-        'hostname' => 'mysql-server',
+        'hostname' => 'localhost',
         'username' => 'employee_center',
         'password' => 'gi0kQ#vdmw7b',
-        'database' => 'training_center',
+        'database' => 'employee_center',
     );
-    $env_global_vars = array(
-        'global:cm_subscriber_list_slug' => '',
-        'global:google_analytics_key' => 'XX-XXXX'
-    );
+    $env_global_vars = array();
 }
 
 // Config bootsrap... GO!
@@ -213,7 +213,7 @@ if(isset($config)) {
         'license_number' => '',
         'site_index' => '',
         'admin_session_type' => 'cs',
-        'new_version_check' => 'y',
+        'new_version_check' => 'n',
         'doc_url' => 'http://expressionengine.com/user_guide/',
 
         'site_url' => NSM_SITE_URL,
