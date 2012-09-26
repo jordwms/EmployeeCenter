@@ -3,92 +3,85 @@
 	{exp:workreports:wrDetails projid="{segment_3}"}
 	{form_open}
 	<fieldset id="topOfTicket">
-		<header>
-			<h3>Work Report {ProjectID}</h3>
-			<div class="row">
-				<div class="span4"></div>
-				<div class="span4">
-					<table>
-						<tr>
-							<th>RTD Ref#:</th>
-							<td><input type="text" name="rtd_ref" value="{RTDRef}" /></td>
-						</tr>
-						<tr>
-							<th>Execution Date:</th>
-							<td><input type="date" name="execution_date" value="{ExecDate format="%Y-%m-%d"}" /></td>
-						</tr>
-					</table>
-				</div>
-				<div class="span4"></div>
+		<h3>Work Report {ProjectID}</h3>
+		<div class="row-fluid">
+			<div class="span12">
+				<table>
+					<tr class="wp_lores">
+						<td colspan="3">RTD Ref#</td>
+					</tr>
+					<tr>
+						<td><input type="text" name="rtd_ref" value="{RTDRef}" /></td>
+						<td class="omit_label">RTD Ref#</td>
+						<td></td>
+					</tr>
+					<tr class="wp_lores">
+						<td colspan="3">Execution Date</td>
+					</tr>
+					<tr>
+						<td class="workreports_date"><input type="date" name="execution_date" value="{ExecDate format="%Y-%m-%d"}" /></td>
+						<td class="omit_label">Execution Date</td>
+						<td></td>
+					</tr>
+					<tr class="wp_lores">
+						<td colspan="3">Customer Ref#</td>
+					</tr>
+					<tr>
+						<td><input type="text" name="customer_reference" value="{CustomerRef}" /></td>
+						<td class="omit_label">Customer Ref#</td>
+						<td></td>
+					</tr>
+				</table>
 			</div>
-			<div class="row">
-				<div class="span4">
-					<table>
-						<thead>
-							<tr>
-								<th colspan="2">Customer Info</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<th>Name:</th>
-								<td><input type="text" name="customer_name" value="{CustomerName}" /></td>
-							</tr>
-							<tr>
-								<th>Customer Ref#:</th>
-								<td><input type="text" name="customer_reference" value="{CustomerRef}" /></td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-				<div class="span4">
-					<table>
-						<thead>
-							<tr>
-								<th colspan="2">Contact Person</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<th>Name:</th>
-								<td><input type="text" name="customer_contact_person_name" value="{CustomerContactPersonName}" /></td>
-							</tr>
-							<tr>
-								<th>Email:</th>
-								<td>{CustomerContactPersonEmail}</td>
-							</tr>
-							<tr>
-								<th>Phone:</th>
-								<td>{CustomerContactPersonPhone}</td>
-							</tr>
-							<tr>
-								<th>Cell:</th>
-								<td>{CustomerContactPersonCellPhone}</td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-				<div class="span4">
-					<table>
-						<thead>
-							<tr>
-								<th colspan="2">Work Location</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<th>Location:</th>
-								<td><input type="text" name="work_location_name" value="{DeliveryName}" /></td>
-							</tr>
-							<tr>
-								<th>Address:</th>
-								<td>{DeliveryAddress}</td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
+		</div>
+
+		<h3>Customer Info</h3>
+		<div class="row-fluid">
+			<div class="span12">
+				<table>
+					<tr class="wp_lores">
+						<td colspan="3">Name</td>
+					</tr>
+					<tr>
+						<td><input type="text" name="customer_name" value="{CustomerName}"/></td>
+						<td class="omit_label">Name</td>
+						<td>4735 Walnut Street</br>Boulder, CO 80301<br />720-369-3644</td>
+					</tr>
+				</table>
 			</div>
-		</header>
+		</div>
+
+		<h3>Contact Person</h3>
+		<div class="row-fluid">
+			<div class="span12">
+				<table>
+					<tr class="wp_lores">
+						<td colspan="3">Name</td>
+					</tr>
+					<tr>
+						<td><input type="text" name="customer_contact_person_name" value="{CustomerContactPersonName}" /></td>
+						<td class="omit_label">Name</td>
+						<td>4735 Walnut Street</br>Boulder, CO 80301<br />720-369-3644</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+
+		<h3>Work Location</h3>
+		<div class="row-fluid">
+			<div class="span12">
+				<table>
+					<tr class="wp_lores">
+						<td colspan="3">Location</td>
+					</tr>
+					<tr>
+						<td><input type="text" name="work_location_name" value="{DeliveryName}" /></td>
+						<td class="omit_label">Location</td>
+						<td>4735 Walnut Street</br>Boulder, CO 80301<br />720-369-3644{DeliveryAddress}</td>
+					</tr>
+				</table>
+			</div>
+		</div>
 	</fieldset>
 
 	<fieldset id="resources" class="single-numeric">
@@ -225,27 +218,13 @@
 	$('input,textarea').focus(function() {
 	    $(this).parent().parent().addClass('backgroundImage');
 	});
-	$('#topOfTicket input').focus(function() {
-		$(this).parent().parent().removeClass('backgroundImage');
-	});
 	$('input,textarea').blur(function() {
 	    $(this).parent().parent().removeClass('backgroundImage');
 	});
 
-	$(window).resize(function() {
-		var width = $(window).width();
-		if(width > 800) {
-			$('#topOfTicket .span4').parent().removeClass('row').addClass('row-fluid');
-		}
-		else {
-			$('#topOfTicket .span4').parent().removeClass('row-fluid').addClass('row');
-		}
-	})
-	.resize();
-
 	$('#work_reports_details').parent().parent().addClass('details_background');
 
-	$('.single-numeric tr,.textarea tr').click(function() {
+	$('#topOfTicket tr,.single-numeric tr,.textarea tr').click(function() {
 	    $(this).find("input,textarea").focus();
 	});
 
