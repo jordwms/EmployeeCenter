@@ -1,6 +1,8 @@
 .DS_Store
 .htaccess
 
+.fuse*
+
 # Images
 images/avatars/
 images/captchas/
