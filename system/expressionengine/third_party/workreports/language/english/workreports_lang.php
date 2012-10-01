@@ -36,7 +36,7 @@
 //----------------------------------------
 // Table field headers
 //----------------------------------------
-		'company'							=> 'Company',
+		'company_id'						=> 'Company',
 		'contact_person'					=> 'Contact Person',
 		'customer_account'					=> 'Customer Account',
 		'customer_name'						=> 'Customer Name',
@@ -45,11 +45,11 @@
 		'dimension_id'						=> 'Dimension ID',
 		'execution_date'					=> 'Execution Date',
 		'submission_date'					=> 'Date Submitted',
-		'submitter_name'					=> 'Submitted By',
-		'name'								=> 'Name',
 		'item_dimensions'					=> 'Item Dimensions',
 		'item_id'							=> 'Item ID',
 		'item_name'							=> 'Item Name',
+		'name'								=> 'Name',
+		'name_last_first'					=> 'Submitted By',
 		'object_description'				=> 'Object Description',
 		'order'								=> 'Project ID',
 		'order_description'					=> 'Order Description',	

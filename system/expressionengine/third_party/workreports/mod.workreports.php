@@ -459,11 +459,11 @@ class Workreports {
 			 */
 			$data = array(
 				'submitter_id'			=> $this->EE->input->post('id'), #should be employee name
-				'submitter_name'		=> $employee['name_last_first'],
+				'name_last_first'		=> $employee['name_last_first'],
 				'execution_date'		=> strtotime($this->EE->input->post('execution_date')),
 				'submission_date'       => time(),
 				'status'				=> $status,
-				'company'				=> $this->EE->input->post('company_id'), #AKA DATAAREAID
+				'company_id'			=> $this->EE->input->post('company_id'), #AKA DATAAREAID
 				//'cost_center'			=> $this->EE->input->post('cost_center'), #AKA DIMENSION2_
 				'customer_name'			=> $this->EE->input->post('customer_name'),
 				'customer_account'		=> $this->EE->input->post('customer_account'),

@@ -359,6 +359,8 @@ class Workreports_mcp {
 				$project_id = $report->order.'/'.$report->work_order.'/'.$report->work_report;
 
 				$this->EE->axapta->set_approval($project_id, $report->company, $report->submitter_id, FALSE);
+				
+				return;
 			}
 
 			$this->EE->db->delete('wr_reports', $data);

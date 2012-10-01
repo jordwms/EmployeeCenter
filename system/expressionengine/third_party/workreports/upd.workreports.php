@@ -133,12 +133,15 @@ class Workreports_upd {
 		if( $current < $this->version){
 			// run update code here
 
-			// Update field names for wr_* tables
-
-			// Change wr_reports.object_description and wr_reports.order_description to 'text' type fields
+			/* Update field names for wr_* tables and 
+			* change wr_reports.object_description and wr_reports.order_description
+			* to 'text' type fields.
+			*/
 			$fields = array(
 				'object_description' 	=> array('type' => 'TEXT'),
-				'order_description'		=> array('type' => 'TEXT')
+				'order_description'		=> array('type' => 'TEXT'),
+				'submitter_name'		=> array('name'	=> 'name_last_first'),
+				'company'				=> array('name'	=> 'company_id')
 				);
 
 			$this->EE->dbforge->modify_column('wr_reports', $fields);
