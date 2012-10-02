@@ -3,7 +3,6 @@
 		width: 33.3333%;
 	}
 </style>
-
 <div id="details" class="workreports"> 
 	<?= form_open($action_url,$form_attributes,$form_hidden);
 		// CompanyInfo

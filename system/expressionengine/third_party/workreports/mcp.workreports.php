@@ -175,6 +175,7 @@ class Workreports_mcp {
 		}
 
 		$vars['help_message'] = lang('history_help_message');
+
 		return $this->EE->load->view('report', $vars, TRUE);
 	}
 
