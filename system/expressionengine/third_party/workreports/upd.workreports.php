@@ -1,6 +1,6 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 class Workreports_upd {
-	var $version = '1.1';
+	var $version = '1.2';
 
 	function __construct() {
 		$this->EE =& get_instance();
@@ -40,24 +40,46 @@ class Workreports_upd {
 		 *******************************************************************************************/
 		$this->EE->dbforge->add_field(array(
 			'id'                              	=> array('type' => 'int',     	'constraint' => '10', 'unsigned' => TRUE, 'auto_increment' => TRUE),
-			'submitter_name'					=> array('type' => 'varchar',  	'constraint' => '50'),
 			'submitter_id'						=> array('type' => 'varchar',  	'constraint' => '50'),
+			'submitter_name'					=> array('type' => 'varchar',  	'constraint' => '50'),
 			'crew_leader'						=> array('type' => 'varchar',  	'constraint' => '50'),
 			'status'							=> array('type' => 'tinyint'),
 			'execution_date'       				=> array('type' => 'int',     	'constraint' => '10'),
 			'submission_date'       			=> array('type' => 'int',     	'constraint' => '10'),
-			'company'		                    => array('type' => 'varchar', 	'constraint' => '50'),
+			'company_id'		                => array('type' => 'varchar', 	'constraint' => '50'),
 			'customer_account'					=> array('type' => 'varchar', 	'constraint' => '50'),
 			'customer_name'						=> array('type' => 'varchar', 	'constraint' => '50'),
-			'order'								=> array('type' => 'varchar', 	'constraint' => '50'),
-			'work_order'						=> array('type' => 'varchar', 	'constraint' => '50'),
-			'work_report'						=> array('type' => 'varchar', 	'constraint' => '50'),
+			'project_order_id'					=> array('type' => 'varchar', 	'constraint' => '50'),
+			'project_work_order_id'				=> array('type' => 'varchar', 	'constraint' => '50'),
+			'project_work_report_id'			=> array('type' => 'varchar', 	'constraint' => '50'),
 			'customer_reference'				=> array('type' => 'varchar', 	'constraint' => '50'),
 			'rtd_reference'						=> array('type' => 'varchar', 	'constraint' => '50'),
 			'work_location_name'				=> array('type' => 'varchar', 	'constraint' => '50'),
 			'contact_person'					=> array('type' => 'varchar', 	'constraint' => '50'),
 			'object_description'				=> array('type' => 'text'),
 			'order_description'					=> array('type' => 'text'),
+			'work_location_id'					=> array('type' => 'varchar',   'constraint' => '50'),
+			'work_location_address'				=> array('type' => 'varchar',   'constraint' => '50'),
+			'project_id' 						=> array('type' => 'varchar',   'constraint' => '50'),
+			'sales_id'	 						=> array('type' => 'varchar',   'constraint' => '50'),
+			'sales_name' 						=> array('type' => 'varchar',   'constraint' => '50'), // SalesName
+			'invoice_account'					=> array('type' => 'varchar',   'constraint' => '50'), // InvoiceAccount
+			'delivery_name'						=> array('type' => 'varchar',   'constraint' => '50'), // DeliveryName
+			'delivery_address' 					=> array('type' => 'varchar',   'constraint' => '50'), // DeliveryAddress
+			'team_contact_name' 				=> array('type' => 'varchar',   'constraint' => '50'), // TeamContactPerson
+			'team_contact_address' 				=> array('type' => 'varchar',   'constraint' => '50'), // TeamContactPersonAddress
+			'team_contact_phone' 				=> array('type' => 'varchar',   'constraint' => '50'), // TeamContactPersonPhone
+			'team_contact_fax' 					=> array('type' => 'varchar',   'constraint' => '50'), // TeamContactPersonFax
+			'team_contact_email' 				=> array('type' => 'varchar',   'constraint' => '50'), // TeamContactPersonEmail
+			'customer_address'					=> array('type' => 'varchar',   'constraint' => '50'), // CustomerAddress
+			'customer_phone'					=> array('type' => 'varchar',   'constraint' => '50'), // CustomerPhone
+			'customer_fax' 						=> array('type' => 'varchar',   'constraint' => '50'), // CustomerFax
+			'customer_email' 					=> array('type' => 'varchar',   'constraint' => '50'), // CustomerEmail
+			'customer_contact_id' 				=> array('type' => 'varchar',   'constraint' => '50'), // CustomerContactPersonID
+			'customer_contact_name' 			=> array('type' => 'varchar',   'constraint' => '50'), // CustomerContactPersonName
+			'customer_contact_email' 			=> array('type' => 'varchar',   'constraint' => '50'), // CustomerContactPersonEmail
+			'customer_contact_phone' 			=> array('type' => 'varchar',   'constraint' => '50'), // CustomerContactPersonPhone
+			'customer_contact_mobile' 			=> array('type' => 'varchar',   'constraint' => '50'), // CustomerContactPersonCellPhone
 			'remarks'							=> array('type' => 'text')
 			)
 		);
@@ -127,24 +149,68 @@ class Workreports_upd {
 	}
 
 	function update($current = '') {
+
+		# The commented code below may not be necessary...
+		// if($current == '') {
+		// 	$query = $this->EE->db->get_where('modules', array('module_name'=>'Workreports'));
+		// 	$row = $query->row();
+		// 	$current = $row->module_version;
+		// }
 		if( $current == $this->version ){
 			return FALSE;
 		}
-		if( $current < $this->version){
+		if( $current < '1.2'){
 			// run update code here
+			$this->EE->load->dbforge();
 
-			/* Update field names for wr_* tables and 
+			/* 
+			* Update field names for wr_* tables and 
 			* change wr_reports.object_description and wr_reports.order_description
 			* to 'text' type fields.
+			* Note: name changes need column definition, because CI uses ALTER column CHANGE
 			*/
 			$fields = array(
-				'object_description' 	=> array('type' => 'TEXT'),
-				'order_description'		=> array('type' => 'TEXT'),
-				'submitter_name'		=> array('name'	=> 'name_last_first'),
-				'company'				=> array('name'	=> 'company_id')
+				'object_description' 	=> array('name' => 'object_description', 	'type' => 'TEXT'),
+				'order_description'		=> array('name' => 'order_description', 	'type' => 'TEXT'),
+				'customer_account'		=> array('name'	=> 'customer_id', 			'type' => 'varchar',   'constraint' => '50'),
+				'order'					=> array('name'	=> 'project_order_id', 		'type' => 'varchar',   'constraint' => '50'),
+				'work_order'			=> array('name'	=> 'project_work_order_id', 'type' => 'varchar',   'constraint' => '50'),
+				'work_report'			=> array('name'	=> 'project_work_report_id','type' => 'varchar',   'constraint' => '50'),
+				'company'				=> array('name'	=> 'company_id', 			'type' => 'varchar',   'constraint' => '50'),
 				);
 
 			$this->EE->dbforge->modify_column('wr_reports', $fields);
+
+			// Adding fields to wr_reports for synching axapta and MySQL
+			$fields = array(
+				'work_location_id'			=> array('type' => 'varchar',   'constraint' => '50'),
+				'work_location_address'		=> array('type' => 'varchar',   'constraint' => '50'),
+				'project_id' 				=> array('type' => 'varchar',   'constraint' => '50'),
+				'sales_id'	 				=> array('type' => 'varchar',   'constraint' => '50'),
+				'sales_name' 				=> array('type' => 'varchar',   'constraint' => '50'), // SalesName
+				'invoice_account'			=> array('type' => 'varchar',   'constraint' => '50'), // InvoiceAccount
+				'delivery_name'				=> array('type' => 'varchar',   'constraint' => '50'), // DeliveryName
+				'delivery_address' 			=> array('type' => 'varchar',   'constraint' => '50'), // DeliveryAddress
+				'team_contact_name' 		=> array('type' => 'varchar',   'constraint' => '50'), // TeamContactPerson
+				'team_contact_address' 		=> array('type' => 'varchar',   'constraint' => '50'), // TeamContactPersonAddress
+				'team_contact_phone' 		=> array('type' => 'varchar',   'constraint' => '50'), // TeamContactPersonPhone
+				'team_contact_fax' 			=> array('type' => 'varchar',   'constraint' => '50'), // TeamContactPersonFax
+				'team_contact_email' 		=> array('type' => 'varchar',   'constraint' => '50'), // TeamContactPersonEmail
+				'customer_address'			=> array('type' => 'varchar',   'constraint' => '50'), // CustomerAddress
+				'customer_phone'			=> array('type' => 'varchar',   'constraint' => '50'), // CustomerPhone
+				'customer_fax' 				=> array('type' => 'varchar',   'constraint' => '50'), // CustomerFax
+				'customer_email' 			=> array('type' => 'varchar',   'constraint' => '50'), // CustomerEmail
+				'customer_contact_id' 		=> array('type' => 'varchar',   'constraint' => '50'), // CustomerContactPersonID
+				'customer_contact_name' 	=> array('type' => 'varchar',   'constraint' => '50'), // CustomerContactPersonName
+				'customer_contact_email' 	=> array('type' => 'varchar',   'constraint' => '50'), // CustomerContactPersonEmail
+				'customer_contact_phone' 	=> array('type' => 'varchar',   'constraint' => '50'), // CustomerContactPersonPhone
+				'customer_contact_mobile' 	=> array('type' => 'varchar',   'constraint' => '50') // CustomerContactPersonCellPhone
+				);
+			$this->EE->dbforge->add_column('wr_reports', $fields);
+
+		}
+
+		if ($current < $this->version ) {
 
 		}
 

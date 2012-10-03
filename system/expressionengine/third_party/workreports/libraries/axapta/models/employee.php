@@ -57,10 +57,10 @@ class employee extends Axapta {
 		//extend query with options
 		$query .= ' WHERE ';
 
-		//handy dubug defaults;
-		//$options = array('DATAAREAID' => '107';
-		//$options = array('email' => 'chet.yates@applusrtd.com');
-		//$options = array('email' => 'bert.weber@applusrtd.com');
+		// handy debug defaults;
+		// $options = array('DATAAREAID' => '107';
+		// $options = array('email' => 'chet.yates@applusrtd.com');
+		// $options = array('email' => 'bert.weber@applusrtd.com');
 
 		if( is_array($options) && count($options) > 0 ){
 			foreach ($options as $key => $value) {

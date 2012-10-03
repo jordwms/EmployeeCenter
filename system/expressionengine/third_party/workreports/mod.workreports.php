@@ -386,10 +386,10 @@ class Workreports {
 				'hidden_fields' => array(
 										'projid' 				=> str_replace('-', '/', $projid),
 										'DataAreaID'            => $data[0]['DataAreaID'],
-										'id' 			=> $data[0]['EmployeeID'],
+										'id' 					=> $data[0]['EmployeeID'],
 										'execution_date'		=> $data[0]['ExecDate'],
 										'company_id'			=> $data[0]['CompanyID'],
-										//'customer_name'			=> $data[0]['customer_name'],
+										//'customer_name'		=> $data[0]['customer_name'],
 										'customer_account'		=> $data[0]['CustomerAccount'],
 										//'customer_reference'	=> $data[0]['CustomerRef'],
 										'rtd_reference'			=> $data[0]['RTDRef'],
@@ -459,7 +459,7 @@ class Workreports {
 			 */
 			$data = array(
 				'submitter_id'			=> $this->EE->input->post('id'), #should be employee name
-				'name_last_first'		=> $employee['name_last_first'],
+				'submitter_name'		=> $employee['name_last_first'],
 				'execution_date'		=> strtotime($this->EE->input->post('execution_date')),
 				'submission_date'       => time(),
 				'status'				=> $status,
