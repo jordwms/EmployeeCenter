@@ -7,7 +7,7 @@
 	    $this->table->set_template($company_info_header); // adding a table name
 	    $this->table->set_columns(array(
 	    	'submission_date'     => array('header' => lang('submission_date')),
-	    	'submitter_name'     => array('header' => lang('submitter_name')),
+	    	'submitter_name'	  => array('header' => lang('submitter_name')),
 	    	'customer_name'       => array('header' => lang('customer_name')),
 	    	'order'               => array('header' => lang('order')),
 	    	'customer_reference'  => array('header' => lang('customer_reference')),

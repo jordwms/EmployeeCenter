@@ -1,6 +1,6 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 class Workreports_upd {
-	var $version = '1.2';
+	var $version = '1.3';
 
 	function __construct() {
 		$this->EE =& get_instance();
@@ -81,8 +81,7 @@ class Workreports_upd {
 			'customer_contact_phone' 			=> array('type' => 'varchar',   'constraint' => '50'), // CustomerContactPersonPhone
 			'customer_contact_mobile' 			=> array('type' => 'varchar',   'constraint' => '50'), // CustomerContactPersonCellPhone
 			'remarks'							=> array('type' => 'text')
-			)
-		);
+		));
 
 		$this->EE->dbforge->add_key('id', TRUE);
 
@@ -149,6 +148,7 @@ class Workreports_upd {
 	}
 
 	function update($current = '') {
+		$this->EE->load->dbforge();
 
 		# The commented code below may not be necessary...
 		// if($current == '') {
@@ -160,9 +160,6 @@ class Workreports_upd {
 			return FALSE;
 		}
 		if( $current < '1.2'){
-			// run update code here
-			$this->EE->load->dbforge();
-
 			/* 
 			* Update field names for wr_* tables and 
 			* change wr_reports.object_description and wr_reports.order_description
@@ -177,7 +174,7 @@ class Workreports_upd {
 				'work_order'			=> array('name'	=> 'project_work_order_id', 'type' => 'varchar',   'constraint' => '50'),
 				'work_report'			=> array('name'	=> 'project_work_report_id','type' => 'varchar',   'constraint' => '50'),
 				'company'				=> array('name'	=> 'company_id', 			'type' => 'varchar',   'constraint' => '50'),
-				);
+			);
 
 			$this->EE->dbforge->modify_column('wr_reports', $fields);
 
@@ -205,13 +202,36 @@ class Workreports_upd {
 				'customer_contact_email' 	=> array('type' => 'varchar',   'constraint' => '50'), // CustomerContactPersonEmail
 				'customer_contact_phone' 	=> array('type' => 'varchar',   'constraint' => '50'), // CustomerContactPersonPhone
 				'customer_contact_mobile' 	=> array('type' => 'varchar',   'constraint' => '50') // CustomerContactPersonCellPhone
-				);
+			);
 			$this->EE->dbforge->add_column('wr_reports', $fields);
 
 		}
 
 		if ($current < $this->version ) {
-
+			// Adding fields to wr_reports for synching axapta and MySQL
+			$fields = array( 
+				'research_norm_id'		=> array('type' => 'varchar',   'constraint' => '50'),
+				'research_procedure_id'	=> array('type' => 'varchar',   'constraint' => '50'),
+				'research_spec_id'		=> array('type' => 'varchar',   'constraint' => '50'),
+				'review_procedure_id'	=> array('type' => 'varchar',   'constraint' => '50'),
+				'review_spec_id'		=> array('type' => 'varchar',   'constraint' => '50'),
+				'template_indicator'	=> array('type' => 'varchar',   'constraint' => '50'),
+				'department_id'			=> array('type' => 'varchar',   'constraint' => '50'),
+				'cost_center_id'		=> array('type' => 'varchar',   'constraint' => '50'),
+				'technique_id'			=> array('type' => 'varchar',   'constraint' => '50'),
+				'contract_id'			=> array('type' => 'varchar',   'constraint' => '50'),
+				'contract_date'			=> array('type' => 'varchar',   'constraint' => '50'),
+				'deadline_date'			=> array('type' => 'varchar',   'constraint' => '50'),
+				'sales_responsible'		=> array('type' => 'varchar',   'constraint' => '50'),
+				'team_contact_id' 		=> array('type' => 'varchar',   'constraint' => '50'),
+				'created_time'			=> array('type' => 'varchar',   'constraint' => '50'),
+				'created_date'			=> array('type' => 'varchar',   'constraint' => '50'),
+				'created_by'			=> array('type' => 'varchar',   'constraint' => '50'),
+				'modified_date'			=> array('type' => 'varchar',   'constraint' => '50'),
+				'modified_time'			=> array('type' => 'varchar',   'constraint' => '50'),
+				'modified_by'			=> array('type' => 'varchar',   'constraint' => '50')
+			);
+			$this->EE->dbforge->add_column('wr_reports', $fields);
 		}
 
 		return TRUE;
