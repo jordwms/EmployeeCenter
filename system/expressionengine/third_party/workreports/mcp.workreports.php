@@ -291,10 +291,11 @@ class Workreports_mcp {
 		
 		$vars['delete_button'] = '<a id="delete" href="'.$delete_link.'" ><input type="button" value="'.lang('delete').'"/></a>';
 		$vars['reject_button'] = '<a id="reject" href="'.$delete_link.AMP.'reject=TRUE'.'" ><input type="button" value="'.lang('reject').'"/></a>';
+		$vars['report']['project_id'] = $vars['report']['project_order_id'].'/'.$vars['report']['project_work_order_id'].'/'.$vars['report']['project_work_report_id'];
 
 		// if status is 'not approved' for work report, make it an authorize button
 		if($vars['report']['status'] == 1) {
-			$vars['report']['status'] = '<a href="'.BASE.AMP.$this->mod_uri_base.AMP.'method=set_val'.AMP.'company='.$vars['report']['copmany_id'].AMP.'id='.$id.AMP.'callback=pending'.AMP.'status=2"><input type="button" value="'.lang('approve').'"></input></a>';
+			$vars['report']['status'] = '<a href="'.BASE.AMP.$this->mod_uri_base.AMP.'method=set_val'.AMP.'company='.$vars['report']['company_id'].AMP.'id='.$id.AMP.'callback=pending'.AMP.'status=2"><input type="button" value="'.lang('approve').'"></input></a>';
 		} else { // mark as Approved
 			$vars['report']['status'] = lang('approved');
 		}
