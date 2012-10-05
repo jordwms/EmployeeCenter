@@ -137,7 +137,7 @@ class Workreports_mcp {
 		$vars['reports'] = $this->EE->axapta->get_reports(NULL, 0);
 
 		foreach ($vars['reports'] as &$report) {
-			$report['project_id'] = $report['order'].'/'.$report['work_order'].'/'.$report['work_report'];
+			$report['project_id'] = $report['project_order_id'].'/'.$report['project_work_order_id'].'/'.$report['work_report'];
 			$report['customer_name'] = '<a href="'.$report_link.$report['id'].'" >'.$report['customer_name'].'</a>';
 			$report['execution_date'] = date('m-d-Y', $report['execution_date']);
 			$report['submission_date'] = date("m-d-Y h:i A", $report['submission_date']);
@@ -169,12 +169,13 @@ class Workreports_mcp {
 		$vars['reports'] = $this->EE->axapta->get_reports(NULL,2);
 
 		foreach ($vars['reports'] as &$report) {
-			$report['project_id'] = $report['order'].'/'.$report['work_order'].'/'.$report['work_report'];
+			$report['project_id'] = $report['project_order_id'].'/'.$report['project_work_order_id'].'/'.$report['project_work_report_id'];
 			$report['execution_date'] = date('m-d-Y', $report['execution_date']);
 			$report['submission_date'] = date('m-d-Y h:i:s A', $report['submission_date']);
 		}
 
 		$vars['help_message'] = lang('history_help_message');
+
 		return $this->EE->load->view('report', $vars, TRUE);
 	}
 
@@ -199,7 +200,7 @@ class Workreports_mcp {
 
 		foreach ($vars['reports'] as &$report) {
 			$report['customer_name'] = '<a href="'.$report_link.$report['id'].'" >'.$report['customer_name'].'</a>';
-			$report['project_id'] = $report['order'].'/'.$report['work_order'].'/'.$report['work_report'];
+			$report['project_id'] = $report['project_order_id'].'/'.$report['project_work_order_id'].'/'.$report['project_work_report_id'];
 			$report['execution_date'] = date('m/d/Y', $report['execution_date']);
 			$report['submission_date'] = date('m/d/Y h:i:s A', $report['submission_date']);
 		}
@@ -246,7 +247,7 @@ class Workreports_mcp {
 
 		// if status is 'not approved' for work report, make it an authorize button
 		if($vars['report']['status'] == 0) {
-			$vars['report']['status'] = '<a href="'.BASE.AMP.$this->mod_uri_base.AMP.'method=set_val'.AMP.'company='.$vars['report']['company'].AMP.'id='.$id.AMP.'callback=submitted'.AMP.'status=1"><input type="button" value="'.lang('approve').'"></input></a>';
+			$vars['report']['status'] = '<a href="'.BASE.AMP.$this->mod_uri_base.AMP.'method=set_val'.AMP.'company='.$vars['report']['copmany_id'].AMP.'id='.$id.AMP.'callback=submitted'.AMP.'status=1"><input type="button" value="'.lang('approve').'"></input></a>';
 		} else { // mark as Approved
 			$vars['report']['status'] = lang('approved');
 		}
@@ -290,10 +291,11 @@ class Workreports_mcp {
 		
 		$vars['delete_button'] = '<a id="delete" href="'.$delete_link.'" ><input type="button" value="'.lang('delete').'"/></a>';
 		$vars['reject_button'] = '<a id="reject" href="'.$delete_link.AMP.'reject=TRUE'.'" ><input type="button" value="'.lang('reject').'"/></a>';
+		$vars['report']['project_id'] = $vars['report']['project_order_id'].'/'.$vars['report']['project_work_order_id'].'/'.$vars['report']['project_work_report_id'];
 
 		// if status is 'not approved' for work report, make it an authorize button
 		if($vars['report']['status'] == 1) {
-			$vars['report']['status'] = '<a href="'.BASE.AMP.$this->mod_uri_base.AMP.'method=set_val'.AMP.'company='.$vars['report']['company'].AMP.'id='.$id.AMP.'callback=pending'.AMP.'status=2"><input type="button" value="'.lang('approve').'"></input></a>';
+			$vars['report']['status'] = '<a href="'.BASE.AMP.$this->mod_uri_base.AMP.'method=set_val'.AMP.'company='.$vars['report']['company_id'].AMP.'id='.$id.AMP.'callback=pending'.AMP.'status=2"><input type="button" value="'.lang('approve').'"></input></a>';
 		} else { // mark as Approved
 			$vars['report']['status'] = lang('approved');
 		}
@@ -349,16 +351,19 @@ class Workreports_mcp {
 	* Looks from $_GET to delete a report from wr_reports and all corresponding data in other 'wr_' prefix tables.
 	*/
 	function delete_report($reject=FALSE) {
-		if( is_numeric($this->EE->input->GET('id')) ) {			
-			$data = array('id' 	=> $this->EE->input->GET('id'));
+		if( is_numeric($id = $this->EE->input->GET('id')) ) {			
+			$data = array('id' 	=> $id);
 
 			$reject = $this->EE->input->GET('reject');			
 			if($reject){
 				$report = $this->EE->db->get_where('wr_reports', $data)->row();
 
+				// check this for errors...
 				$project_id = $report->order.'/'.$report->work_order.'/'.$report->work_report;
 
 				$this->EE->axapta->set_approval($project_id, $report->company, $report->submitter_id, FALSE);
+				
+				return;
 			}
 
 			$this->EE->db->delete('wr_reports', $data);

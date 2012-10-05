@@ -1,5 +1,6 @@
 <div id="report" class="workreports"> 
 <?php if (count($reports) > 0): ?>
+	<pre><?print_r($reports)?></pre>	
 	<p><?=$help_message ?></p>
 	<?
 		// CompanyInfo
@@ -7,9 +8,9 @@
 	    $this->table->set_template($company_info_header); // adding a table name
 	    $this->table->set_columns(array(
 	    	'submission_date'     => array('header' => lang('submission_date')),
-	    	'submitter_name'      => array('header' => lang('submitter_name')),
+	    	'submitter_name'	  => array('header' => lang('submitter_name')),
 	    	'customer_name'       => array('header' => lang('customer_name')),
-	    	'order'               => array('header' => lang('order')),
+	    	'project_id'          => array('header' => lang('project_id')),
 	    	'customer_reference'  => array('header' => lang('customer_reference')),
 	    	'rtd_reference'       => array('header' => lang('rtd_reference')),
 	    	'work_location_name'  => array('header' => lang('work_location_name')),
