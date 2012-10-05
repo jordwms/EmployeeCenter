@@ -93,6 +93,7 @@ class EE_Core {
 		define('NBS', 			'&nbsp;');
 		define('BR', 			'<br />');
 		define('NL',			"\n");
+		define('TAB',			"\t");
 		define('PATH_DICT', 	APPPATH.'config/');
 		define('AJAX_REQUEST',	$this->EE->input->is_ajax_request());
 
