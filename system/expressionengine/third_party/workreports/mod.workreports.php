@@ -2,10 +2,12 @@
 
 class Workreports {
 	var $return_data = '';
+	protected $return_data = '';
 
 	function __construct() {
 		$this->EE =& get_instance();
 		$this->EE->load->library('axapta');
+		$this->EE->load->library('axapta/axapta');
 	}
 
 	function dashboard() {
@@ -43,32 +45,56 @@ class Workreports {
 	 *	
 	 *	You must be logged in to use this
 	 */
-	function get() {
+	function rest() {
 		if( $this->EE->session->userdata('email') && $this->EE->session->userdata('is_banned') == 0 ) {
+
+			//$employee = $this->EE->axapta->employee->get_remote(array( 'email' => $this->EE->session->userdata('email') ));
+			//$employee = $employee[0];
 
 			$method = $this->EE->input->get('method');
 			$output = $this->EE->input->get('output');
 			$data   = $this->EE->input->post('data');
 
 			switch ($method) {
-				case 'employee': //done
-				    $return_data = $this->EE->axapta->employee(  );
+				
+				case 'employee':
+				    $return_data = $this->EE->axapta->employee->get_remote( array('email' => $this->EE->session->userdata('email')) );
 					break;
-				case 'company': //done
-					$return_data = $this->EE->axapta->company(  );
+
+				case 'company':
+					$return_data = $this->EE->axapta->company->get_remote( array('id' => '107') );
 					break;
-				case 'cost_center': //done?
-					$return_data = $this->EE->axapta->cost_center(  );
+
+				case 'cost_center':
+					$return_data = $this->EE->axapta->cost_center->get_remote( array('id' => $employee['cost_center_id'], 'company_id' => $employee['company_id']) );
 					break;
-				case 'customer': //done
-					$return_data = $this->EE->axapta->customer(  );
+
+				case 'customer':
+					$return_data = $this->EE->axapta->customer->get_remote( array('company_id' => '107') );
 					break;
-				case 'work_location': //done
-					$return_data = $this->EE->axapta->work_location(  );
+
+				case 'work_location':
+					$return_data = $this->EE->axapta->work_location->get_remote( array('company_id' => '107', 'cost_center_id' => '10') );
 					break;
-				case 'contact_person': //done
-					$return_data = $this->EE->axapta->contact_person(array('id' => '107..SYB2001380'));
+					$return_data = $this->EE->axapta->contact_person->get_remote( array('id' => '107..SYB2001380') );
 					break;
+
+				case 'work_report':
+					$return_data = $this->EE->axapta->work_report->get_remote(  );
+					break;
+
+				case 'materials':
+					$return_data = $this->EE->axapta->materials->get_remote(  );
+					break;
+
+				case 'sales_items':
+					$return_data = $this->EE->axapta->sales_items->get_remote( array('project_id' => '07.005532/001/120820') );
+					break;
+
+				case 'dispatch_list':
+					$return_data = $this->EE->axapta->dispatch_list->get_remote( array('employee_id' => 'EM.107.0226') );
+					break;
+
 				
 				default:
 					return FALSE;
