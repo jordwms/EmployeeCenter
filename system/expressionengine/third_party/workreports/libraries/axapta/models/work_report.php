@@ -1,75 +1,101 @@
 <?php
-class work_report extends Axapta {
+class work_report extends axapta {
+	protected $project_id                  = 'SALESTABLE.PROJID';
+	protected $template_indicator          = 'SALESTABLE.EXPORTREASON';
+
+	protected $sales_id                    = 'SALESTABLE.SALESID';
+
+	protected $customer_id                 = 'SALESTABLE.CUSTACCOUNT';
+	protected $customer_name               = 'SALESTABLE.SALESNAME';
+	protected $customer_refrence           = 'SALESTABLE.CUSTOMERREF';
+	protected $customer_contact_person_id  = 'SALESTABLE.CONTACTPERSONID';
+
+	protected $invoice_account             = 'SALESTABLE.INVOICEACCOUNT';
+
+	protected $company_id                  = 'SALESTABLE.DATAAREAID';
+	protected $department_id               = 'SALESTABLE.DIMENSION';
+	protected $cost_center_id              = 'SALESTABLE.DIMENSION2_';
+	protected $technique_id                = 'SALESTABLE.DIMENSION3_';
+
+	protected $contract_id                 = 'RTDPROJORDERTABLE.CONTRACTID';
+	protected $contract_date               = 'RTDPROJORDERTABLE.CONTRACTDATE';
+
+	protected $deadline_date               = 'CONVERT(DATE, SALESTABLE.DEADLINE)';
+	protected $execution_date              = 'CONVERT(DATE, SALESTABLE.DELIVERYDATE)';
+
+	protected $rtd_reference               = 'SALESTABLE.RTDPROJORDERREFERENCE';
+
+	protected $sales_responsible           = 'SALESTABLE.SALESRESPONSIBLE';
+	protected $crew_leader_id              = 'RTDEMPLPERWORKREPORT.EMPLID';
+	protected $team_contact_person_id      = 'RTDPROJORDERTABLE.CONTACTPERSONID';
+
+	protected $work_location               = 'SALESTABLE.DELIVERYNAME';
+	protected $work_location_address       = 'SALESTABLE.DELIVERYADDRESS';
+
+	protected $object_description          = 'SALESTABLE.RTDOBJECTDESCRIPTION';
+	protected $order_description           = 'SALESTABLE.RTDORDERDESCRIPTION';
+
+	protected $research_norm_id            = 'RTDSALESPROCEDURE.RESEARCHNORMID';
+	protected $research_procedure_id       = 'RTDSALESPROCEDURE.RESEARCHPROCEDUREID';
+	protected $research_spec_id            = 'RTDSALESPROCEDURE.RESEARCHSPECID';
+
+	protected $review_norm_id              = 'RTDSALESPROCEDURE.REVIEWNORMID';
+	protected $review_procedure_id         = 'RTDSALESPROCEDURE.REVIEWPROCEDUREID';
+	protected $review_spec_id              = 'RTDSALESPROCEDURE.REVIEWSPECID';
+
+	protected $status                      = 'SALESTABLE.RTDAPPROVED';
+	protected $project_status              = 'RTDPROJORDERTABLE.PROJORDERSTATUS';
+	protected $invoiced_status             = 'SALESTABLE.RTDINVOICED';
+
+	protected $created_date                = 'CONVERT(DATE, SALESTABLE.CREATEDDATE)';
+	protected $created_time                = 'SALESTABLE.CREATEDTIME';
+	protected $created_by                  = 'SALESTABLE.CREATEDBY';
+
+	protected $modified_date               = 'CONVERT(DATE, SALESTABLE.MODIFIEDDATE)';
+	protected $modified_time               = 'SALESTABLE.MODIFIEDTIME';
+	protected $modified_by                 = 'SALESTABLE.MODIFIEDBY';
+
+
+	function __construct($conn){
+		$this->conn =& $conn;
+		$this->properties = $this->get_properties();
+	}
+	
 	/*
 	 *  Work Reports
 	 *
 	 *	Option: 
 	 *
 	 */
-	function get($options = NULL) {
-		if( $employee = $this->employee->get() ) {
-			$query = 
-				'SELECT TOP(10)
-					SALESTABLE.PROJID                                  AS project_id,
-					SALESTABLE.EXPORTREASON                            AS export_reason,
-					SALESTABLE.SALESID                                 AS sales_id,
-					SALESTABLE.DATAAREAID                              AS company_id,
-					SALESTABLE.DIMENSION                               AS department_id,
-					SALESTABLE.DIMENSION2_                             AS cost_center_id,
-					SALESTABLE.DIMENSION3_                             AS technique_id,
-					RTDPROJORDERTABLE.CONTRACTID                       AS contract_id,
-					RTDPROJORDERTABLE.CONTRACTDATE                     AS contract_date,
-					SALESTABLE.DEADLINE                                AS deadline_date,
-					CONVERT(DATE, SALESTABLE.DELIVERYDATE)             AS execution_date,
-					SALESTABLE.RTDPROJORDERREFERENCE                   AS rtd_reference,
-					SALESTABLE.SALESRESPONSIBLE                        AS sales_responsible,
-					RTDEMPLPERWORKREPORT.EMPLID                        AS crew_leader,
-					RTDPROJORDERTABLE.CONTACTPERSONID                  AS contact_person_id,
-					SALESTABLE.DELIVERYNAME                            AS delivery_name,
-					SALESTABLE.DELIVERYADDRESS                         AS delivery_address,
-					SALESTABLE.CUSTACCOUNT                             AS customer_id,
-					SALESTABLE.SALESNAME                               AS customer_name,
-					SALESTABLE.CUSTOMERREF                             AS customer_refrence,
-					SALESTABLE.CONTACTPERSONID                         AS customer_contact_person_id,
-					SALESTABLE.RTDOBJECTDESCRIPTION                    AS object_description,
-					SALESTABLE.RTDORDERDESCRIPTION                     AS order_description,
-					RTDSALESPROCEDURE.RESEARCHNORMID                   AS research_norm_id,
-					RTDSALESPROCEDURE.RESEARCHPROCEDUREID              AS research_procedure_id,
-					RTDSALESPROCEDURE.RESEARCHSPECID                   AS research_spec_id,
-					RTDSALESPROCEDURE.REVIEWNORMID                     AS review_norm_id,
-					RTDSALESPROCEDURE.REVIEWPROCEDUREID                AS review_procedure_id,
-					RTDSALESPROCEDURE.REVIEWSPECID                     AS review_spec_id,
-					SALESTABLE.RTDAPPROVED                             AS status,
-					RTDPROJORDERTABLE.PROJORDERSTATUS                  AS project_status,
-					SALESTABLE.INVOICEACCOUNT                          AS invoice_account,
-					SALESTABLE.RTDINVOICED                             AS invoiced_status,
-					CONVERT(DATE, SALESTABLE.CREATEDDATE)              AS created_date,
-					SALESTABLE.CREATEDTIME                             AS created_time,
-					SALESTABLE.CREATEDBY                               AS created_by,
-					CONVERT(DATE, SALESTABLE.MODIFIEDDATE)             AS modified_date,
-					SALESTABLE.MODIFIEDTIME                            AS modified_time,
-					SALESTABLE.MODIFIEDBY                              AS modified_by
-				FROM SALESTABLE
-				LEFT JOIN PROJTABLE AS WORKREPORT ON WORKREPORT.PROJID            = SALESTABLE.PROJID    AND WORKREPORT.DATAAREAID           = SALESTABLE.DATAAREAID
-				LEFT JOIN PROJTABLE AS WORKORDER  ON WORKORDER.PROJID             = WORKREPORT.PARENTID  AND WORKORDER.DATAAREAID            = SALESTABLE.DATAAREAID
-				LEFT JOIN RTDPROJORDERTABLE       ON RTDPROJORDERTABLE.PROJID     = WORKORDER.PARENTID   AND RTDPROJORDERTABLE.DATAAREAID    = SALESTABLE.DATAAREAID AND RTDPROJORDERTABLE.PROJID <> \'\'
-				LEFT JOIN RTDEMPLPERWORKREPORT    ON RTDEMPLPERWORKREPORT.PROJID  = SALESTABLE.PROJID    AND RTDEMPLPERWORKREPORT.DATAAREAID = SALESTABLE.DATAAREAID AND RTDEMPLPERWORKREPORT.TASKID = \'Crew Leader\'
-				LEFT JOIN RTDSALESPROCEDURE       ON RTDSALESPROCEDURE.SALESID    = SALESTABLE.SALESID   AND RTDSALESPROCEDURE.DATAAREAID    = SALESTABLE.DATAAREAID
-				WHERE
-					WORKREPORT.RTDPROJORDERLEVEL = 3';
+	function get_remote($options = NULL) {
+		$query = $this->build_SELECT();
+
+		$query .= 'FROM SALESTABLE'.NL;
+		$query .= 'LEFT JOIN PROJTABLE AS WORKREPORT ON WORKREPORT.PROJID            = SALESTABLE.PROJID    AND WORKREPORT.DATAAREAID           = SALESTABLE.DATAAREAID'.NL;
+		$query .= 'LEFT JOIN PROJTABLE AS WORKORDER  ON WORKORDER.PROJID             = WORKREPORT.PARENTID  AND WORKORDER.DATAAREAID            = SALESTABLE.DATAAREAID'.NL;
+		$query .= 'LEFT JOIN RTDPROJORDERTABLE       ON RTDPROJORDERTABLE.PROJID     = WORKORDER.PARENTID   AND RTDPROJORDERTABLE.DATAAREAID    = SALESTABLE.DATAAREAID AND RTDPROJORDERTABLE.PROJID <> \'\''.NL;
+		$query .= 'LEFT JOIN RTDEMPLPERWORKREPORT    ON RTDEMPLPERWORKREPORT.PROJID  = SALESTABLE.PROJID    AND RTDEMPLPERWORKREPORT.DATAAREAID = SALESTABLE.DATAAREAID AND RTDEMPLPERWORKREPORT.TASKID = \'Crew Leader\''.NL;
+		$query .= 'LEFT JOIN RTDSALESPROCEDURE       ON RTDSALESPROCEDURE.SALESID    = SALESTABLE.SALESID   AND RTDSALESPROCEDURE.DATAAREAID    = SALESTABLE.DATAAREAID'.NL;
 			
-				
-			$work_report = $ax_conn->prepare($query);
+		$query .= $this->build_WHERE($options);
 
-			$work_report->setFetchMode(PDO::FETCH_NAMED);
-			$work_report->execute();
-
-			$return_data = $work_report->fetchAll();
-
-			return $this->fix_padding($return_data);
-		} else {
-			return FALSE;
+		if( $_GET['output'] == 'debug' ){
+			echo '<pre>'.$query.'</pre>';
+			echo '<pre>';
+			print_r($options);
+			echo '</pre>';
 		}
+			
+		$work_report = $this->conn->prepare($query);
+
+		$this->bind_option_values($work_report, $options);
+
+		$work_report->setFetchMode(PDO::FETCH_NAMED);
+		$work_report->execute();
+
+		$return_data = $work_report->fetchAll();
+
+		return $this->fix_padding($return_data);
 	}
 
 	/*

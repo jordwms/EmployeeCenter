@@ -1,54 +1,60 @@
 <?php
-class cost_center extends Axapta {
+class cost_center extends axapta {
+	protected $id             = 'DIMENSIONS.NUM';
+	protected $company_id     = 'DIMENSIONS.DATAAREAID';
+	protected $company_group  = 'DIMENSIONS.COMPANYGROUP';
+	protected $name           = 'ADDRESS.NAME';
+	protected $address        = 'ADDRESS.ADDRESS';
+	protected $phone          = 'ADDRESS.PHONE';
+	protected $fax            = 'ADDRESS.TELEFAX';
+	protected $email          = 'ADDRESS.EMAIL';
+	protected $street         = 'ADDRESS.STREET';
+	protected $city           = 'ADDRESS.CITY';
+	protected $state          = 'ADDRESS.STATE';
+	protected $zipcode        = 'ADDRESS.ZIPCODE';
+	protected $country        = 'ADDRESS.COUNTRY';
+	protected $dimension_code = 'DIMENSIONS.DIMENSIONCODE';
+
+	function __construct($conn){
+		$this->conn =& $conn;
+		$this->properties = $this->get_properties();
+	}
+	
 	/*
 	 *  Cost Center
 	 *	Option: id         (default: employee['cost_center_id'])
 	 *	Option: company_id (default: employee['company_id'])
 	 */
-	function get($options = NULL) {
-		if ( $employee = $this->employee->get() ) {
-			$cost_center = $this->conn->prepare(
-				'SELECT
-					DIMENSIONS.NUM          AS id,
-					DIMENSIONS.DATAAREAID   AS company_id,
-					DIMENSIONS.COMPANYGROUP AS company_group,
-					ADDRESS.NAME            AS name,
-					ADDRESS.ADDRESS         AS address,
-					ADDRESS.PHONE           AS phone,
-					ADDRESS.TELEFAX         AS fax,
-					ADDRESS.EMAIL           AS email,
-					ADDRESS.STREET          AS street,
-					ADDRESS.CITY            AS city,
-					ADDRESS.STATE           AS state,
-					ADDRESS.ZIPCODE         AS zipcode,
-					ADDRESS.COUNTRY         AS country
-				FROM DIMENSIONS
-				LEFT JOIN ADDRESS ON DIMENSIONS.RTDADDRESS = ADDRESS.RECID
-				WHERE DIMENSIONS.DATAAREAID = :company_id
-				AND DIMENSIONS.NUM = :id
-				AND DIMENSIONS.DIMENSIONCODE = 1'
-			);
-
-
-			if( isset($options['id']) ){
-				$cost_center->bindValue(':id', $options['id'], PDO::PARAM_STR);
-			} else {
-				$cost_center->bindValue(':id', $employee['cost_center_id'], PDO::PARAM_STR);
-			}
-
-			if( isset($options['company_id']) ){
-				$cost_center->bindValue(':company_id', $options['company_id'], PDO::PARAM_STR);
-			} else {
-				$cost_center->bindValue(':company_id', $employee['company_id'], PDO::PARAM_STR);
-			}
-
-			
-			$cost_center->setFetchMode(PDO::FETCH_NAMED);
-			$cost_center->execute();
-
-			return $cost_center->fetchAll();
+	function get_remote($options = NULL) {
+		//DIMENSIONCODE = 1 limits dimensions to only "cost centers", we'll make sure it's alway set here:
+		if( !is_array($options) ){
+			$options = array('dimension_code' => '1');
 		} else {
-			return FALSE;
+			$options['dimension_code'] = '1';
 		}
+
+		$query = $this->build_SELECT();
+
+		$query .= 'FROM DIMENSIONS'.NL;
+		$query .= 'LEFT JOIN ADDRESS ON DIMENSIONS.RTDADDRESS = ADDRESS.RECID'.NL;
+
+		$query .= $this->build_WHERE($options);
+
+		if( $_GET['output'] == 'debug' ){
+			echo '<pre>'.$query.'</pre>';
+			echo '<pre>';
+			print_r($options);
+			echo '</pre>';
+		}
+
+		$cost_center = $this->conn->prepare($query);
+
+		$this->bind_option_values($cost_center, $options);
+
+		$cost_center->setFetchMode(PDO::FETCH_NAMED);
+		$cost_center->execute();
+
+		$return_data = $cost_center->fetchAll();
+		return $this->fix_padding($return_data);
 	}
 }

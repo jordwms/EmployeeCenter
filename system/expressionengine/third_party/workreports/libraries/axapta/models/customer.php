@@ -1,5 +1,21 @@
 <?php
-class customer extends Axapta {
+class customer extends axapta {
+	protected $id                         = 'LTRIM(CustTable.AccountNum)';
+	protected $account_num                = 'CustTable.AccountNum';
+	protected $name                       = 'CustTable.Name';
+	protected $address                    = 'CustTable.Address';
+	protected $phone                      = 'CustTable.Phone';
+	protected $fax                        = 'CustTable.TELEFAX';
+	protected $main_contact_id            = 'SMMBUSRELTABLE.MAINCONTACT';
+	protected $blocked                    = 'CUSTTABLE.BLOCKED';
+	protected $business_relation_account  = 'smmBusRelTable.BusRelAccount';
+	protected $company_id                 = 'CustTable.DATAAREAID';
+
+	function __construct($conn){
+		$this->conn =& $conn;
+		$this->properties = $this->get_properties();
+	}
+	
 	/*
 	 *  Customers
 	 *
@@ -9,61 +25,35 @@ class customer extends Axapta {
 	 *	Will only return customers for an employee's authorized companies if no customer id given
 	 *
 	 */
-	function get($options = NULL) {
-		if ( $employee = $this->employee->get() ) {
-
-			//$employee['groups'][101] = array('WA TECH');  //debugging test
-
-			$query = 
-				'SELECT
-					CustTable.AccountNum          AS id,
-					CustTable.AccountNum          AS account_num,
-					CustTable.Name                AS name,
-					CustTable.Address             AS address,
-					CustTable.Phone               AS phone,
-					CustTable.TELEFAX             AS fax,
-					SMMBUSRELTABLE.MAINCONTACT    AS main_contact,
-					smmBusRelTable.BusRelAccount  AS business_relation_account
-				FROM CustTable
-				LEFT JOIN smmBusRelTable ON smmBusRelTable.CustAccount = CustTable.AccountNum
-				WHERE 
-					CUSTTABLE.BLOCKED = 0';
-
-			if( isset($options['id']) ) {
-				$query .= ' AND LTRIM(CustTable.AccountNum) = :id';
-			} else {
-				//These are the companies the employee has "WA TECH", we will only list customers of these companies.
-				$authorized_companies = '';
-				$last_key = end( array_keys($employee['groups']) );
-				foreach ($employee['groups'] as $company => $group) {
-					if ( in_array('WA TECH', $employee['groups'][$company]) ) {
-						$authorized_companies .= "'$company'";
-						if( count($employee['groups']) > 1 && $company != $last_key) {
-							$authorized_companies .= ', ';
-						}
-					}
-				}
-				$query .= ' AND CustTable.DATAAREAID IN ('.$authorized_companies.')';
-			}
-
-			if( isset($options['name']) ) {
-				$query .= ' AND CustTable.NAME LIKE :name';
-			}
-
-			$customers = $this->conn->prepare($query);
-
-			if( isset($options['id']) ) {
-				$customers->bindValue(':id', $options['id'], PDO::PARAM_STR);
-			}
-			if( isset($options['name']) ) {
-				$customers->bindValue(':name', '%'.$options['name'].'%', PDO::PARAM_STR);
-			}
-
-			$customers->setFetchMode(PDO::FETCH_NAMED);
-			$customers->execute();
-
-			return $this->fix_padding($customers->fetchAll());
+	function get_remote($options = NULL) {
+		//if customer is blocked... welll it's blocked, we shouldn't bother with them
+		if( !is_array($options) ){
+			$options = array('blocked' => '0');
 		} else {
-			return FALSE;
+			$options['blocked'] = '0';
 		}
+
+		$query = $this->build_SELECT();
+
+		$query .= 'FROM CustTable'.NL;
+		$query .= 'LEFT JOIN smmBusRelTable ON smmBusRelTable.CustAccount = CustTable.AccountNum'.NL;
+
+		$query .= $this->build_WHERE($options);
+
+		if( $_GET['output'] == 'debug' ){
+			echo '<pre>'.$query.'</pre>';
+			echo '<pre>';
+			print_r($options);
+			echo '</pre>';
+		}
+
+		$customers = $this->conn->prepare($query);
+
+		$this->bind_option_values($customers, $options);
+
+		$customers->setFetchMode(PDO::FETCH_NAMED);
+		$customers->execute();
+
+		return $this->fix_padding($customers->fetchAll());
 	}
+}

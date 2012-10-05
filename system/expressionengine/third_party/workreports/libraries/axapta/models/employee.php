@@ -1,5 +1,54 @@
 <?php
-class employee extends Axapta {
+class employee extends axapta {
+	/* 
+	 *	these are the model properties
+	 *	they are defined as: $property_name = AXAPTAFIELD with any SQL operators (ie date formating)
+	 */
+	protected $id                 = 'EMPLID';
+	protected $name               = 'NAME';
+	protected $title              = 'TITLE';
+	protected $axapta_id          = 'USERID';
+
+	protected $status             = 'STATUS';
+	protected $internal_external  = 'INTERNALEXTERNAL';
+	protected $hrm_active_flag    = 'HRMACTIVEINACTIVE';
+
+	protected $company_id         = 'DATAAREAID';
+	protected $department_id      = 'DIMENSION';
+	protected $cost_center_id     = 'DIMENSION2_';
+
+	protected $email              = 'EMAIL';
+	protected $phone              = 'PHONE';
+	protected $cell_phone         = 'CELLULARPHONE';
+	protected $personal_phone     = 'RTDPRIVATEPHONE';
+	protected $fax                = 'TELEFAX';
+
+	protected $address            = 'ADDRESS';
+	protected $street             = 'STREET';
+	protected $city               = 'CITY';
+	protected $county             = 'COUNTYID';
+	protected $state              = 'STATEID';
+	protected $zip_code           = 'ZIPCODEID';
+	protected $country            = 'COUNTRYID';
+
+	protected $currency           = 'CURRENCY';
+
+	protected $birth_date         = 'CONVERT(DATE,BIRTHDATE)';
+
+	protected $modified_date      = 'CONVERT(DATE,MODIFIEDDATE)';
+	protected $modified_time      = 'MODIFIEDTIME';
+	protected $modified_by        = 'MODIFIEDBY';
+
+	protected $created_date       = 'CONVERT(DATE,CREATEDDATE)';
+	protected $created_time       = 'CREATEDTIME';
+	protected $created_by         = 'CREATEDBY';
+
+
+	function __construct($conn, $test = NULL){
+		$this->conn =& $conn;
+		$this->properties = $this->get_properties();
+	}
+
 	/*
 	 *	Employee Details
 	 *	
@@ -7,104 +56,51 @@ class employee extends Axapta {
 	 *	Options: ANY COLUMN
 	 *
 	 */
-	function employee($options = NULL) {
+	function get_remote($options = NULL) {
 		/*
 		 *  Employee information
 		 */
-		$query = 'SELECT
-			[NAME]                        AS name_last_first,
-			[ALIAS]                       AS alias,
-			[TITLE]                       AS title,
 
-			[EMPLID]                      AS id,
-			[USERID]                      AS axapta_id,
-			[DATAAREAID]                  AS data_area_id,
-			[INTERNALEXTERNAL]            AS internal_external,
-			[HRMACTIVEINACTIVE]           AS hrm_active_flag,
-			[STATUS]                      AS status,
-
-			[DATAAREAID]                  AS company_id,
-			[DIMENSION]                   AS department_id,
-			[DIMENSION2_]                 AS cost_center_id,
-			[DIMENSION3_]                 AS technique_id,
-			[DIMENSION4_]                 AS business_line_id,
-			
-			[EMAIL]                       AS email,
-			[PHONE]                       AS phone,
-			[CELLULARPHONE]               AS cell_phone,
-			[RTDPRIVATEPHONE]             AS personal_phone,
-			[TELEFAX]                     AS fax,
-			
-			[ADDRESS]                     AS full_address,
-			[STREET]                      AS street,
-			[CITY]                        AS city,
-			[COUNTYID]                    AS county,
-			[STATEID]                     AS state,
-			[ZIPCODEID]                   AS zip_code,
-			[COUNTRYID]                   AS country,
-			
-			[CURRENCY]                    AS currency,
-			
-			CONVERT(DATE,[BIRTHDATE])     AS birth_date,
-			CONVERT(DATE,[MODIFIEDDATE])  AS modified_date,
-			[MODIFIEDTIME]                AS modified_time,
-			[MODIFIEDBY]                  AS modified_by,
-			CONVERT(DATE,[CREATEDDATE])   AS created_date,
-			[CREATEDTIME]                 AS created_time,
-			[CREATEDBY]                   AS created_by
-		FROM [TEST].[dbo].[EMPLTABLE]';
-
-		//extend query with options
-		$query .= ' WHERE ';
-
-		//handy dubug defaults;
-		//$options = array('DATAAREAID' => '107';
+		/* handy dubug defaults */
+		//$options = array('company' => '107';
 		//$options = array('email' => 'chet.yates@applusrtd.com');
 		//$options = array('email' => 'bert.weber@applusrtd.com');
 
-		if( is_array($options) && count($options) > 0 ){
-			foreach ($options as $key => $value) {
-				$query .= $key.' = :'.$key;
+		//select all properties defined at top of class
+		$query = $this->build_select();
 
-				if( count($options) > 1 || !isset($data['email']) ) { 
-					$query .= ' AND '; 
-				}
-			}
+		//from statement
+		$query .= 'FROM EMPLTABLE'.NL;
+
+		//build WHERE statements from passed options
+		$query .= $this->build_WHERE($options);
+
+		if( $_GET['output'] == 'debug' ){
+			echo '<pre>'.$query.'</pre>';
+			echo '<pre>';
+			print_r($options);
+			echo '</pre>';
 		}
 
-		//set defualt values
-		if( !isset($data['email']) ) {
-			$query .= 'EMAIL = :email';
-		}
-
+		//create the prepared statement
 		$employee_info = $this->conn->prepare($query);
 
-		//bind options
-		if( is_array($options) && count($options) > 0 ){
-			foreach ($options as $key => $value) {
-				$employee_info->bindValue(':'.$key, $value);
-			}
-		}
+		//bind all option values
+		$this->bind_option_values($employee_info, $options);
 
-		//bind defaults
-		if ( !isset($options['email']) ) {
-			$employee_info->bindValue(':email', $this->EE->session->userdata['email'], PDO::PARAM_STR);
-		} else {
-			$employee_info->bindValue(':email', $options['email'], PDO::PARAM_STR);
-		}
-		
+		//fetch all records
 		$employee_info->setFetchMode(PDO::FETCH_NAMED);
 		$employee_info->execute();
-		$employee = $employee_info->fetchAll();
+		$employees = $employee_info->fetchAll();
 
-		//Sanity Check if there are more than one employee's returned for 1 email given
-		if( count($employee) == 1 ) {
-			//no need for nested arrays
-			$employee = $employee[0];
-
+		foreach ($employees as &$employee) {
 			//fix employee name so we have a nice "First Last" setup
-			$employee_name = explode(',', $employee['name_last_first']);
-			$employee['name'] = ltrim($employee_name[1]).' '.$employee_name[0];
+			$exploded_name = explode(',', $employee['name']);
+			if(count($exploded_name) > 1){
+				$employee['name_first_last'] = ltrim($exploded_name[1]).' '.$exploded_name[0];
+			} else {
+				$employee['name_first_last'] = '';
+			}
 
 			//fix modified and created dates into unix timestamps
 			$employee['modified_datetime'] = strtotime($employee['modified_date']) + ($employee['modified_time']/1000);
@@ -129,7 +125,7 @@ class employee extends Axapta {
 			 *
 			 */
 			$employee['groups'] = array();
-			$employeeGroups = $this->conn->prepare(
+			$employee_groups = $this->conn->prepare(
 				"SELECT
 					HRMVIRTUALNETWORKHISTORY.DATAAREAID        AS company_id,
 					HRMVIRTUALNETWORKHISTORY.HRMPOSITIONID     AS position_id
@@ -137,20 +133,17 @@ class employee extends Axapta {
 				JOIN HRMVIRTUALNETWORKHISTORY ON HRMVIRTUALNETWORKTABLE.HRMVIRTUALNETWORKID = HRMVIRTUALNETWORKHISTORY.HRMVIRTUALNETWORKID
 				WHERE REFERENCE = :id"
 			);
-			$employeeGroups->bindParam(':id', $employee['id'], PDO::PARAM_STR, 12);
-			$employeeGroups->setFetchMode(PDO::FETCH_NAMED);
-			$employeeGroups->execute();
+			$employee_groups->bindParam(':id', $employee['id'], PDO::PARAM_STR, 12);
+			$employee_groups->setFetchMode(PDO::FETCH_NAMED);
+			$employee_groups->execute();
 
-			foreach ($employeeGroups->fetchALL() as $group) {
+			foreach ($employee_groups->fetchALL() as $group) {
 				if( !array_key_exists($group['company_id'], $employee['groups'])){
 					$employee['groups'][$group['company_id']] = array();
 				}
 				array_push($employee['groups'][$group['company_id']], $group['position_id'] );
 			}
-
-			return $this->fix_padding($employee);
-		} else {
-			return FALSE;
 		}
+		return $this->fix_padding($employees);
 	}
 }
