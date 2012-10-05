@@ -169,6 +169,7 @@ class Workreports_upd {
 			$fields = array(
 				'object_description' 	=> array('name' => 'object_description', 	'type' => 'TEXT'),
 				'order_description'		=> array('name' => 'order_description', 	'type' => 'TEXT'),
+				'crew_leader'			=> array('name'	=> 'crew_leader_id', 		'type' => 'varchar',   'constraint' => '50'),
 				'customer_account'		=> array('name'	=> 'customer_id', 			'type' => 'varchar',   'constraint' => '50'),
 				'order'					=> array('name'	=> 'project_order_id', 		'type' => 'varchar',   'constraint' => '50'),
 				'work_order'			=> array('name'	=> 'project_work_order_id', 'type' => 'varchar',   'constraint' => '50'),
@@ -182,12 +183,9 @@ class Workreports_upd {
 			$fields = array(
 				'work_location_id'			=> array('type' => 'varchar',   'constraint' => '50'),
 				'work_location_address'		=> array('type' => 'varchar',   'constraint' => '50'),
-				'project_id' 				=> array('type' => 'varchar',   'constraint' => '50'),
 				'sales_id'	 				=> array('type' => 'varchar',   'constraint' => '50'),
 				'sales_name' 				=> array('type' => 'varchar',   'constraint' => '50'), // SalesName
 				'invoice_account'			=> array('type' => 'varchar',   'constraint' => '50'), // InvoiceAccount
-				'delivery_name'				=> array('type' => 'varchar',   'constraint' => '50'), // DeliveryName
-				'delivery_address' 			=> array('type' => 'varchar',   'constraint' => '50'), // DeliveryAddress
 				'team_contact_name' 		=> array('type' => 'varchar',   'constraint' => '50'), // TeamContactPerson
 				'team_contact_address' 		=> array('type' => 'varchar',   'constraint' => '50'), // TeamContactPersonAddress
 				'team_contact_phone' 		=> array('type' => 'varchar',   'constraint' => '50'), // TeamContactPersonPhone
@@ -229,6 +227,7 @@ class Workreports_upd {
 				'created_by'			=> array('type' => 'varchar',   'constraint' => '50'),
 				'modified_date'			=> array('type' => 'varchar',   'constraint' => '50'),
 				'modified_time'			=> array('type' => 'varchar',   'constraint' => '50'),
+				'project_id'			=> array('type' => 'varchar',   'constraint' => '50'), // already in inital install - don't add again!
 				'modified_by'			=> array('type' => 'varchar',   'constraint' => '50')
 			);
 			$this->EE->dbforge->add_column('wr_reports', $fields);

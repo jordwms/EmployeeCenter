@@ -351,8 +351,8 @@ class Workreports_mcp {
 	* Looks from $_GET to delete a report from wr_reports and all corresponding data in other 'wr_' prefix tables.
 	*/
 	function delete_report($reject=FALSE) {
-		if( is_numeric($this->EE->input->GET('id')) ) {			
-			$data = array('id' 	=> $this->EE->input->GET('id'));
+		if( is_numeric($id = $this->EE->input->GET('id')) ) {			
+			$data = array('id' 	=> $id);
 
 			$reject = $this->EE->input->GET('reject');			
 			if($reject){
