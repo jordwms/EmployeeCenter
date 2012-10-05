@@ -129,7 +129,7 @@ elseif(NSM_ENV == 'staging') {
         'webmaster_name' => 'Webmaster',
     );
 }
-else {
+else { // 'development'
     $env_db_config = array(
         'hostname' => 'localhost',
         'username' => 'employee_center',
