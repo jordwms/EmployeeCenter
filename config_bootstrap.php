@@ -129,12 +129,12 @@ elseif(NSM_ENV == 'staging') {
         'webmaster_name' => 'Webmaster',
     );
 }
-else {
 else { // 'development'
     $env_db_config = array(
         'hostname' => 'localhost',
         'username' => 'employee_center',
         'password' => 'gi0kQ#vdmw7b',
+        'database' => 'employee_center',
     );
     $env_global_vars = array();
 }
