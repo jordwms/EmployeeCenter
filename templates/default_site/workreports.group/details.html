@@ -3,7 +3,7 @@
 	{exp:workreports:wrDetails projid="{segment_3}"}
 	{form_open}
 	<fieldset id="topOfTicket">
-		<h3>Work Report {ProjectID}</h3>
+		<h3>Work Report {project_id}</h3>
 		<div class="row-fluid">
 			<div class="span12">
 				<table>
@@ -11,7 +11,7 @@
 						<td colspan="3">RTD Ref#</td>
 					</tr>
 					<tr>
-						<td><input type="text" name="rtd_ref" value="{RTDRef}" /></td>
+						<td><input type="text" name="rtd_ref" value="{rtd_reference}" /></td>
 						<td class="omit_label">RTD Ref#</td>
 						<td></td>
 					</tr>
@@ -19,7 +19,7 @@
 						<td colspan="3">Execution Date</td>
 					</tr>
 					<tr>
-						<td class="workreports_date"><input type="date" name="execution_date" value="{ExecDate format="%Y-%m-%d"}" /></td>
+						<td class="workreports_date"><input type="date" name="execution_date" value="{execution_date format="%Y-%m-%d"}" /></td>
 						<td class="omit_label">Execution Date</td>
 						<td></td>
 					</tr>
@@ -27,7 +27,7 @@
 						<td colspan="3">Customer Ref#</td>
 					</tr>
 					<tr>
-						<td><input type="text" name="customer_reference" value="{CustomerRef}" /></td>
+						<td><input type="text" name="customer_reference" value="{customer_reference}" /></td>
 						<td class="omit_label">Customer Ref#</td>
 						<td></td>
 					</tr>
@@ -43,7 +43,7 @@
 						<td colspan="3">Name</td>
 					</tr>
 					<tr>
-						<td><input type="text" name="customer_name" value="{CustomerName}"/></td>
+						<td><input type="text" name="customer_name" value="{customer_name}"/></td>
 						<td class="omit_label">Name</td>
 						<td>4735 Walnut Street</br>Boulder, CO 80301<br />720-369-3644</td>
 					</tr>
@@ -59,7 +59,7 @@
 						<td colspan="3">Name</td>
 					</tr>
 					<tr>
-						<td><input type="text" name="customer_contact_person_name" value="{CustomerContactPersonName}" /></td>
+						<td><input type="text" name="customer_contact_person_name" value="{customer_contact_name}" /></td>
 						<td class="omit_label">Name</td>
 						<td>4735 Walnut Street</br>Boulder, CO 80301<br />720-369-3644</td>
 					</tr>
@@ -75,9 +75,9 @@
 						<td colspan="3">Location</td>
 					</tr>
 					<tr>
-						<td><input type="text" name="work_location_name" value="{DeliveryName}" /></td>
+						<td><input type="text" name="work_location_name" value="{work_location_name}" /></td>
 						<td class="omit_label">Location</td>
-						<td>4735 Walnut Street</br>Boulder, CO 80301<br />720-369-3644{DeliveryAddress}</td>
+						<td>4735 Walnut Street</br>Boulder, CO 80301<br />720-369-3644{work_location_address}</td>
 					</tr>
 				</table>
 			</div>
@@ -110,7 +110,7 @@
 		<div class="row-fluid">
 			<div class="span12">
 				<table>
-					{salesItems}
+					{sales_items}
 					<tr>
 						<td>
 							<input type="hidden" name="salesItems[{dimension_id}|{item_id}][dimension_id]" value="{dimension_id}" />
@@ -122,7 +122,7 @@
 						<td>{unit}</td>
 						<td>{name}</td>
 					</tr>
-					{/salesItems}
+					{/sales_items}
 				</table>
 			</div>
 		</div>
