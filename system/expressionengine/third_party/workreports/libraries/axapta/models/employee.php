@@ -60,64 +60,6 @@ class employee extends axapta {
 		/*
 		 *  Employee information
 		 */
-<<<<<<< HEAD
-
-		/* handy dubug defaults */
-		//$options = array('company' => '107';
-		//$options = array('email' => 'chet.yates@applusrtd.com');
-		//$options = array('email' => 'bert.weber@applusrtd.com');
-=======
-		$query = 'SELECT
-			[NAME]                        AS name_last_first,
-			[ALIAS]                       AS alias,
-			[TITLE]                       AS title,
-
-			[EMPLID]                      AS id,
-			[USERID]                      AS axapta_id,
-			[DATAAREAID]                  AS data_area_id,
-			[INTERNALEXTERNAL]            AS internal_external,
-			[HRMACTIVEINACTIVE]           AS hrm_active_flag,
-			[STATUS]                      AS status,
-
-			[DATAAREAID]                  AS company_id,
-			[DIMENSION]                   AS department_id,
-			[DIMENSION2_]                 AS cost_center_id,
-			[DIMENSION3_]                 AS technique_id,
-			[DIMENSION4_]                 AS business_line_id,
-			
-			[EMAIL]                       AS email,
-			[PHONE]                       AS phone,
-			[CELLULARPHONE]               AS cell_phone,
-			[RTDPRIVATEPHONE]             AS personal_phone,
-			[TELEFAX]                     AS fax,
-			
-			[ADDRESS]                     AS full_address,
-			[STREET]                      AS street,
-			[CITY]                        AS city,
-			[COUNTYID]                    AS county,
-			[STATEID]                     AS state,
-			[ZIPCODEID]                   AS zip_code,
-			[COUNTRYID]                   AS country,
-			
-			[CURRENCY]                    AS currency,
-			
-			CONVERT(DATE,[BIRTHDATE])     AS birth_date,
-			CONVERT(DATE,[MODIFIEDDATE])  AS modified_date,
-			[MODIFIEDTIME]                AS modified_time,
-			[MODIFIEDBY]                  AS modified_by,
-			CONVERT(DATE,[CREATEDDATE])   AS created_date,
-			[CREATEDTIME]                 AS created_time,
-			[CREATEDBY]                   AS created_by
-		FROM [TEST].[dbo].[EMPLTABLE]';
-
-		//extend query with options
-		$query .= ' WHERE ';
-
-		// handy debug defaults;
-		// $options = array('DATAAREAID' => '107';
-		// $options = array('email' => 'chet.yates@applusrtd.com');
-		// $options = array('email' => 'bert.weber@applusrtd.com');
->>>>>>> JW
 
 		//select all properties defined at top of class
 		$query = $this->build_select();
