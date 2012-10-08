@@ -44,9 +44,9 @@ class dispatch_list extends axapta {
 
 		$query .= $this->build_WHERE($options);
 
-		if( $_GET['output'] == 'debug' ){
-			echo '<pre>QUERY:'.NL.$query.'</pre>';
-			echo '<pre>OPTIONS:';
+		if( isset($_GET['output']) && $_GET['output'] == 'debug' ){
+			echo '<pre>'.$query.'</pre>';
+			echo '<pre>';
 			print_r($options);
 			echo '</pre>';
 		}

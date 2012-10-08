@@ -29,9 +29,9 @@ class sales_items extends axapta {
 
 		$query .= NL.'ORDER BY SALESLINE.RTDITEMNAME, SALESLINE.SALESUNIT';
 
-		if( $_GET['output'] == 'debug' ){
-			echo '<pre>QUERY:'.NL.$query.'</pre>';
-			echo '<pre>OPTIONS:';
+		if( isset($_GET['output']) && $_GET['output'] == 'debug' ){
+			echo '<pre>'.$query.'</pre>';
+			echo '<pre>';
 			print_r($options);
 			echo '</pre>';
 		}

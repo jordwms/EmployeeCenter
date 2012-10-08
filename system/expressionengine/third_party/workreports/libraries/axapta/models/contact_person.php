@@ -30,6 +30,13 @@ class contact_person extends axapta {
 		$query .= 'LEFT JOIN CUSTTABLE ON CUSTTABLE.ACCOUNTNUM = CONTACTPERSON.CUSTACCOUNT AND CUSTTABLE.DATAAREAID = CONTACTPERSON.DATAAREAID'.NL;
 
 		$query .= $this->build_WHERE($options);
+
+		if( isset($_GET['output']) && $_GET['output'] == 'debug' ){
+			echo '<pre>'.$query.'</pre>';
+			echo '<pre>';
+			print_r($options);
+			echo '</pre>';
+		}
 		
 		$contact_person = $this->conn->prepare($query);
 

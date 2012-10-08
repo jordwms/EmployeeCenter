@@ -48,7 +48,7 @@ class work_location extends axapta {
 
 		$query .= NL.'ORDER BY CUSTTABLE.NAME, [ADDRESS].NAME';
 
-		if( $_GET['output'] == 'debug' ){
+		if( isset($_GET['output']) && $_GET['output'] == 'debug' ){
 			echo '<pre>'.$query.'</pre>';
 			echo '<pre>';
 			print_r($options);

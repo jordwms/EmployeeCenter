@@ -50,7 +50,7 @@ class materials extends axapta {
 
 		$query .= NL.'ORDER BY PRICEDISCTABLE.RTDITEMNAME';
 
-		if( $_GET['output'] == 'debug' ){
+		if( isset($_GET['output']) && $_GET['output'] == 'debug' ){
 			echo '<pre>'.$query.'</pre>';
 			echo '<pre>';
 			print_r($options);

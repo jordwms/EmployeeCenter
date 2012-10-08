@@ -79,7 +79,7 @@ class work_report extends axapta {
 			
 		$query .= $this->build_WHERE($options);
 
-		if( $_GET['output'] == 'debug' ){
+		if( isset($_GET['output']) && $_GET['output'] == 'debug' ){
 			echo '<pre>'.$query.'</pre>';
 			echo '<pre>';
 			print_r($options);
