@@ -75,6 +75,8 @@ class Workreports {
 				case 'work_location':
 					$return_data = $this->EE->axapta->work_location->get_remote( array('company_id' => '107', 'cost_center_id' => '10') );
 					break;
+
+				case 'contact_person':
 					$return_data = $this->EE->axapta->contact_person->get_remote( array('id' => '107..SYB2001380') );
 					break;
 
@@ -136,7 +138,7 @@ class Workreports {
 		return $this->EE->db->count_all_results('wr_reports');
 	}
 
-	function wrList($projid = NULL) {
+	function wrList() {
 		// if ( ($employee = $this->EE->axapta->employee()) && $ax_conn = $this->EE->axapta->axapta_connection() ) {
 		// 	if(is_null($projid)) {
 		// 		$projid = explode( '/', $this->EE->input->post('projid') );
@@ -152,7 +154,6 @@ class Workreports {
 						project_work_report_id,
 						rtd_reference,
 						sales_name,
-						invoice_account,
 						object_description,
 						order_description,
 						execution_date,
@@ -183,44 +184,46 @@ class Workreports {
 	}
 
 	// Remake of wrDetails(), but it comes from MySQL instead of Axapta
-	function wrDetails($projid = NULL) {
-		// if ( ($employee = $this->EE->axapta->employee()) && $ax_conn = $this->EE->axapta->axapta_connection() ) {
-			if(is_null($projid)) {
-				$projid = explode( '-', $this->EE->db->escape_str( $this->EE->TMPL->fetch_param('projid') ) );
-			}
+	function wrDetails() {
+		// if ( ($employee = $this->EE->axapta->employee()) ) {
+			$project_id = str_replace('-', '/', $this->EE->TMPL->fetch_param('projid') );
+
 			$submit_uri = $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$this->EE->functions->fetch_action_id('Workreports', 'submit_for_approval');
 			// $employee = $this->EE->axapta->employee->get_remote(array( 'email' => $this->EE->session->userdata('email') ));
 
 			$this->EE->db->select('
 						id,
-						crew_leader_id,
 						sales_id,
 						project_id,
-						project_order_id,
-						project_work_order_id,
-						project_work_report_id,
+
+						crew_leader_id,
+
+						execution_datetime,
+
 						company_id,
 						rtd_reference,
-						sales_name,
-						invoice_account,
 						object_description,
 						order_description,
-						execution_date,
+
+						work_location_id,
 						work_location_name,
 						work_location_address,
-						customer_reference,
-						company_id,
+
+						team_contact_id,
 						team_contact_name,
 						team_contact_address,
 						team_contact_phone,
 						team_contact_fax,
 						team_contact_email,
+
+						customer_id,
 						customer_name,
 						customer_address,
 						customer_phone,
 						customer_fax,
 						customer_email,
-						customer_account,
+						customer_reference,
+
 						customer_contact_id,
 						customer_contact_name,
 						customer_contact_email,
@@ -229,9 +232,8 @@ class Workreports {
 			');
 
 			$this->EE->db->from('wr_reports');
-			$this->EE->db->where('project_order_id', $projid[0]);
-			$this->EE->db->where('project_work_order_id', $projid[1]);
-			$this->EE->db->where('project_work_report_id', $projid[2]);
+			$this->EE->db->where('project_id', $project_id);
+
 			// $this->EE->db->where('crew_leader_id', $employee);
 
 			$data[0] = $this->EE->db->get()->row_array();
@@ -248,22 +250,14 @@ class Workreports {
 				'id'            => $this->EE->TMPL->form_id,
 				'class'         => $this->EE->TMPL->form_class,
 				'hidden_fields' => array(
-										'projid' 				=> $data[0]['project_id'],
+										'project_id'			=> $data[0]['project_id'],
 										'id' 					=> $data[0]['crew_leader_id'],
-										'execution_date'		=> $data[0]['execution_date'],
+										'execution_datetime'	=> $data[0]['execution_datetime'],
 										'company_id'			=> $data[0]['company_id'],
-										//'customer_name'		=> $data[0]['customer_name'],
-										'customer_account'		=> $data[0]['customer_account'],
-										//'customer_reference'	=> $data[0]['customer_reference'],
+										'customer_id'			=> $data[0]['customer_id'],
 										'rtd_reference'			=> $data[0]['rtd_reference'],
 										'work_location_name'	=> $data[0]['work_location_name'],
-										'work_location_address' => $data[0]['work_location_address'],
-										// 'cost_center'			=> $employee['cost_center_id'],
-										'contact_person'		=> $data[0]['customer_contact_name'],
-										'contact_email'         => $data[0]['customer_contact_email'],
-										'contact_phone'         => $data[0]['customer_contact_phone'],
-										'contact_cell'          => $data[0]['customer_contact_mobile'],
-										'object_description'	=> $data[0]['object_description']
+										'work_location_address' => $data[0]['work_location_address']
 									),
 				'secure'        => TRUE,
 				'onsubmit'      => ''

@@ -1,6 +1,6 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 class Workreports_upd {
-	var $version = '1.3';
+	var $version = '1.3.1';
 
 	function __construct() {
 		$this->EE =& get_instance();
@@ -205,7 +205,7 @@ class Workreports_upd {
 
 		}
 
-		if ($current < $this->version ) {
+		if ($current < '1.3' ) {
 			// Adding fields to wr_reports for synching axapta and MySQL
 			$fields = array( 
 				'research_norm_id'		=> array('type' => 'varchar',   'constraint' => '50'),
@@ -231,6 +231,38 @@ class Workreports_upd {
 				'modified_by'			=> array('type' => 'varchar',   'constraint' => '50')
 			);
 			$this->EE->dbforge->add_column('wr_reports', $fields);
+		}
+
+		if( $current < '1.3.1') {
+			//remove unnecessary fields:
+			$this->EE->dbforge->drop_column('wr_reports', 'project_order_id');
+			$this->EE->dbforge->drop_column('wr_reports', 'project_work_order_id');
+			$this->EE->dbforge->drop_column('wr_reports', 'project_work_report_id');
+
+			$this->EE->dbforge->drop_column('wr_reports', 'submitter_name');
+
+			$this->EE->dbforge->drop_column('wr_reports', 'created_time');
+			$this->EE->dbforge->drop_column('wr_reports', 'modified_time');
+
+			$this->EE->dbforge->drop_column('wr_reports', 'contact_person');
+
+			$this->EE->dbforge->drop_column('wr_reports', 'contract_date');
+
+			$this->EE->dbforge->drop_column('wr_reports', 'sales_name');
+
+			$this->EE->dbforge->drop_column('wr_reports', 'invoice_account');
+
+			//modifiy existing fields:
+			$fields = array( 
+				'created_date'    => array('name' => 'created_datetime', 'type' => 'int', 'constraint' => '10'),
+				'modified_date'    => array('name' => 'modified_datetime', 'type' => 'int', 'constraint' => '10'),
+				'execution_date'    => array('name' => 'execution_datetime', 'type' => 'int', 'constraint' => '10'),
+				'deadline_date'    => array('name' => 'deadline_datetime', 'type' => 'int', 'constraint' => '10'),
+				'submission_date'    => array('name' => 'submission_datetime', 'type' => 'int', 'constraint' => '10')
+
+			);
+
+			$this->EE->dbforge->modify_column('wr_reports', $fields);
 		}
 
 		return TRUE;
