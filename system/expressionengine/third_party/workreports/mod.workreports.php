@@ -146,9 +146,8 @@ class Workreports {
 						crew_leader_id,
 						sales_id,
 						project_id,
-						REPLACE(\'project_id\', \'\/\', \'-\') AS project_id_uri,
 						rtd_reference,
-						sales_name,
+						sales_responsible,
 						object_description,
 						order_description,
 						execution_datetime,
@@ -167,6 +166,11 @@ class Workreports {
 			// $this->EE->db->where('status', 0);
 
 			$report = $this->EE->db->get()->result_array();
+
+			foreach ($report as &$rep) {
+				$rep['project_id_uri'] = str_replace('/', '-', $rep['project_id']);
+			}
+			// echo '<pre>'; print_r($report); die;
 
 			$this->return_data = $this->EE->TMPL->parse_variables( $tagdata,  $report);
 			return $this->return_data;
@@ -227,11 +231,15 @@ class Workreports {
 
 			$data[0] = $this->EE->db->get()->row_array();
 
-			$data[0]['materials'] = $this->EE->db->get('wr_materials', array('report_id' => $data[0]['id']) )->result_array();
+			$data[0]['project_id_uri'] = str_replace('/', '-', $data[0]['project_id']);
 
-			$data[0]['sales_item'] = $this->EE->db->get('wr_items', array('report_id' => $data[0]['id']) )->result_array();
+			$data[0]['materials'] = $this->EE->db->get_where('wr_materials', array('report_id' => $data[0]['id']) )->result_array();
 
-			$data[0]['resources'] = $this->EE->db->get('wr_resources', array('report_id' => $data[0]['id']) )->result_array();
+			$data[0]['sales_items'] = $this->EE->db->get_where('wr_items', array('report_id' => $data[0]['id']) )->result_array();
+
+			$data[0]['resources'] = $this->EE->db->get_where('wr_resources', array('report_id' => $data[0]['id']) )->result_array();
+
+// echo '<pre>'; print_r($data); die;
 
 			$form_open = array(
 				'action'		=> $submit_uri,
