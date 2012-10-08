@@ -2,7 +2,7 @@
 class dispatch_list extends axapta {
 	protected $employee_id                = 'RTDEMPLPERWORKREPORT.EMPLID';
 	protected $sales_id                   = 'RTDEMPLPERWORKREPORT.SALESID';
-	protected $sales_name                 = 'SALESTABLE.SALESNAME';
+	//protected $sales_name                 = 'SALESTABLE.SALESNAME';  //same as customer name
 	protected $project_id                 = 'RTDEMPLPERWORKREPORT.PROJID';
 
 	protected $customer_id                = 'CUSTTABLE.ACCOUNTNUM';
