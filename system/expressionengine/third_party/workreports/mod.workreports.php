@@ -11,7 +11,8 @@ class Workreports {
 	function dashboard() {
 		$message = '';
 		if( $this->EE->axapta->axapta_connection() ) {
-			if( $employee = $this->EE->axapta->employee() ) {
+			if( $employee = $this->EE->axapta->employee->get_remote(array( 'email' => $this->EE->session->userdata('email') )) ) {
+				$employee = $employee[0];
 				if( count($employee['groups']) > 0 ) {
 					foreach ($employee['groups'] as $companies) {
 						if( in_array('WA TECH', $companies) ){
