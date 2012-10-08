@@ -58,6 +58,16 @@ class dispatch_list extends axapta {
 		$dispatch_list->setFetchMode(PDO::FETCH_NAMED);
 		$dispatch_list->execute();
 
-		return $this->fix_padding( $dispatch_list->fetchAll() );
+		$return_data = $dispatch_list->fetchAll();
+
+		foreach ($return_data as &$data_row) {
+			//fix modified and created dates into unix timestamps
+			//$data_row['modified_datetime'] = strtotime($data_row['modified_date']) + ($data_row['modified_time']/1000);
+			//$data_row['created_datetime']  = strtotime($data_row['created_date']) + ($data_row['created_time']/1000);
+
+			$data_row['execution_datetime']  = strtotime($data_row['execution_date']) + ($data_row['execution_time']/1000);
+		}
+
+		return $this->fix_padding( $return_data );
 	}
 }
