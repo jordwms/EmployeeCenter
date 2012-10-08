@@ -139,11 +139,7 @@ class Workreports {
 	}
 
 	function wrList() {
-		// if ( ($employee = $this->EE->axapta->employee()) && $ax_conn = $this->EE->axapta->axapta_connection() ) {
-		// 	if(is_null($projid)) {
-		// 		$projid = explode( '/', $this->EE->input->post('projid') );
-		// 	}
-			// $employee = $this->EE->axapta->employee->get_remote( array('email' => $this->EE->session->userdata('email')) );
+		//if ( $employee = $this->EE->axapta->employee->get_remote( array('email' => $this->EE->session->userdata('email')) ) ){
 			$tagdata = $this->EE->TMPL->tagdata;
 
 			$this->EE->db->select('
@@ -170,17 +166,12 @@ class Workreports {
 
 			$this->EE->db->from('wr_reports');
 			// $this->EE->db->where('status', 0);
-			// this->EE->db->where('crew_leader_id', $employee[0]);
 
 			$report = $this->EE->db->get()->result_array();
 
-			// $data['materials'] = $this->EE->axapta->materials->get();
-			// $data['sales_item'] = $this->EE->axapta->sales_item->get();
-			// $data['resources'] = $this->EE->axapta->resources->get();
-
 			$this->return_data = $this->EE->TMPL->parse_variables( $tagdata,  $report);
 			return $this->return_data;
-		// }
+		//}
 	}
 
 	// Remake of wrDetails(), but it comes from MySQL instead of Axapta
