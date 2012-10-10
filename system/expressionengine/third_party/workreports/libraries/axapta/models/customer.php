@@ -1,7 +1,7 @@
 <?php
 class customer extends axapta {
 	protected $id                         = 'LTRIM(CustTable.AccountNum)';
-	protected $account_num                = 'CustTable.AccountNum';
+	//protected $account_num                = 'CustTable.AccountNum';
 	protected $name                       = 'CustTable.Name';
 	protected $address                    = 'CustTable.Address';
 	protected $phone                      = 'CustTable.Phone';
@@ -10,6 +10,8 @@ class customer extends axapta {
 	protected $blocked                    = 'CUSTTABLE.BLOCKED';
 	protected $business_relation_account  = 'smmBusRelTable.BusRelAccount';
 	protected $company_id                 = 'CustTable.DATAAREAID';
+	protected $department_id              = 'CustTable.DIMENSION';
+	protected $cost_center_id             = 'CustTable.DIMENSION2_';
 
 	function __construct($conn){
 		$this->conn =& $conn;
@@ -19,19 +21,8 @@ class customer extends axapta {
 	/*
 	 *  Customers
 	 *
-	 *	Option: id
-	 *	Option: name
-	 *
-	 *	Will only return customers for an employee's authorized companies if no customer id given
-	 *
 	 */
 	function get_remote($options = NULL) {
-		//if customer is blocked... welll it's blocked, we shouldn't bother with them
-		if( !is_array($options) ){
-			$options = array('blocked' => '0');
-		} else {
-			$options['blocked'] = '0';
-		}
 
 		$query = $this->build_SELECT();
 
