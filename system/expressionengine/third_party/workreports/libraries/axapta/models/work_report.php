@@ -1,7 +1,7 @@
 <?php
 class work_report extends axapta {
 	protected $project_id                  = 'SALESTABLE.PROJID';
-	protected $template_indicator          = 'SALESTABLE.EXPORTREASON';
+	protected $export_reason               = 'SALESTABLE.EXPORTREASON';
 
 	protected $sales_id                    = 'SALESTABLE.SALESID';
 
@@ -18,10 +18,11 @@ class work_report extends axapta {
 	protected $technique_id                = 'SALESTABLE.DIMENSION3_';
 
 	protected $contract_id                 = 'RTDPROJORDERTABLE.CONTRACTID';
-	protected $contract_date               = 'RTDPROJORDERTABLE.CONTRACTDATE';
+	//protected $contract_date               = 'RTDPROJORDERTABLE.CONTRACTDATE';
 
 	protected $deadline_date               = 'CONVERT(DATE, SALESTABLE.DEADLINE)';
 	protected $execution_date              = 'CONVERT(DATE, SALESTABLE.DELIVERYDATE)';
+	protected $execution_time              = 'SALESTABLE.RTDSTARTTIME';
 
 	protected $rtd_reference               = 'SALESTABLE.RTDPROJORDERREFERENCE';
 
@@ -68,6 +69,8 @@ class work_report extends axapta {
 	 *
 	 */
 	function get_remote($options = NULL) {
+		$this->explode_datetime($options);
+		
 		$query = $this->build_SELECT();
 
 		$query .= 'FROM SALESTABLE'.NL;
@@ -95,6 +98,15 @@ class work_report extends axapta {
 
 		$return_data = $work_report->fetchAll();
 
+		foreach ($return_data as &$data_row) {
+			//fix modified and created dates into unix timestamps
+			$data_row['modified_datetime'] = strtotime($data_row['modified_date']) + ($data_row['modified_time']);
+			$data_row['created_datetime']  = strtotime($data_row['created_date']) + ($data_row['created_time']);
+
+			//convert execution date+time into unix timestamp
+			$data_row['execution_datetime']  = strtotime($data_row['execution_date']) + ($data_row['execution_time']);
+		}
+
 		return $this->fix_padding($return_data);
 	}
 
@@ -105,23 +117,22 @@ class work_report extends axapta {
 	 *	Defaults: 
 	 *
 	 */
-	function set_approval($projid=NULL, $dataAreaID=NULL, $emplID=NULL, $approved=TRUE) {
-		if( $employee = $this->employee->get() ) {
-			$query = 'UPDATE Salestable SET RtdApproved = :approved WHERE PROJID = :projid AND DATAAREAID = :dataAreaID';
+	//function set_approval($projid=NULL, $dataAreaID=NULL, $emplID=NULL, $approved=TRUE) {
+	function set_ax_status($options=NULL){
+		$query = 'UPDATE Salestable SET RtdApproved = :status WHERE PROJID = :project_id AND DATAAREAID = :company_id';
 
-			$approval = $this->conn->prepare($query);
+		$status = $this->conn->prepare($query);
 
-			if($approved) {
-				$approval->bindValue('approved', 1, PDO::PARAM_STR);
-			} else {
-				$approval->bindValue('approved', 0, PDO::PARAM_STR);
-			}
-			$approval->bindValue('projid', $projid, PDO::PARAM_STR);
-			$approval->bindValue('emplID', $projid, PDO::PARAM_STR);
-			$approval->bindValue('dataAreaID', $dataAreaID, PDO::PARAM_STR);
-			
-			$approval->execute();
-			//$approval->bindValue('emplID', $dataAreaID, PDO::PARAM_STR, 3);
+		if( isset($options['status']) ){
+			$status->bindValue('status', $options['status'], PDO::PARAM_STR);
+		} else {
+			$status->bindValue('status', 1, PDO::PARAM_STR);
 		}
+
+		$status->bindValue('project_id', $options['project_id'], PDO::PARAM_STR);
+		$status->bindValue('employee_id', $options['employee_id'], PDO::PARAM_STR);
+		$status->bindValue('company_id', $options['company_id'], PDO::PARAM_STR);
+
+		return $status->execute();
 	}
 }
