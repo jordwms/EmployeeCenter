@@ -8,10 +8,10 @@
 		<tr>
 			<td class="color_bar"></td>
 			<td>
-				<a href="{path='workreports/details/{project_order_id}-{project_work_order_id}-{project_work_report_id}'}" class="work_reports">
+				<a href="{path='workreports/details/{project_link}'}" class="work_reports">
 					<div>
-						<p><h3>Work Report ID</h3> <span>{project_order_id}/{project_work_order_id}/{project_work_report_id}</span></p>
-						<p><h3>Scheduled Date</h3> {start_datetime format="%m/%d/%Y %H:%i"}</p>
+						<p><h3>Work Report ID</h3> <span>{project_id}</span></p>
+						<p><h3>Scheduled Date</h3> {execution_datetime format="%m/%d/%Y %H:%i"}</p>
 					</div>
 					<div>	
 						<p><h3>Customer Name</h3> {customer_name}</p>
