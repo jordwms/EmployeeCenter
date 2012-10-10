@@ -57,9 +57,7 @@ class employee extends axapta {
 	 *
 	 */
 	function get_remote($options = NULL) {
-		/*
-		 *  Employee information
-		 */
+		$this->explode_datetime($options);
 
 		//select all properties defined at top of class
 		$query = $this->build_select();
@@ -98,8 +96,8 @@ class employee extends axapta {
 			}
 
 			//fix modified and created dates into unix timestamps
-			$employee['modified_datetime'] = strtotime($employee['modified_date']) + ($employee['modified_time']/1000);
-			$employee['created_datetime']  = strtotime($employee['created_date']) + ($employee['created_time']/1000);
+			$employee['modified_datetime'] = strtotime($employee['modified_date']) + $employee['modified_time'];
+			$employee['created_datetime']  = strtotime($employee['created_date']) + $employee['created_time'];
 
 			
 			/*
