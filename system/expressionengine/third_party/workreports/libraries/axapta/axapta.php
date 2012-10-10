@@ -162,6 +162,25 @@ class axapta {
 
 	// END QUERY HELPERS
 
+	// explodes datetime options into date and time parts for the queries to properly use
+	function explode_datetime(&$options){
+		foreach ($options as $key => &$value) {
+			if( $key_part = strstr($key, '_datetime', TRUE) ){
+				if( isset($options[$key]) ){
+					if( is_array($options[$key]) ){
+						$options[$key_part.'_date'] = array($options[$key][0] , date('Y-m-d', $options[$key][1]) );
+						$options[$key_part.'_time'] = array($options[$key][0] , $options[$key][1] - strtotime($options[$key_part.'_date'][1]) );
+					} else {
+						$options[$key_part.'_date'] = date('Y-m-d', $options[$key]);
+						$options[$key_part.'_time'] = $options[$key] - strtotime($options[$key_part.'_date']);
+					}
+					unset($options[$key]);
+					return $options;
+				}
+			}
+		}
+	}
+
 	//fix axapta's penchant for padding strings
 	function fix_padding(&$data) {
 		if( is_array($data) ){
