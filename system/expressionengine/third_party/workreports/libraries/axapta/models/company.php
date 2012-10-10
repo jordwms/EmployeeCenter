@@ -28,6 +28,8 @@ class company extends axapta {
 	 *	DataAreaID = Company ID
 	 */
 	function get_remote($options = NULL) {
+		$this->explode_datetime($options);
+		
 		//select all properties defined at top of class
 		$query = $this->build_SELECT();
 
@@ -57,7 +59,7 @@ class company extends axapta {
 
 		foreach ($return_data as $row => &$values) {
 			//fix modified dates into unix timestamps
-			$values['modified_datetime'] = date('l jS \of F Y h:i:s A', strtotime($values['modified_date']) + ($values['modified_time']/1000));
+			$values['modified_datetime'] = strtotime($values['modified_date']) + $values['modified_time'];
 		}
 
 		return $this->fix_padding($return_data);
