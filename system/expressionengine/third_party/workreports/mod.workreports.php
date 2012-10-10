@@ -181,20 +181,20 @@ class Workreports {
 			$tagdata = $this->EE->TMPL->tagdata;
 
 			$this->EE->db->select('
-						crew_leader_id,
+						project_id,
 						sales_id,
-						project_order_id,
-						project_work_order_id,
-						project_work_report_id,
+						crew_leader_id,
 						rtd_reference,
-						sales_name,
 						object_description,
 						order_description,
-						execution_date,
+						execution_datetime,
+
 						work_location_name,
 						work_location_address,
 						customer_reference,
+
 						company_id,
+
 						customer_name,
 						customer_contact_name,
 						customer_contact_email,
@@ -205,9 +205,13 @@ class Workreports {
 			$this->EE->db->from('wr_reports');
 			// $this->EE->db->where('status', 0);
 
-			$report = $this->EE->db->get()->result_array();
+			$dispatch_list = $this->EE->db->get()->result_array();
 
-			$this->return_data = $this->EE->TMPL->parse_variables( $tagdata,  $report);
+			foreach ($dispatch_list as &$wr) {
+				$wr['project_link'] = str_replace('/', '-', $wr['project_id'] );
+			}
+
+			$this->return_data = $this->EE->TMPL->parse_variables( $tagdata,  $dispatch_list);
 			return $this->return_data;
 		//}
 	}
