@@ -143,6 +143,49 @@ class Workreports {
 		}
 	}
 
+	function sync($employee_id = NULL) {
+		if( !is_null($employee_id) ){
+			// Get List of dispatched work reports
+			// We use axapta's status to know if we've already synced a work report
+			$dispatch_list = $this->EE->axapta->dispatch_list->get_remote(array(
+				'employee_id' => 'EM.107.0226', 
+				'status' => 0
+			));
+
+			//loop over dispatch list and sync the work report to mysql
+			foreach ($dispatch_list as $dispatch_item) {
+				//get workreport from axapta and add to mysql
+				$work_report = $this->EE->axapta->work_report->get_remote( array( 'project_id' => $dispatch_item['project_id'] ) );
+
+
+				//get resources from axapta and add to mysql
+				$resources = $this->EE->axapta->resources->get_remote( array( 'project_id' => $dispatch_item['project_id'] ) );
+
+
+				//get sales items from axapta and add to mysql
+				$sales_items = $this->EE->axapta->sales_items->get_remote( array( 'project_id' => $dispatch_item['project_id'] ) );
+
+
+				//get materials from axapta and add to mysql
+				$materials = $this->EE->axapta->materials->get_remote( array( 'project_id' => $dispatch_item['project_id'] ) );
+
+
+				//set status in axapta to 1 to know we've already synced this item
+				$this->EE->axapta->work_report->set_status(array(
+					'employee_id' => $employee_id,
+					'company_id'  => $dispatch_item['company_id'],
+					'project_id'  => $dispatch_item['project_id'],
+					'status'      => 1
+				));
+			}
+
+			$templates = $this->EE->axapta->work_report->get_remote( array( 'template_indicator' => 1 ) );
+
+		} else {
+			echo 'invalid employee';
+		}
+	}
+
 	function dashboard() {
 		$message = '';
 		if( $this->EE->axapta->axapta_connection() ) {
