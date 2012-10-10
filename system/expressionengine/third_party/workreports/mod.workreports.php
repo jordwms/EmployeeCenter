@@ -69,11 +69,16 @@ class Workreports {
 					break;
 
 				case 'customer':
-					$return_data = $this->EE->axapta->customer->get_remote( array('company_id' => '107') );
+					$return_data = $this->EE->axapta->customer->get_remote( array(
+						'company_id' => $employee['company_id'],
+						//'department_id' => $employee['department_id'],
+						'cost_center_id' => $employee['cost_center_id'],
+						'blocked' => 0
+					));
 					break;
 
 				case 'work_location':
-					$return_data = $this->EE->axapta->work_location->get_remote( array('company_id' => '107', 'cost_center_id' => '10') );
+					$return_data = $this->EE->axapta->work_location->get_remote( array('company_id' => $employee['company_id'], $employee['cost_center_id']) );
 					break;
 
 				case 'contact_person':
@@ -81,24 +86,59 @@ class Workreports {
 					break;
 
 				case 'work_report':
-					$return_data = $this->EE->axapta->work_report->get_remote(  );
+					$options = array(
+						'project_id' => '07.005532/001/120820'
+					);
+					$return_data = $this->EE->axapta->work_report->get_remote( $options );
+					break;
+
+				case 'template':
+					$options = array(
+						//'company_id' => $employee['company_id'],
+						'export_reason' => 'TEMPLATE',
+						'execution_date' => '2012-01-01'
+					);
+					$return_data = $this->EE->axapta->work_report->get_remote( $options );
+					break;
+
+				case 'resources':
+					$return_data = $this->EE->axapta->resources->get_remote( array('project_id' => '07.005532/001/120820') );
 					break;
 
 				case 'materials':
-					$return_data = $this->EE->axapta->materials->get_remote(  );
+					$options = array(
+						'project_id' => '07.004845/002/120409te'
+					);
+					$return_data = $this->EE->axapta->materials->get_remote( $options );
 					break;
 
 				case 'sales_items':
 					$return_data = $this->EE->axapta->sales_items->get_remote( array('project_id' => '07.005532/001/120820') );
 					break;
 
-				case 'dispatch_list':
-					$return_data = $this->EE->axapta->dispatch_list->get_remote( array('employee_id' => 'EM.107.0226') );
+				case 'contract_items':
+					$options = array(
+						'contract_id' => '10.000109',
+						'film_indicator' => '1'
+					);
+					$return_data = $this->EE->axapta->contract_items->get_remote( $options );
 					break;
 
-				
+				case 'dispatch_list':
+					$return_data = $this->EE->axapta->dispatch_list->get_remote(array(
+						'employee_id' => 'EM.107.0226', 
+						'modified_datetime' => array('<', time())
+					));
+					break;
+
+				case 'sync':
+					echo '<h2>Sync Started</h2>';
+					$this->sync($employee['id']);
+					break;
+
 				default:
-					return FALSE;
+					echo 'no method found';
+					$return_data = FALSE;
 					break;
 			}
 
@@ -124,9 +164,7 @@ class Workreports {
 				
 			} else {
 				echo '<h1>error</h1></br>';
-				echo '<pre>';
-				print_r($return_data);
-				echo '</pre>';
+				echo '<p>no return data</p>';
 				//return 404;
 			}
 		} else {
