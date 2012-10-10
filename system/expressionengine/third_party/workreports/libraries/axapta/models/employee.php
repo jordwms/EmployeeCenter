@@ -68,12 +68,12 @@ class employee extends axapta {
 		//build WHERE statements from passed options
 		$query .= $this->build_WHERE($options);
 
-		if( isset($_GET['output']) && $_GET['output'] == 'debug' ){
-			echo '<pre>'.$query.'</pre>';
-			echo '<pre>';
-			print_r($options);
-			echo '</pre>';
-		}
+		// if( isset($_GET['output']) && $_GET['output'] == 'debug' ){
+		// 	echo '<pre>'.$query.'</pre>';
+		// 	echo '<pre>';
+		// 	print_r($options);
+		// 	echo '</pre>';
+		// }
 
 		//create the prepared statement
 		$employee_info = $this->conn->prepare($query);
