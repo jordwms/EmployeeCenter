@@ -7,35 +7,6 @@ class Workreports {
 		$this->EE =& get_instance();
 		$this->EE->load->library('axapta/axapta');
 	}
-
-	function dashboard() {
-		$message = '';
-		if( $this->EE->axapta->axapta_connection() ) {
-			if( $employee = $this->EE->axapta->employee->get_remote(array( 'email' => $this->EE->session->userdata('email') )) ) {
-				$employee = $employee[0];
-				if( count($employee['groups']) > 0 ) {
-					foreach ($employee['groups'] as $companies) {
-						if( in_array('WA TECH', $companies) ){
-							$message = 'You have '.$this->wrCount().' Work Reports assigned to you';
-							//$message = $this->EE->lang->line('');
-						} 
-					}
-				} else {
-					//$message = 'Please Contact HRM Department for Authorization';
-					$message = $this->EE->lang->line('unauthorized');
-				}
-			} else {
-				//$message = 'Invalid Employee Information Returned';
-				$message = $this->EE->lang->line('invalid_employee');
-				$message = lang('invalid_employee');
-			}
-		} else {
-			//$message = 'No connection to Axapta';
-			$message = $this->EE->lang->line('no_connection');
-		}
-
-		return $message;
-	}
 	
 	/*
 	 *	This is a simple router designed as a REST like API
@@ -170,6 +141,42 @@ class Workreports {
 		} else {
 			echo lang('unauthorized');
 		}
+	}
+
+	function dashboard() {
+		$message = '';
+		if( $this->EE->axapta->axapta_connection() ) {
+			if( $employee = $this->EE->axapta->employee->get_remote(array( 'email' => $this->EE->session->userdata('email') )) ) {
+				$employee = $employee[0];
+				if( count($employee['groups']) > 0 ) {
+					$message = '';
+					foreach ($employee['groups'] as $companies) {
+						if( in_array('WA TECH', $companies) ){
+							$message .= 'You have '.$this->wrCount().' Work Reports assigned to you'.'<br>';
+							//$message = $this->EE->lang->line('');
+						}
+						if( in_array('WA DISP', $companies) ){
+							$message .= 'You have '.$this->wrCount().' Work Reports awaiting DISPATCHER approval'.'<br>';
+						}
+						if( in_array('WA ADMIN', $companies) ){
+							$message .= 'You have '.$this->wrCount().' Work Reports awaiting ADMIN approval'.'<br>';
+						}
+					}
+				} else {
+					//$message = 'Please Contact HRM Department for Authorization';
+					$message = $this->EE->lang->line('unauthorized');
+				}
+			} else {
+				//$message = 'Invalid Employee Information Returned';
+				$message = $this->EE->lang->line('invalid_employee');
+				$message = lang('invalid_employee');
+			}
+		} else {
+			//$message = 'No connection to Axapta';
+			$message = $this->EE->lang->line('no_connection');
+		}
+
+		return $message;
 	}
 
 	function wrCount() {
