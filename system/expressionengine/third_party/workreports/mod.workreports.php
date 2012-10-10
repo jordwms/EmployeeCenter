@@ -234,22 +234,28 @@ class Workreports {
 						project_id,
 						sales_id,
 						crew_leader_id,
+						sales_responsible,
+
+						execution_datetime,
+
+						company_id,
 						rtd_reference,
 						object_description,
 						order_description,
-						execution_datetime,
 
+						work_location_id,
 						work_location_name,
 						work_location_address,
-						customer_reference,
 
-						company_id,
-
+						customer_id,
 						customer_name,
+
 						customer_contact_name,
 						customer_contact_email,
 						customer_contact_phone,
-						customer_contact_mobile
+						customer_contact_mobile,
+
+						customer_reference
 			');
 
 			$this->EE->db->from('wr_reports');
@@ -262,9 +268,11 @@ class Workreports {
 			}
 
 			$this->return_data = $this->EE->TMPL->parse_variables( $tagdata,  $dispatch_list);
+
 			return $this->return_data;
 		//}
 	}
+
 
 	// Remake of wrDetails(), but it comes from MySQL instead of Axapta
 	function wrDetails() {
@@ -276,10 +284,10 @@ class Workreports {
 
 			$this->EE->db->select('
 						id,
-						sales_id,
 						project_id,
-
+						sales_id,
 						crew_leader_id,
+						sales_responsible,
 
 						execution_datetime,
 
@@ -321,11 +329,13 @@ class Workreports {
 
 			$data[0] = $this->EE->db->get()->row_array();
 
-			$data[0]['materials'] = $this->EE->db->get('wr_materials', array('report_id' => $data[0]['id']) )->result_array();
+			$data[0]['project_id_uri'] = str_replace('/', '-', $data[0]['project_id']);
 
-			$data[0]['sales_item'] = $this->EE->db->get('wr_items', array('report_id' => $data[0]['id']) )->result_array();
+			$data[0]['materials'] = $this->EE->db->get_where('wr_materials', array('report_id' => $data[0]['id']) )->result_array();
 
-			$data[0]['resources'] = $this->EE->db->get('wr_resources', array('report_id' => $data[0]['id']) )->result_array();
+			$data[0]['sales_items'] = $this->EE->db->get_where('wr_items', array('report_id' => $data[0]['id']) )->result_array();
+
+			$data[0]['resources'] = $this->EE->db->get_where('wr_resources', array('report_id' => $data[0]['id']) )->result_array();
 
 			$form_open = array(
 				'action'		=> $submit_uri,
@@ -348,29 +358,12 @@ class Workreports {
 			$data[0]['form_open'] = $this->EE->functions->form_declaration($form_open);
 			$data[0]['form_close'] = '</form>';
 
-
-			// echo "<pre>"; print_r($data); die;
-
-
 			$tagdata = $this->EE->TMPL->tagdata;
 			$this->return_data = $this->EE->TMPL->parse_variables( $tagdata,  $data );
 			return $this->return_data;
 		// }
 	}
 
-	/*
-	* Validates a form before it can be process in submit_for_approval()
-	*/
-	function wrValidate() {
-		
-		$this->EE->load->library('form_validation');
-
-		// 34. When there are no items, do not submit!
-		$this->EE->form_validation->set_rules('items', 'Sales Items', 'required');
-
-		return TRUE;
-		return $this->EE->form_validation->run();
-	}
 
 	/*
 	* Posts a work report to the MySQL database for supervisor/admin approval
