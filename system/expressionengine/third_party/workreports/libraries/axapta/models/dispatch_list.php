@@ -1,22 +1,26 @@
 <?php
 class dispatch_list extends axapta {
 	protected $employee_id                = 'RTDEMPLPERWORKREPORT.EMPLID';
-	protected $sales_id                   = 'RTDEMPLPERWORKREPORT.SALESID';
-	//protected $sales_name                 = 'SALESTABLE.SALESNAME';  //same as customer name
 	protected $project_id                 = 'RTDEMPLPERWORKREPORT.PROJID';
+
+	protected $status                     = 'SALESTABLE.RTDAPPROVED';
+	protected $project_status             = 'RTDPROJORDERTABLE.PROJORDERSTATUS';
+	protected $invoiced_status            = 'SALESTABLE.RTDINVOICED';
 
 	protected $customer_id                = 'CUSTTABLE.ACCOUNTNUM';
 	protected $customer_name              = 'CUSTTABLE.NAME';
-	//protected $invoice_account          = 'SALESTABLE.INVOICEACCOUNT';
-
-	protected $rtd_refrence               = 'SALESTABLE.RTDPROJORDERREFERENCE';
-	protected $customer_refrence          = 'SALESTABLE.CUSTOMERREF';
+	protected $customer_blocked           = 'CUSTTABLE.BLOCKED';
 
 	protected $execution_date             = 'CONVERT(DATE, SALESTABLE.DELIVERYDATE)';
 	protected $execution_time             = 'SALESTABLE.RTDSTARTTIME';
 
-	protected $work_location_name         = 'SALESTABLE.DELIVERYNAME';
-	protected $customer_contact_person_id = 'SALESTABLE.CONTACTPERSONID';
+	protected $created_date                = 'CONVERT(DATE, SALESTABLE.CREATEDDATE)';
+	protected $created_time                = 'SALESTABLE.CREATEDTIME';
+	protected $created_by                  = 'SALESTABLE.CREATEDBY';
+
+	protected $modified_date               = 'CONVERT(DATE, SALESTABLE.MODIFIEDDATE)';
+	protected $modified_time               = 'SALESTABLE.MODIFIEDTIME';
+	protected $modified_by                 = 'SALESTABLE.MODIFIEDBY';
 
 
 	function __construct($conn){
@@ -25,7 +29,7 @@ class dispatch_list extends axapta {
 	}
 	
 	/*
-	 *  Sales Items
+	 *  dispatch list
 	 *
 	 *	Options: 
 	 *	Defaults: 
@@ -37,7 +41,6 @@ class dispatch_list extends axapta {
 		$query .= 'FROM RTDEMPLPERWORKREPORT'.NL;
 		$query .= 'LEFT JOIN SALESTABLE                  ON RTDEMPLPERWORKREPORT.PROJID = SALESTABLE.PROJID             AND SALESTABLE.DATAAREAID        = RTDEMPLPERWORKREPORT.DATAAREAID'.NL;
 		$query .= 'LEFT JOIN CUSTTABLE                   ON SALESTABLE.CUSTACCOUNT      = CUSTTABLE.ACCOUNTNUM          AND CUSTTABLE.DATAAREAID         = RTDEMPLPERWORKREPORT.DATAAREAID'.NL;
-		$query .= 'LEFT JOIN EMPLTABLE                   ON EMPLTABLE.EMPLID            = RTDEMPLPERWORKREPORT.EMPLID   AND EMPLTABLE.DATAAREAID         = RTDEMPLPERWORKREPORT.DATAAREAID'.NL;
 		$query .= 'LEFT JOIN PROJTABLE AS WORKREPORT     ON WORKREPORT.PROJID           = RTDEMPLPERWORKREPORT.PROJID   AND WORKREPORT.DATAAREAID        = RTDEMPLPERWORKREPORT.DATAAREAID'.NL;
 		$query .= 'LEFT JOIN PROJTABLE AS WORKORDER      ON WORKORDER.PROJID            = WORKREPORT.PARENTID           AND WORKORDER.DATAAREAID         = RTDEMPLPERWORKREPORT.DATAAREAID'.NL;
 		$query .= 'LEFT JOIN RTDPROJORDERTABLE           ON RTDPROJORDERTABLE.PROJID    = WORKORDER.PARENTID            AND RTDPROJORDERTABLE.DATAAREAID = RTDEMPLPERWORKREPORT.DATAAREAID'.NL;
