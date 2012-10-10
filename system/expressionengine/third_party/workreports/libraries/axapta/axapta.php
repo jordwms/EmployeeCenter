@@ -150,7 +150,7 @@ class axapta {
 					} elseif( $value[0] == 'in' ){
 						//do nothing?
 					} else {
-						$prepared_statment->bindValue($key, $value);
+						$prepared_statment->bindValue($key, $value[1]);
 					}
 				} else {
 					$prepared_statment->bindValue($key, $value);
