@@ -36,6 +36,8 @@ class dispatch_list extends axapta {
 	 *
 	 */
 	function get_remote($options = NULL) {
+		$this->explode_datetime($options);
+		
 		$query = $this->build_SELECT();
 
 		$query .= 'FROM RTDEMPLPERWORKREPORT'.NL;
@@ -64,11 +66,11 @@ class dispatch_list extends axapta {
 		$return_data = $dispatch_list->fetchAll();
 
 		foreach ($return_data as &$data_row) {
-			//fix modified and created dates into unix timestamps
-			//$data_row['modified_datetime'] = strtotime($data_row['modified_date']) + ($data_row['modified_time']/1000);
-			//$data_row['created_datetime']  = strtotime($data_row['created_date']) + ($data_row['created_time']/1000);
+			//create unix timestamps from date and time fields
+			$data_row['modified_datetime'] = strtotime($data_row['modified_date']) + $data_row['modified_time'];
+			$data_row['created_datetime']  = strtotime($data_row['created_date']) + $data_row['created_time'];
 
-			$data_row['execution_datetime']  = strtotime($data_row['execution_date']) + ($data_row['execution_time']/1000);
+			$data_row['execution_datetime']  = strtotime($data_row['execution_date']) + $data_row['execution_time'];
 		}
 
 		return $this->fix_padding( $return_data );
