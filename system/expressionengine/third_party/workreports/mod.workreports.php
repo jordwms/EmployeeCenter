@@ -60,7 +60,6 @@ class Workreports {
 					break;
 
 				case 'contact_person':
-					$return_data = $this->EE->axapta->contact_person->get_remote( array('id' => '107..SYB2001380') );
 					$options = array(
 						//'customer_id' => '107.CUS000769'
 						'company_id' => $employee['company_id'],
