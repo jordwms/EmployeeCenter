@@ -10,7 +10,7 @@ class work_report extends axapta {
 	protected $customer_refrence           = 'SALESTABLE.CUSTOMERREF';
 	protected $customer_contact_person_id  = 'SALESTABLE.CONTACTPERSONID';
 
-	protected $invoice_account             = 'SALESTABLE.INVOICEACCOUNT';
+	//protected $invoice_account             = 'SALESTABLE.INVOICEACCOUNT';
 
 	protected $company_id                  = 'SALESTABLE.DATAAREAID';
 	protected $department_id               = 'SALESTABLE.DIMENSION';
@@ -30,7 +30,8 @@ class work_report extends axapta {
 	protected $crew_leader_id              = 'RTDEMPLPERWORKREPORT.EMPLID';
 	protected $team_contact_person_id      = 'RTDPROJORDERTABLE.CONTACTPERSONID';
 
-	protected $work_location               = 'SALESTABLE.DELIVERYNAME';
+	protected $work_location_id            = 'SALESTABLE.RTDLOCATIONID';
+	protected $work_location_name          = 'SALESTABLE.DELIVERYNAME';
 	protected $work_location_address       = 'SALESTABLE.DELIVERYADDRESS';
 
 	protected $object_description          = 'SALESTABLE.RTDOBJECTDESCRIPTION';
@@ -74,12 +75,12 @@ class work_report extends axapta {
 		$query = $this->build_SELECT();
 
 		$query .= 'FROM SALESTABLE'.NL;
-		$query .= 'LEFT JOIN PROJTABLE AS WORKREPORT ON WORKREPORT.PROJID            = SALESTABLE.PROJID    AND WORKREPORT.DATAAREAID           = SALESTABLE.DATAAREAID'.NL;
-		$query .= 'LEFT JOIN PROJTABLE AS WORKORDER  ON WORKORDER.PROJID             = WORKREPORT.PARENTID  AND WORKORDER.DATAAREAID            = SALESTABLE.DATAAREAID'.NL;
-		$query .= 'LEFT JOIN RTDPROJORDERTABLE       ON RTDPROJORDERTABLE.PROJID     = WORKORDER.PARENTID   AND RTDPROJORDERTABLE.DATAAREAID    = SALESTABLE.DATAAREAID AND RTDPROJORDERTABLE.PROJID <> \'\''.NL;
-		$query .= 'LEFT JOIN RTDEMPLPERWORKREPORT    ON RTDEMPLPERWORKREPORT.PROJID  = SALESTABLE.PROJID    AND RTDEMPLPERWORKREPORT.DATAAREAID = SALESTABLE.DATAAREAID AND RTDEMPLPERWORKREPORT.TASKID = \'Crew Leader\''.NL;
-		$query .= 'LEFT JOIN RTDSALESPROCEDURE       ON RTDSALESPROCEDURE.SALESID    = SALESTABLE.SALESID   AND RTDSALESPROCEDURE.DATAAREAID    = SALESTABLE.DATAAREAID'.NL;
-			
+		$query .= 'LEFT JOIN PROJTABLE AS WORKREPORT ON WORKREPORT.PROJID            = SALESTABLE.PROJID      AND WORKREPORT.DATAAREAID           = SALESTABLE.DATAAREAID'.NL;
+		$query .= 'LEFT JOIN PROJTABLE AS WORKORDER  ON WORKORDER.PROJID             = WORKREPORT.PARENTID    AND WORKORDER.DATAAREAID            = SALESTABLE.DATAAREAID'.NL;
+		$query .= 'LEFT JOIN RTDPROJORDERTABLE       ON RTDPROJORDERTABLE.PROJID     = WORKORDER.PARENTID     AND RTDPROJORDERTABLE.DATAAREAID    = SALESTABLE.DATAAREAID AND RTDPROJORDERTABLE.PROJID <> \'\''.NL;
+		$query .= 'LEFT JOIN RTDEMPLPERWORKREPORT    ON RTDEMPLPERWORKREPORT.PROJID  = SALESTABLE.PROJID      AND RTDEMPLPERWORKREPORT.DATAAREAID = SALESTABLE.DATAAREAID AND RTDEMPLPERWORKREPORT.TASKID = \'Crew Leader\''.NL;
+		$query .= 'LEFT JOIN RTDSALESPROCEDURE       ON RTDSALESPROCEDURE.SALESID    = SALESTABLE.SALESID     AND RTDSALESPROCEDURE.DATAAREAID    = SALESTABLE.DATAAREAID'.NL;
+
 		$query .= $this->build_WHERE($options);
 
 		if( isset($_GET['output']) && $_GET['output'] == 'debug' ){
@@ -105,6 +106,9 @@ class work_report extends axapta {
 
 			//convert execution date+time into unix timestamp
 			$data_row['execution_datetime']  = strtotime($data_row['execution_date']) + ($data_row['execution_time']);
+
+			//convert execution date+time into unix timestamp
+			$data_row['deadline_datetime']  = strtotime($data_row['deadline_date']);
 		}
 
 		return $this->fix_padding($return_data);
