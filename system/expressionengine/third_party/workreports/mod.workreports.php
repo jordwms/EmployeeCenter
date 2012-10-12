@@ -6,6 +6,7 @@ class Workreports {
 	function __construct() {
 		$this->EE =& get_instance();
 		$this->EE->load->library('axapta/axapta');
+		$this->EE->load->library('mysql');
 	}
 	
 	/*
@@ -370,14 +371,13 @@ class Workreports {
 	*/ 
 	function submit_for_approval() {
 		// echo '<pre>';
-		// print_r($_POST['customer_name']);
+		// print_r($_POST['project_id']);
 		// die;
 
 		// If the form has valid data process, else rerender the page with error messages.
-		if ( $employee = $this->EE->axapta->employee->get_remote() ) {
+		if ( $employee = $this->EE->axapta->employee->get_remote(array( 'email' => $this->EE->session->userdata('email') ) ) ) {
+			$employee = $employee[0];
 			$success = array();
-
-			$projid = explode( '/', $this->EE->input->post('projid') );
 
 			$status = 0;
 			
@@ -387,91 +387,169 @@ class Workreports {
 			if(in_array('WA ADMIN',$employee['groups'][$this->EE->input->post('company_id')])) {
 				$status = 2;
 			}
+			// If this is a new entry, insert into table, else update a current entry
+			// Find out by searching the wr_reports table
 
-			/*
-			 *	project id (workreport id) get's exploded into the three sections
-			 *	[0] => order / [1] => work_order / [2] => work_report
-			 */
-			$data = array(
-				'submitter_id'			=> $this->EE->input->post('id'), #should be employee name
-				'submitter_name'		=> $employee['name_last_first'],
-				'execution_date'		=> strtotime($this->EE->input->post('execution_date')),
-				'submission_date'       => time(),
-				'status'				=> $status,
-				'company_id'			=> $this->EE->input->post('company_id'), #AKA DATAAREAID
-				//'cost_center'			=> $this->EE->input->post('cost_center'), #AKA DIMENSION2_
-				'customer_name'			=> $this->EE->input->post('customer_name'),
-				'customer_account'		=> $this->EE->input->post('customer_account'),
-				'order'					=> $projid[0],
-				'work_order' 			=> $projid[1],
-				'work_report' 			=> $projid[2],
-				'customer_reference' 	=> $this->EE->input->post('customer_reference'),
-				'rtd_reference'			=> $this->EE->input->post('rtd_reference'),
-				'work_location_name' 	=> $this->EE->input->post('work_location_name'),
-				'contact_person'		=> $this->EE->input->post('contact_person'),
-				'object_description'	=> $this->EE->input->post('object_description'),
-				'order_description'     => $this->EE->input->post('order_description'),
-				'remarks'               => $this->EE->input->post('remarks')
-				);
+			$this->EE->db->select('id');
+			$this->EE->db->where('project_id', $this->EE->input->post('project_id') );
+			$query = $this->EE->db->get('wr_reports')->row_array();
 
-			$this->EE->db->insert('wr_reports', $data);
-			$report_id = $this->EE->db->insert_id();
-			$success['wr_reports'] = $this->EE->db->affected_rows();;
-			
-			// Make wr_resources entries
-			$resources = $this->EE->input->post('resources');
-			foreach($resources as $resource) {
+
+
+			if ( array_key_exists('id', $query) ) {
+				$report_id = $query['id'];
 				$data = array(
-					'report_id'		=> $report_id,
-					'name'          => $resource['name'],
-					'resource_id' 	=> $resource['resource_id'],
-					'qty' 			=> $resource['qty']
+					'submitter_id'			=> $employee['id'], #should be employee name
+					'execution_datetime'	=> strtotime($this->EE->input->post('execution_date')),
+					'submission_datetime'   => time(),
+					'status'				=> $status,
+					'company_id'			=> $this->EE->input->post('company_id'), #AKA DATAAREAID
+					//'cost_center'			=> $this->EE->input->post('cost_center'), #AKA DIMENSION2_
+					'customer_name'			=> $this->EE->input->post('customer_name'),
+					'customer_id'			=> $this->EE->input->post('customer_id'),
+					'project_id'			=> $this->EE->input->post('project_id'),
+					'customer_reference' 	=> $this->EE->input->post('customer_reference'),
+					'rtd_reference'			=> $this->EE->input->post('rtd_reference'),
+					'work_location_name' 	=> $this->EE->input->post('work_location_name'),
+					'customer_contact_name'	=> $this->EE->input->post('customer_contact_name'),
+					'object_description'	=> $this->EE->input->post('object_description'),
+					'order_description'     => $this->EE->input->post('order_description'),
+					'remarks'               => $this->EE->input->post('remarks')
 					);
 
-				$this->EE->db->insert('wr_resources', $data);
-				$success['resources'] = $this->EE->db->affected_rows();
-			}
+				$this->EE->db->where('project_id', $this->EE->input->post('project_id') );
+				$this->EE->db->update('wr_reports', $data);
+				$success['wr_reports'] = $this->EE->db->affected_rows();
 
-			// Make wr_items entries
-			$sales_items = $this->EE->input->post('salesItems');
-			foreach($sales_items as $item) {
-				$data = array(
-					'report_id' 	=> $report_id,
-					'name' 			=> $item['name'],
-					'dimension_id'  => $item['dimension_id'],
-					'item_id' 		=> $item['item_id'],
-					'qty'           => $item['qty'],
-					'unit'			=> $item['unit']
-				);
-				$this->EE->db->insert('wr_items', $data);
-				$success['sales_items'] = $this->EE->db->affected_rows();
-			}
-			
-			// Not every report uses materials
-			if(isset($materials) ) {
-				// Make wr_materials entries
-				$materials = $this->EE->input->post('materials');
-				foreach($materials as $material) {
+				
+				
+				// Make wr_resources entries
+				$resources = $this->EE->input->post('resources');
+				foreach($resources as $resource) {
 					$data = array(
-						'report_id'			=> $report_id,
-						'dimension_id'      => $material['dimension_id'],
-						'item_id' 			=> $material['item_id'],
-						'name' 			    => $material['name'],
-						'unit' 			    => $material['unit'],
-						'qty'				=> $material['qty']
+						'report_id'		=> $report_id,
+						'name'          => $resource['name'],
+						'resource_id' 	=> $resource['resource_id'],
+						'qty' 			=> $resource['qty']
+						);
+
+					$this->EE->db->update('wr_resources', $data);
+					// $success['resources'] = $this->EE->db->affected_rows();
+				}
+
+				// Make wr_items entries
+				$sales_items = $this->EE->input->post('salesItems');
+				foreach($sales_items as $item) {
+					$data = array(
+						'report_id' 	=> $report_id,
+						'name' 			=> $item['name'],
+						'dimension_id'  => $item['dimension_id'],
+						'item_id' 		=> $item['item_id'],
+						'qty'           => $item['qty'],
+						'unit'			=> $item['unit']
 					);
-					$this->EE->db->insert('wr_materials', $data);
-					$success['materials'] = $this->EE->db->affected_rows();
+					$this->EE->db->update('wr_items', $data);
+					// $success['sales_items'] = $this->EE->db->affected_rows();
+				}
+				
+				// Not every report uses materials
+				if(isset($materials) ) {
+					// Make wr_materials entries
+					$materials = $this->EE->input->post('materials');
+					foreach($materials as $material) {
+						$data = array(
+							'report_id'			=> $report_id,
+							'dimension_id'      => $material['dimension_id'],
+							'item_id' 			=> $material['item_id'],
+							'name' 			    => $material['name'],
+							'unit' 			    => $material['unit'],
+							'qty'				=> $material['qty']
+						);
+						$this->EE->db->update('wr_materials', $data);
+						// $success['materials'] = $this->EE->db->affected_rows();
+					}
+				}
+			} else { // Entry DNE, then insert
+				$data = array(
+					'submitter_id'			=> $employee['id'], #should be employee name
+					'execution_datetime'	=> strtotime($this->EE->input->post('execution_date')),
+					'submission_datetime'   => time(),
+					'status'				=> $status,
+					'company_id'			=> $this->EE->input->post('company_id'), #AKA DATAAREAID
+					//'cost_center'			=> $this->EE->input->post('cost_center'), #AKA DIMENSION2_
+					'customer_name'			=> $this->EE->input->post('customer_name'),
+					'customer_id'			=> $this->EE->input->post('customer_id'),
+					'project_id'			=> $this->EE->input->post('project_id'),
+					'customer_reference' 	=> $this->EE->input->post('customer_reference'),
+					'rtd_reference'			=> $this->EE->input->post('rtd_reference'),
+					'work_location_name' 	=> $this->EE->input->post('work_location_name'),
+					'customer_contact_name'	=> $this->EE->input->post('customer_contact_name'),
+					'object_description'	=> $this->EE->input->post('object_description'),
+					'order_description'     => $this->EE->input->post('order_description'),
+					'remarks'               => $this->EE->input->post('remarks')
+					);
+				$this->EE->db->insert('wr_reports', $data);
+				
+				$success['wr_reports'] = $this->EE->db->affected_rows();
+				$report_id = $this->EE->db->insert_id();
+
+				
+				// Make wr_resources entries
+				$resources = $this->EE->input->post('resources');
+				foreach($resources as $resource) {
+					$data = array(
+						'report_id'		=> $report_id,
+						'name'          => $resource['name'],
+						'resource_id' 	=> $resource['resource_id'],
+						'qty' 			=> $resource['qty']
+						);
+
+					$this->EE->db->insert('wr_resources', $data);
+					// $success['resources'] = $this->EE->db->affected_rows();
+				}
+
+				// Make wr_items entries
+				$sales_items = $this->EE->input->post('salesItems');
+				foreach($sales_items as $item) {
+					$data = array(
+						'report_id' 	=> $report_id,
+						'name' 			=> $item['name'],
+						'dimension_id'  => $item['dimension_id'],
+						'item_id' 		=> $item['item_id'],
+						'qty'           => $item['qty'],
+						'unit'			=> $item['unit']
+					);
+					$this->EE->db->insert('wr_items', $data);
+					// $success['sales_items'] = $this->EE->db->affected_rows();
+				}
+				
+				// Not every report uses materials
+				if(isset($materials) ) {
+					// Make wr_materials entries
+					$materials = $this->EE->input->post('materials');
+					foreach($materials as $material) {
+						$data = array(
+							'report_id'			=> $report_id,
+							'dimension_id'      => $material['dimension_id'],
+							'item_id' 			=> $material['item_id'],
+							'name' 			    => $material['name'],
+							'unit' 			    => $material['unit'],
+							'qty'				=> $material['qty']
+						);
+						$this->EE->db->update('wr_materials', $data);
+						// $success['materials'] = $this->EE->db->affected_rows();
+					}
 				}
 			}
+			// echo "<pre>"; print_r($success); die;
 			if(in_array(0, $success)) {
-				$this->EE->show_error('error submitting work report');
+				show_error('error submitting work report');
 
 				// Delete all records where report_id
 			} else {
-				$this->EE->axapta->set_approval($this->EE->input->post('projid'), $this->EE->input->post('DataAreaID'), $employee['id']);
+				// $this->EE->axapta->set_approval($this->EE->input->post('projid'), $this->EE->input->post('DataAreaID'), $employee['id']);
 				if($status == 2) {
-					$this->EE->axapta->create_xml($report_id);
+					$this->EE->mysql->create_xml($report_id);
 				}
 				$this->EE->output->show_message(array(
 					'title'   => 'Information Accepted',
