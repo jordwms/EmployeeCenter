@@ -153,6 +153,7 @@ class Workreports {
 				'status' => 0
 			));
 
+
 			//loop over dispatch list and sync the work report to mysql
 			foreach ($dispatch_list as $dispatch_item) {
 				//get workreport from axapta and add to mysql
@@ -178,6 +179,10 @@ class Workreports {
 					'project_id'  => $dispatch_item['project_id'],
 					'status'      => 1
 				));
+
+				// Insert each entry to the MySQL database
+				echo "<pre>"; print_r($work_report); die;
+
 			}
 
 			$templates = $this->EE->axapta->work_report->get_remote( array( 'template_indicator' => 1 ) );
@@ -192,6 +197,10 @@ class Workreports {
 		if( $this->EE->axapta->axapta_connection() ) {
 			if( $employee = $this->EE->axapta->employee->get_remote(array( 'email' => $this->EE->session->userdata('email') )) ) {
 				$employee = $employee[0];
+				
+				// sync the 2 databases.
+				$this->sync($employee['id']);			
+				
 				if( count($employee['groups']) > 0 ) {
 					$message = '';
 					foreach ($employee['groups'] as $companies) {
@@ -379,13 +388,13 @@ class Workreports {
 			$employee = $employee[0];
 			$success = array();
 
-			$status = 0;
+			$status = 2;
 			
 			if(in_array('WA DISP',$employee['groups'][$this->EE->input->post('company_id')])) {
-				$status = 1;
+				$status = 3;
 			}
 			if(in_array('WA ADMIN',$employee['groups'][$this->EE->input->post('company_id')])) {
-				$status = 2;
+				$status = 4;
 			}
 			// If this is a new entry, insert into table, else update a current entry
 			// Find out by searching the wr_reports table

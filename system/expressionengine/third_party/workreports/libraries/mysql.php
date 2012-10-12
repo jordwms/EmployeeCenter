@@ -106,6 +106,9 @@ class mysql {
 	function create_xml($report_id = NULL) {
 		$dir_result = TRUE;
 
+		show_error( lang('xml_error'). " dir = $dir" );
+		return FALSE;
+		
 		if( is_null($report_id) ) {
 			$id = $this->EE->input->GET('id');
 		} else {
@@ -133,6 +136,7 @@ class mysql {
 			}
 
 			if ($dir_result) {
+				
 				// New DOM document
 				$doc = new DOMDocument('1.0','iso-8859-1');
 				$doc->formatOutput = TRUE;
@@ -142,11 +146,11 @@ class mysql {
 				$xml_root = $doc->appendChild($xml_root);
 
 				// Create and append Employee ID
-				$empl_id = $doc->createElement('EmplId', htmlentities( $report_query['submitter_id'], ENT_XML1, ISO-8859-1) );
+				$empl_id = $doc->createElement('EmplId', htmlentities( $report_query['submitter_id'], NULL, "ISO-8859-1") );
 				$empl_id = $xml_root->appendChild($empl_id);
 
 				// Create and append Crew Leader ID
-				$crew_leader = $doc->createElement('CrewLeader', htmlentities( $report_query['crew_leader'], ENT_XML1, ISO-8859-1) );
+				$crew_leader = $doc->createElement('CrewLeader', htmlentities( $report_query['crew_leader_id'], NULL, "ISO-8859-1") );
 				$crew_leader = $xml_root->appendChild($crew_leader);
 
 				// Create and append company
@@ -154,16 +158,16 @@ class mysql {
 				$company = $xml_root->appendChild($company);
 
 				// Fill company with work report elements
-				$company->appendChild($doc->createElement('Company', 				htmlentities( $report_query['company_id'], 				ENT_XML1, ISO-8859-1) ));
-				$company->appendChild($doc->createElement('CustomerAccount', 		htmlentities( $report_query['customer_id'], 			ENT_XML1, ISO-8859-1) ));
-				$company->appendChild($doc->createElement('Order', 					htmlentities( $project_id[0], 							ENT_XML1, ISO-8859-1) ));
-				$company->appendChild($doc->createElement('WorkOrder', 				htmlentities( $project_id[1], 							ENT_XML1, ISO-8859-1) ));
-				$company->appendChild($doc->createElement('WorkReport', 			htmlentities( $project_id[2], 							ENT_XML1, ISO-8859-1) ));
-				$company->appendChild($doc->createElement('CustomerReference',		htmlentities( $report_query['customer_reference'],		ENT_XML1, ISO-8859-1) ));
-				$company->appendChild($doc->createElement('RTDReference', 			htmlentities( $report_query['rtd_reference'], 			ENT_XML1, ISO-8859-1) ));
-				$company->appendChild($doc->createElement('WorkLocationName', 		htmlentities( $report_query['work_location_name'],		ENT_XML1, ISO-8859-1) ));
-				$company->appendChild($doc->createElement('ContactPerson', 			htmlentities( $report_query['customer_contact_name'],	ENT_XML1, ISO-8859-1) ));
-				$company->appendChild($doc->createElement('ObjectDescription',		htmlentities( $report_query['object_description'],		ENT_XML1, ISO-8859-1) )); // $this->EE->typography->parse_type($report_query['object_description'],array('text_format' => 'none'))
+				$company->appendChild($doc->createElement('Company', 				htmlentities( $report_query['company_id'], 				NULL, 'ISO-8859-1') ));
+				$company->appendChild($doc->createElement('CustomerAccount', 		htmlentities( $report_query['customer_id'], 			NULL, 'ISO-8859-1') ));
+				$company->appendChild($doc->createElement('Order', 					htmlentities( $project_id[0], 							NULL, 'ISO-8859-1') ));
+				$company->appendChild($doc->createElement('WorkOrder', 				htmlentities( $project_id[1], 							NULL, 'ISO-8859-1') ));
+				$company->appendChild($doc->createElement('WorkReport', 			htmlentities( $project_id[2], 							NULL, 'ISO-8859-1') ));
+				$company->appendChild($doc->createElement('CustomerReference',		htmlentities( $report_query['customer_reference'],		NULL, 'ISO-8859-1') ));
+				$company->appendChild($doc->createElement('RTDReference', 			htmlentities( $report_query['rtd_reference'], 			NULL, 'ISO-8859-1') ));
+				$company->appendChild($doc->createElement('WorkLocationName', 		htmlentities( $report_query['work_location_name'],		NULL, 'ISO-8859-1') ));
+				$company->appendChild($doc->createElement('ContactPerson', 			htmlentities( $report_query['customer_contact_name'],	NULL, 'ISO-8859-1') ));
+				$company->appendChild($doc->createElement('ObjectDescription',		htmlentities( $report_query['object_description'],		NULL, 'ISO-8859-1') )); // $this->EE->typography->parse_type($report_query['object_description'],array('text_format' => 'none'))
 				$company->appendChild($doc->createElement('ExecutionDate', 			date( 'Y-m-d', $report_query['execution_datetime']) ));
 
 				// Create and append Resources
@@ -214,25 +218,30 @@ class mysql {
 
 					$result = $doc->save($dir.$file);
 
+					show_error( lang('xml_error'). " dir = $dir" );
+					return FALSE;
 					// $result stores the size of the file if the save is successful or false otherwise...
 				if($result) {
 					// Notify user and change status in the database. 
-					// $this->EE->session->set_flashdata('message_success', 'Report approved. file = '.$file);
+					$this->EE->session->set_flashdata('message_success', 'Report approved. file = '.$file);
 
-					$data = array( 'status'	=> 2 );
+					$data = array( 'status'	=> 5 );
 					$this->EE->db->where('id', $id);
 					$this->EE->db->update('wr_reports', $data);
 				} else {
 					// Send an error
-					// $this->EE->session->set_flashdata('message_failure', lang('xml_error'). " dir = $dir" );
+					show_error( lang('xml_error'). " dir = $dir" );
+					return FALSE;
 				}
 			} else {
 				// Send an error
-				// $this->EE->session->set_flashdata('message_failure', lang('xml_error').lang('dir_error') );
+				show_error( lang('xml_error').lang('dir_error') );
+				return FALSE;
 			}
 			return TRUE;
 		} else {
 			show_error('Invalid id given.');
+			return FALSE;
 		}
 	}
 }// END CLASS
