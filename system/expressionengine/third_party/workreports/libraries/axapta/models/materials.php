@@ -6,7 +6,7 @@ class materials extends axapta {
 	protected $item_name           = 'PRICEDISCTABLE.RTDITEMNAME';
 	protected $name                = 'CONFIGTABLE.NAME';
 	protected $unit                = 'PRICEDISCTABLE.UNITID';
-	protected $ammount             = 'PRICEDISCTABLE.AMOUNT';
+	protected $price               = 'PRICEDISCTABLE.AMOUNT';
 	protected $contract_id         = 'RTDCONTRACT.CONTRACTID';
 	protected $contract_valid      = 'RTDCONTRACT.VALID';
 	protected $contract_valid_from = 'CONVERT(DATE, RTDCONTRACT.VALIDFROM)';
