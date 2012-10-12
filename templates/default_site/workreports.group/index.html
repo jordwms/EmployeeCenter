@@ -29,8 +29,21 @@
 		</tr>
 	{/exp:workreports:wrList}
 	</table>
+	<div class="btn-group">
+		<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+		New
+		<span class="caret"></span>
+		</a>
+		<ul class="dropdown-menu">
+		{exp:workreports:templates}
+			<li><a href="{path='workreports/details/project_link}">{customer_name}</a></li>
+		{/exp:workreports:templates}
+		</ul>
+	</div>
 </div>
 {embed="assets/scripts"}  
+
+<script type="text/javascript" src="{path="assets/bootstrap-dropdown"}"></script>
 
 <script>
 
