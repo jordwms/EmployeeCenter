@@ -5,6 +5,11 @@ class contact_person extends axapta {
 	protected $email         = 'CONTACTPERSON.EMAIL';
 	protected $phone         = 'CONTACTPERSON.PHONE';
 	protected $cell_phone    = 'CONTACTPERSON.CELLULARPHONE';
+
+	protected $company_id    = 'CONTACTPERSON.DATAAREAID';
+	protected $department_id = 'CUSTTABLE.DIMENSION';
+	protected $cost_center   = 'CUSTTABLE.DIMENSION2_';
+
 	protected $customer_id   = 'CUSTTABLE.ACCOUNTNUM';
 	protected $customer_name = 'CUSTTABLE.NAME';
 
