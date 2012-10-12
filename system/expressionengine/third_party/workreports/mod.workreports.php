@@ -21,9 +21,10 @@ class Workreports {
 			$employee = $this->EE->axapta->employee->get_remote(array( 'email' => $this->EE->session->userdata('email') ));
 			$employee = $employee[0];
 
-			$method = $this->EE->input->get('method');
-			$output = $this->EE->input->get('output');
-			$data   = $this->EE->input->post('data');
+			$method  = $this->EE->input->get('method');
+			$output  = $this->EE->input->get('output');
+
+			$query = $this->EE->input->post('query');
 
 			switch ($method) {
 				
@@ -41,6 +42,7 @@ class Workreports {
 
 				case 'customer':
 					$return_data = $this->EE->axapta->customer->get_remote( array(
+						'name' => array('like', $query),
 						'company_id' => $employee['company_id'],
 						//'department_id' => $employee['department_id'],
 						'cost_center_id' => $employee['cost_center_id'],
@@ -49,11 +51,23 @@ class Workreports {
 					break;
 
 				case 'work_location':
-					$return_data = $this->EE->axapta->work_location->get_remote( array('company_id' => $employee['company_id'], $employee['cost_center_id']) );
+					$options = array(
+						'company_id' => $employee['company_id'], 
+						'cost_center_id' => $employee['cost_center_id'],
+						'name' => array('like', $query)
+					);
+					$return_data = $this->EE->axapta->work_location->get_remote( $options );
 					break;
 
 				case 'contact_person':
 					$return_data = $this->EE->axapta->contact_person->get_remote( array('id' => '107..SYB2001380') );
+					$options = array(
+						//'customer_id' => '107.CUS000769'
+						'company_id' => $employee['company_id'],
+						'name' => array('like', $query)
+					);
+
+					$return_data = $this->EE->axapta->contact_person->get_remote( $options );
 					break;
 
 				case 'work_report':
