@@ -243,6 +243,26 @@ class Workreports {
 		return $this->EE->db->count_all_results('wr_reports');
 	}
 
+	function templates() {
+		$tagdata = $this->EE->TMPL->tagdata;
+
+		$options = array(
+			//'company_id' => $employee['company_id'],
+			'export_reason' => 'TEMPLATE',
+			'execution_date' => '2012-01-01'
+		);
+
+		$template_list = $this->EE->axapta->work_report->get_remote( $options );
+
+		foreach ($template_list as &$wr) {
+			$wr['project_link'] = str_replace('/', '-', $wr['project_id'] );
+		}
+
+		$this->return_data = $this->EE->TMPL->parse_variables( $tagdata,  $template_list);
+
+		return $this->return_data;
+	}
+
 	function wrList() {
 		//if ( $employee = $this->EE->axapta->employee->get_remote( array('email' => $this->EE->session->userdata('email')) ) ){
 			$tagdata = $this->EE->TMPL->tagdata;
