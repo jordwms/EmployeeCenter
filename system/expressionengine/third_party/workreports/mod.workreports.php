@@ -366,8 +366,6 @@ class Workreports {
 
 			$data[0] = $this->EE->db->get()->row_array();
 
-			$data[0]['project_id_uri'] = str_replace('/', '-', $data[0]['project_id']);
-
 			$data[0]['materials'] = $this->EE->db->get_where('wr_materials', array('report_id' => $data[0]['id']) )->result_array();
 
 			$data[0]['sales_items'] = $this->EE->db->get_where('wr_items', array('report_id' => $data[0]['id']) )->result_array();
