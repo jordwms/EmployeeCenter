@@ -1,9 +1,48 @@
 {embed="assets/header"}
-<div id="work_reports_details">
+<style type="text/css">
+nav.affix {
+	position: fixed;
+	top: 0;
+	z-index: 1000;
+}
+nav .active {
+	background-color: rgb(242,247,255);
+}
+</style>
+<div id="work_reports_details" >
+	<nav id="form_nav" class='applus-gray' data-spy="affix" data-offset-top="120">
+		<ul class="nav">
+			<li><a href="#topOfTicket">RTD Info</a></li>
+			<li><a href="#customer">Customer Info</a></li>
+			<li><a href="#resources">Resources</a></li>
+			<li><a href="#sales_items">Sales Items</a></li>
+			<li><a href="#materials">Materials</a></li>
+			<li><a href="#remarks">Remarks</a></li>
+		</ul>
+	</nav>
+
 	{exp:workreports:wrDetails projid="{segment_3}"}
 	{form_open}
 	<fieldset id="topOfTicket">
-		<h3>Work Report {project_id}</h3>
+		<h2>Work Report {project_id}</h2>
+
+		<h3>Execution Date</h3>
+		<div class="row-fluid">
+			<div class="span12">
+				<table>
+					<tr class="wp_lores">
+						<td colspan="3">Execution Date</td>
+					</tr>
+					<tr>
+						<td class="workreports_date"><input type="date" name="execution_date" value="{execution_datetime format="%Y-%m-%d"}" /></td>
+						<td class="omit_label">Execution Date</td>
+						<td></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+
+		<h3>RTD Refrence#</h3>
 		<div class="row-fluid">
 			<div class="span12">
 				<table>
@@ -15,14 +54,47 @@
 						<td class="omit_label">RTD Ref#</td>
 						<td></td>
 					</tr>
+				</table>
+			</div>
+		</div>
+	</fieldset>
+	<fieldset id="customer">
+		<h3>Customer</h3>
+		<div class="row-fluid">
+			<div class="span12">
+				<table>
 					<tr class="wp_lores">
-						<td colspan="3">Execution Date</td>
+						<td colspan="3">Name</td>
 					</tr>
 					<tr>
-						<td class="workreports_date"><input type="date" name="execution_date" value="{execution_date format="%Y-%m-%d"}" /></td>
-						<td class="omit_label">Execution Date</td>
-						<td></td>
+						<td><input type="text" autocorrect="off" autocapitalize="off" name="customer_name" value="{customer_name}" /></td>
+						<td class="omit_label">Name</td>
+						<td><pre>{customer_address}</pre></td>
 					</tr>
+				</table>
+			</div>
+		</div>
+
+		<h3>Customer Contact Person</h3>
+		<div class="row-fluid">
+			<div class="span12">
+				<table>
+					<tr class="wp_lores">
+						<td colspan="3">Name</td>
+					</tr>
+					<tr>
+						<td><input type="text" autocorrect="off" autocapitalize="off" name="customer_contact_name" value="{customer_contact_name}" /></td>
+						<td class="omit_label">Name</td>
+						<td>4735 Walnut Street</br>Boulder, CO 80301<br />720-369-3644</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+
+		<h3>Customer Refrence</h3>
+		<div class="row-fluid">
+			<div class="span12">
+				<table>
 					<tr class="wp_lores">
 						<td colspan="3">Customer Ref#</td>
 					</tr>
@@ -30,38 +102,6 @@
 						<td><input type="text" name="customer_reference" value="{customer_reference}" /></td>
 						<td class="omit_label">Customer Ref#</td>
 						<td></td>
-					</tr>
-				</table>
-			</div>
-		</div>
-
-		<h3>Customer Info</h3>
-		<div class="row-fluid">
-			<div class="span12">
-				<table>
-					<tr class="wp_lores">
-						<td colspan="3">Name</td>
-					</tr>
-					<tr>
-						<td><input type="text" name="customer_name" value="{customer_name}"/></td>
-						<td class="omit_label">Name</td>
-						<td>4735 Walnut Street</br>Boulder, CO 80301<br />720-369-3644</td>
-					</tr>
-				</table>
-			</div>
-		</div>
-
-		<h3>Contact Person</h3>
-		<div class="row-fluid">
-			<div class="span12">
-				<table>
-					<tr class="wp_lores">
-						<td colspan="3">Name</td>
-					</tr>
-					<tr>
-						<td><input type="text" name="customer_contact_person_name" value="{customer_contact_name}" /></td>
-						<td class="omit_label">Name</td>
-						<td>4735 Walnut Street</br>Boulder, CO 80301<br />720-369-3644</td>
 					</tr>
 				</table>
 			</div>
@@ -75,7 +115,7 @@
 						<td colspan="3">Location</td>
 					</tr>
 					<tr>
-						<td><input type="text" name="work_location_name" value="{work_location_name}" /></td>
+						<td><input type="text" autocorrect="off" autocapitalize="off" name="work_location_name" value="{work_location_name}" /></td>
 						<td class="omit_label">Location</td>
 						<td>4735 Walnut Street</br>Boulder, CO 80301<br />720-369-3644{work_location_address}</td>
 					</tr>
@@ -105,7 +145,7 @@
 		</div>
 	</fieldset>
 
-	<fieldset id="salesItems" class="single-numeric">
+	<fieldset id="sales_items" class="single-numeric">
 		<h3>Sales Items</h3>
 		<div class="row-fluid">
 			<div class="span12">
@@ -171,7 +211,7 @@
 				<table>
 					<tr>
 						<td>
-							<textarea name="object_description">{ObjectDescription}</textarea>
+							<textarea name="object_description">{object_description}</textarea>
 						</td>
 						<td>Object Description</td>
 					</tr>
@@ -185,7 +225,7 @@
 				<table>
 					<tr>
 						<td>
-							<textarea name="order_description">{OrderDescription}</textarea>
+							<textarea name="order_description">{order_description}</textarea>
 						</td>
 						<td>Order Description</td>
 					</tr>
@@ -195,6 +235,7 @@
 	</fieldset>
 
 	<div class="details_submit">
+		<input type="submit" class="btn" value="Save">
 		<input type="submit" class="btn" value="Submit">
 	</div>
 	{form_close}
@@ -204,30 +245,91 @@
 {embed="assets/scripts"}
 
 <script type="text/javascript" src="{path="assets/bootstrap-typeahead"}"></script>
+<script type="text/javascript" src="{path="assets/bootstrap-scrollspy"}"></script>
+<script type="text/javascript" src="{path="assets/bootstrap-affix"}"></script>
 <script type="text/javascript" src="{path="assets/jQueryFormValidator"}"></script>
 
 <script type="text/javascript">
-	$('input[name="customer_contact_person_name"]').typeahead({
-		source: function (typeahead, query) {
-	        return $.post('/?ACT=43&method=customerInfo', { query: query }, function (data) {
-	            return typeahead.process(data);
-	        });
-	    }
-	});
+	$(document).ready(function() {
+		var customer_id = $('input[name=customer_id]').val();
 
-	$('input,textarea').focus(function() {
-	    $(this).parent().parent().addClass('backgroundImage');
-	});
-	$('input,textarea').blur(function() {
-	    $(this).parent().parent().removeClass('backgroundImage');
-	});
+		$('#work_reports_details').parent().parent().addClass('details_background');
 
-	$('#work_reports_details').parent().parent().addClass('details_background');
+		$('input,textarea').focus(function() {
+		    $(this).parent().parent().addClass('backgroundImage');
+		});
+		$('input,textarea').blur(function() {
+		    $(this).parent().parent().removeClass('backgroundImage');
+		});
 
-	$('#topOfTicket tr,.single-numeric tr,.textarea tr').click(function() {
-	    $(this).find("input,textarea").focus();
+		$('#topOfTicket tr,.single-numeric tr,.textarea tr').click(function() {
+		    $(this).find("input,textarea").focus().select();
+		});
+
+		//$('#form_nav').affix();
+		//$('#form_nav').scrollspy();
+
+		//Customer TypeAhead
+		$('input[name="customer_name"]').typeahead({
+			source: function(typeahead, query){
+		        $.post(
+		        	'https://dev.vxray.com/robert/EmployeeCenter/?ACT=43&output=json&method=customer', 
+		        	{ query: query, customer_id: customer_id },
+		        	function (data) {
+		        		if(data){
+		            		return typeahead.process(data);
+		            	}
+		        	}
+		        );
+		    },
+		    onselect: function(selection){
+		    	$(this.$element).parent().next().next().html('<pre>'+selection.address+'</pre>');
+				$('input[name=customer_id]').val(selection.id);
+		    },
+   			property: 'name',
+		    items: 6
+		});
+
+		//Customer Contact TypeAhead
+		$('input[name="customer_contact_name"]').typeahead({
+			source: function(typeahead, query){
+		        $.post(
+		        	'https://dev.vxray.com/robert/EmployeeCenter/?ACT=43&output=json&method=contact_person', 
+		        	{ query: query, customer_id: customer_id },
+		        	function (data) {
+		            	return typeahead.process(data);
+		        	}
+		        );
+		    },
+		    onselect: function(selection){
+		    	$(this.$element).parent().next().next().html('p:'+selection.phone+'</br>c:'+selection.cell_phone+'</br>e:'+selection.email);
+		    	$('input[name=customer_contact_id]').val(selection.id);
+		    },
+   			property: 'name',
+		    items: 6
+		});
+
+		//Work Location TypeAhead
+		$('input[name="work_location_name"]').typeahead({
+			source: function(typeahead, query){
+		        $.post(
+		        	'https://dev.vxray.com/robert/EmployeeCenter/?ACT=43&output=json&method=work_location', 
+		        	{ query: query, customer_id: customer_id },
+		        	function (data) {
+		        		if(data){
+		            		return typeahead.process(data);
+		            	}
+		        	}
+		        );
+		    },
+		    onselect: function(selection){
+		    	$(this.$element).parent().next().next().html('<pre>'+selection.address+'</pre>');
+		    	$('input[name=work_location_id]').val(selection.id);
+		    },
+   			property: 'name',
+		    items: 6
+		});
 	});
-
 
 </script>
 	
