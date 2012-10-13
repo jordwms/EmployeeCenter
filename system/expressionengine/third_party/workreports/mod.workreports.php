@@ -165,7 +165,7 @@ class Workreports {
 			// Get List of dispatched work reports
 			// We use axapta's status to know if we've already synced a work report
 			$dispatch_list = $this->EE->axapta->dispatch_list->get_remote(array(
-				'employee_id' => 'EM.107.0226', 
+				'employee_id' => $employee_id, 
 				'status' => 0
 			));
 
