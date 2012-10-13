@@ -79,7 +79,7 @@ class Workreports {
 
 				case 'materials':
 					$options = array(
-						'project_id' => '07.004845/002/120409te'
+						'project_id' => '07.003464/142/120802'
 					);
 					$return_data = $this->EE->axapta->materials->get_remote( $options );
 					break;
@@ -98,8 +98,8 @@ class Workreports {
 
 				case 'dispatch_list':
 					$return_data = $this->EE->axapta->dispatch_list->get_remote(array(
-						'employee_id' => 'EM.107.0226', 
-						'modified_datetime' => array('<', time())
+						'employee_id' => $employee['id']
+						//'modified_datetime' => array('<', time())
 					));
 					break;
 
@@ -149,43 +149,131 @@ class Workreports {
 			// Get List of dispatched work reports
 			// We use axapta's status to know if we've already synced a work report
 			$dispatch_list = $this->EE->axapta->dispatch_list->get_remote(array(
-				'employee_id' => 'EM.107.0226', 
-				'status' => 0
+				'employee_id' => $employee_id
+				,'status' => 0
 			));
+
+			$templates = $this->EE->axapta->work_report->get_remote( array( 
+				'export_reason' => 'TEMPLATE'
+				,'execution_date' => '2012-01-01' 
+			) );
 
 
 			//loop over dispatch list and sync the work report to mysql
 			foreach ($dispatch_list as $dispatch_item) {
-				//get workreport from axapta and add to mysql
-				$work_report = $this->EE->axapta->work_report->get_remote( array( 'project_id' => $dispatch_item['project_id'] ) );
+				$this->EE->db->select('project_id');
+				$this->EE->db->from('wr_reports');
+				$this->EE->db->where('project_id', $dispatch_item['project_id']);
 
 
-				//get resources from axapta and add to mysql
-				$resources = $this->EE->axapta->resources->get_remote( array( 'project_id' => $dispatch_item['project_id'] ) );
+				if($this->EE->db->count_all_results() == 0) {
+				
+					//get workreport from axapta and add to mysql
+					$work_report = $this->EE->axapta->work_report->get_remote( array( 'project_id' => $dispatch_item['project_id'] ) );
+
+					// Insert each entry to the MySQL database
+					$data = array(
+						'project_id' 			=> $work_report[0]['project_id'],
+			            'sales_id' 				=> $work_report[0]['sales_id'],
+			            //'submitter_id' 			=> $employee_id,
+			            'customer_id' 			=> $work_report[0]['customer_id'],
+			            'customer_name' 		=> $work_report[0]['customer_name'],
+			            'customer_reference' 	=> $work_report[0]['customer_reference'],
+			            'customer_contact_id' 	=> $work_report[0]['customer_contact_person_id'],
+			            'company_id'	 		=> $work_report[0]['company_id'],
+			            'department_id' 		=> $work_report[0]['department_id'],
+			            'cost_center_id' 		=> $work_report[0]['cost_center_id'],
+			            'technique_id' 			=> $work_report[0]['technique_id'],
+			            'contract_id' 			=> $work_report[0]['contract_id'],
+			            // 'deadline_datetime' 	=> date('Y-M-d', $work_report[0]['deadline_date']),
+			            'rtd_reference' 		=> $work_report[0]['rtd_reference'],
+			            'sales_responsible' 	=> $work_report[0]['sales_responsible'],
+			            'crew_leader_id' 		=> $work_report[0]['crew_leader_id'],
+			            'team_contact_id' 		=> $work_report[0]['team_contact_person_id'],
+			           	// 'work_location_name' => $work_report[0]['work_location_name'],
+			            // 'work_location_id' 	=> $work_report[0]['work_location_id'],
+			            // 'work_location_address'	=> $work_report[0]['work_location_address'],
+			            'work_location_address' => $work_report[0]['work_location_address'],
+			            'object_description' 	=> $work_report[0]['object_description'],
+			            'order_description' 	=> $work_report[0]['order_description'], 
+			            'research_norm_id' 		=> $work_report[0]['research_norm_id'], 
+			            'research_procedure_id' => $work_report[0]['research_procedure_id'],
+			            'research_spec_id' 		=> $work_report[0]['research_spec_id'],
+			           	'review_procedure_id' 	=> $work_report[0]['review_procedure_id'],
+			            'review_spec_id' 		=> $work_report[0]['review_spec_id'],
+			            'status' 				=> 1,
+			            'created_by' 			=> $work_report[0]['created_by'],
+			            'modified_by' 			=> $work_report[0]['modified_by'],
+			            'modified_datetime' 	=> $work_report[0]['modified_datetime'],
+			            'created_datetime' 		=> $work_report[0]['created_datetime'],
+			            'execution_datetime' 	=> $work_report[0]['execution_datetime']
+						);
+					$this->EE->db->insert('wr_reports', $data);
+					$report_id = $this->EE->db->insert_id();
 
 
-				//get sales items from axapta and add to mysql
-				$sales_items = $this->EE->axapta->sales_items->get_remote( array( 'project_id' => $dispatch_item['project_id'] ) );
+					//get resources from axapta and add to mysql
+					$resources = $this->EE->axapta->resources->get_remote( array( 'project_id' => $dispatch_item['project_id'] ) );
+
+					foreach($resources as $resource) {
+						$data = array(
+							'resource_id' 	=> $resource['id'],
+							'name'			=> $resource['name'], 
+							'report_id' 	=> $report_id
+							);
+						$this->EE->db->insert('wr_resources', $data);
+					}
 
 
-				//get materials from axapta and add to mysql
-				$materials = $this->EE->axapta->materials->get_remote( array( 'project_id' => $dispatch_item['project_id'] ) );
+					//get sales items from axapta and add to mysql
+					$sales_items = $this->EE->axapta->sales_items->get_remote( array( 'project_id' => $dispatch_item['project_id'] ) );
+					
+					foreach($sales_items as $item) {
+						$data = array(
+							'item_id' 		=> $item['id'],
+							'name'			=> $item['name'],
+							'unit'			=> $item['unit'],
+							'dimension_id'	=> $item['dimension_id'],   
+							'report_id' 	=> $report_id
+							);
+
+						$this->EE->db->insert('wr_items', $data);
+					}
 
 
-				//set status in axapta to 1 to know we've already synced this item
-				$this->EE->axapta->work_report->set_status(array(
-					'employee_id' => $employee_id,
-					'company_id'  => $dispatch_item['company_id'],
-					'project_id'  => $dispatch_item['project_id'],
-					'status'      => 1
-				));
+					//get materials from axapta and add to mysql
+					$materials = $this->EE->axapta->materials->get_remote( array( 'project_id' => $dispatch_item['project_id'] ) );
+					
+					foreach($materials as $mat) {
+						$data = array(
+							'item_id' 		=> $mat['id'],
+							'name'			=> $mat['name'],
+							'unit'			=> $mat['unit'],
+							// 'qty'			=> (int)$mat['amount'],
+							'dimension_id'	=> $mat['dimension_id'],   
+							'report_id' 	=> $report_id
+							);
 
-				// Insert each entry to the MySQL database
-				echo "<pre>"; print_r($work_report); die;
+						$this->EE->db->insert('wr_materials', $data);
+					}
+					if( $this->EE->db->affected_rows() == count($materials) ){
+						//passed
+					}
 
+					// echo "<pre>"; print_r($work_report); echo "</pre>"; 
+					// echo "<pre>"; print_r($resources); echo "</pre>"; 
+					// echo "<pre>"; print_r($sales_items); echo "</pre>"; 
+					// echo "<pre>"; print_r($materials); echo "</pre>"; 
+
+					//set status in axapta to 1 to know we've already synced this item
+					$this->EE->axapta->work_report->set_ax_status(array(
+						'employee_id' => $employee_id,
+						'company_id'  => $work_report[0]['company_id'],
+						'project_id'  => $work_report[0]['project_id'],
+						'status'      => 1
+					));
+				}
 			}
-
-			$templates = $this->EE->axapta->work_report->get_remote( array( 'template_indicator' => 1 ) );
 
 		} else {
 			echo 'invalid employee';
@@ -205,14 +293,14 @@ class Workreports {
 					$message = '';
 					foreach ($employee['groups'] as $companies) {
 						if( in_array('WA TECH', $companies) ){
-							$message .= 'You have '.$this->wrCount().' Work Reports assigned to you'.'<br>';
+							$message .= 'You have '.$this->wrCount($employee['id']).' Work Reports assigned to you'.'<br>';
 							//$message = $this->EE->lang->line('');
 						}
 						if( in_array('WA DISP', $companies) ){
-							$message .= 'You have '.$this->wrCount().' Work Reports awaiting DISPATCHER approval'.'<br>';
+							$message .= 'You have '.$this->wrCount($employee['id']).' Work Reports awaiting DISPATCHER approval'.'<br>';
 						}
 						if( in_array('WA ADMIN', $companies) ){
-							$message .= 'You have '.$this->wrCount().' Work Reports awaiting ADMIN approval'.'<br>';
+							$message .= 'You have '.$this->wrCount($employee['id']).' Work Reports awaiting ADMIN approval'.'<br>';
 						}
 					}
 				} else {
@@ -232,12 +320,16 @@ class Workreports {
 		return $message;
 	}
 
-	function wrCount() {
-		return $this->EE->db->count_all_results('wr_reports');
+	function wrCount($employee_id) {
+		$this->EE->db->select('*');
+		$this->EE->db->where('resource_id', $employee_id);
+		$this->EE->db->from('wr_reports');
+		$this->EE->db->join('wr_resources','wr_resources.report_id = wr_reports.id' );
+		return $this->EE->db->count_all_results();
 	}
 
 	function wrList() {
-		//if ( $employee = $this->EE->axapta->employee->get_remote( array('email' => $this->EE->session->userdata('email')) ) ){
+		if ( $employee = $this->EE->axapta->employee->get_remote( array('email' => $this->EE->session->userdata('email')) ) ){
 			$tagdata = $this->EE->TMPL->tagdata;
 
 			$this->EE->db->select('
@@ -269,6 +361,8 @@ class Workreports {
 			');
 
 			$this->EE->db->from('wr_reports');
+			$this->EE->db->join('wr_resources','wr_resources.report_id = wr_reports.id' );
+			$this->EE->db->where('resource_id', $employee[0]['id']);
 			// $this->EE->db->where('status', 0);
 
 			$dispatch_list = $this->EE->db->get()->result_array();
@@ -280,7 +374,7 @@ class Workreports {
 			$this->return_data = $this->EE->TMPL->parse_variables( $tagdata,  $dispatch_list);
 
 			return $this->return_data;
-		//}
+		}
 	}
 
 

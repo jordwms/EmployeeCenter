@@ -6,7 +6,7 @@ class materials extends axapta {
 	protected $item_name           = 'PRICEDISCTABLE.RTDITEMNAME';
 	protected $name                = 'CONFIGTABLE.NAME';
 	protected $unit                = 'PRICEDISCTABLE.UNITID';
-	protected $ammount             = 'PRICEDISCTABLE.AMOUNT';
+	protected $amount              = 'PRICEDISCTABLE.AMOUNT';
 	protected $contract_id         = 'RTDCONTRACT.CONTRACTID';
 	protected $contract_valid      = 'RTDCONTRACT.VALID';
 	protected $contract_valid_from = 'CONVERT(DATE, RTDCONTRACT.VALIDFROM)';
@@ -32,7 +32,7 @@ class materials extends axapta {
 			$options = array('film_indicator' => '1');
 		} else {
 			//$options['contract_valid'] = '1';
-			//$options['film_indicator'] = '1';
+			$options['film_indicator'] = '1';
 		}
 
 		$query = $this->build_SELECT();

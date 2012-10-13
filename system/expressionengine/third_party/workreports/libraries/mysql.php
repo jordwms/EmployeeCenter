@@ -106,9 +106,6 @@ class mysql {
 	function create_xml($report_id = NULL) {
 		$dir_result = TRUE;
 
-		show_error( lang('xml_error'). " dir = $dir" );
-		return FALSE;
-		
 		if( is_null($report_id) ) {
 			$id = $this->EE->input->GET('id');
 		} else {
@@ -218,8 +215,6 @@ class mysql {
 
 					$result = $doc->save($dir.$file);
 
-					show_error( lang('xml_error'). " dir = $dir" );
-					return FALSE;
 					// $result stores the size of the file if the save is successful or false otherwise...
 				if($result) {
 					// Notify user and change status in the database. 
