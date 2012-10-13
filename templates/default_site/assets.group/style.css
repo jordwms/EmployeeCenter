@@ -856,6 +856,9 @@ input.submit_answer_button:hover {
 *  Comments
 *****************************/
 
+#comments {
+	color: white;
+}
 #comment, 
 #new-comment, 
 #comments-container {

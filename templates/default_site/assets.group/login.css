@@ -47,8 +47,8 @@ h1 { /* Page Title */
 	float: left;
 	font-size: 22px;
 	line-height: 26px;
-	color: rgb(129,101,92);
 	font-weight: 550;
+	color: rgb(255,255,255);
 }
 h1::first-letter {
 	color: rgb(255,100,7);
