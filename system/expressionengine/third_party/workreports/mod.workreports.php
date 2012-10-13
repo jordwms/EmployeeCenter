@@ -19,6 +19,7 @@ class Workreports {
 		if( $this->EE->session->userdata('email') && $this->EE->session->userdata('is_banned') == 0 ) {
 
 			$employee = $this->EE->axapta->employee->get_remote(array( 'email' => $this->EE->session->userdata('email') ));
+			//$employee = $this->EE->axapta->employee->get_remote(array( 'email' => 'jordan.williams@applusrtd.com' ));
 			$employee = $employee[0];
 
 			$method  = $this->EE->input->get('method');
@@ -110,8 +111,8 @@ class Workreports {
 
 				case 'dispatch_list':
 					$return_data = $this->EE->axapta->dispatch_list->get_remote(array(
-						'employee_id' => 'EM.107.0226', 
-						'modified_datetime' => array('<', time())
+						'employee_id' => $employee['id']
+						//'modified_datetime' => array('<', time())
 					));
 					break;
 
