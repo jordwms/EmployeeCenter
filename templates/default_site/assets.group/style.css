@@ -113,7 +113,7 @@ h1 { /* Page Title */
 	float: left;
 	font-size: 22px;
 	line-height: 26px;
-	color: rgb(129,101,92);
+	color: rgb(255,255,255);
 	font-weight: 550;
 }
 h1::first-letter {
@@ -204,13 +204,14 @@ nav a {
 	padding: 1em;
 	text-decoration: none;
 	vertical-align: middle;
-	color: rgb(129,101,92);
+	color: rgb(255,255,255);
 }
 nav a:hover {
-	text-shadow: rgb(129,101,92) 0 0 1px;
+	color: rgb(227,238,255);
+	text-shadow: rgb(68,64,61) 0 0 1px;
 }
 nav a:visited {
-	color: rgb(129,101,92);
+	color: rgb(255,255,255);
 }
 nav select {
 	display: inline-block;
@@ -487,6 +488,12 @@ a.work_reports span {
 #work_reports_details textarea {
 	border-color: rgb(132,132,132);
 }
+#work_reports_details pre {
+	margin: 0;
+	font-family: sans-serif;
+	line-height: 1.2em;
+	font-size: 0.9em;
+}
 .details_background {
 	background-color: rgb(240,240,240);
 }
@@ -497,22 +504,26 @@ a.work_reports span {
 #topOfTicket h3:nth-child(1) {
 	text-align: center;
 }
-#topOfTicket input {
+#topOfTicket input,
+#customer input {
 	width: 150px;
 	height: 2em;
 	margin: 0.4em;
 }
 #topOfTicket table,
+#customer table,
 .single-numeric table,
 div.details_submit {
 	margin: 1em 1em 2em 0.5em;
 }
 #topOfTicket table,
+#customer table,
 .single-numeric table,
 .textarea table {
 	width: 96%;
 }
 #topOfTicket tr,
+#customer tr,
 .single-numeric tr,
 .textarea tr {
 	background-image: linear-gradient(bottom, rgb(227,227,227) 24%, rgb(240,240,240) 50%);
@@ -530,6 +541,7 @@ div.details_submit {
 	);
 }
 #topOfTicket table td,
+#customer table td,
 .single-numeric td,
 .textarea td {
 	vertical-align: middle;
@@ -537,25 +549,31 @@ div.details_submit {
 	text-align: left;
 }
 #topOfTicket table td:nth-child(1),
+#customer table td:nth-child(1),
 .textarea table td:nth-child(1) {
 	width: 161px;
 }
-#topOfTicket table td:nth-child(2) {
+#topOfTicket table td:nth-child(2),
+#customer table td:nth-child(2) {
 	width: 60px;
 	padding: 0 5px;
 }
-#topOfTicket .wp_lores {
+#topOfTicket .wp_lores,
+#customer .wp_lores {
 	background: none;
 }
-#topOfTicket .wp_lores td {
+#topOfTicket .wp_lores td,
+#customer .wp_lores td {
 	border: none;
 	padding: 12px 0 0 5px;
 }
-#topOfTicket .omit_label {
+#topOfTicket .omit_label,
+#customer .omit_label {
 	display: none;
 }
-#topOfTicket table td:nth-child(3) {
-	padding: 0 0 4px 5px;
+#topOfTicket table td:nth-child(3),
+#customer table td:nth-child(3) {
+	padding: 4px 5px;
 }
 
 .workreports_date input,
@@ -1055,14 +1073,13 @@ Android/HD mobile styles
 		margin: 20px 15%;
 	}
 
-	#topOfTicket .omit_label {
+	#topOfTicket .omit_label,
+	#customer .omit_label {
 		display: table-cell;
 	}
-	#topOfTicket .wp_lores {
+	#topOfTicket .wp_lores,
+	#customer .wp_lores {
 		display: none;
-	}
-	#topOfTicket table td:nth-child(3) {
-		padding: 4px 0;
 	}
 
 	.textarea table td:nth-child(1) {
@@ -1260,12 +1277,17 @@ Android/HD mobile styles
 	}
 
 	#topOfTicket tr:hover,
+	#customer tr:hover,
 	.single-numeric tr:hover,
 	.textarea tr:hover {
 		background: rgb(242,247,255);
 	}
-	#topOfTicket .wp_lores:hover {
+	#topOfTicket .wp_lores:hover,
+	#customer .wp_lores:hover {
 		background: none;
+	}
+	#customer input {
+		width: 280px;
 	}
 
 	.details_submit input {
@@ -1487,7 +1509,7 @@ Android/HD mobile styles
 	background-color: rgb(56,0,147);
 }
 .applus-brown {
-	background-color: rgb(129,101,92);
+	background-color: rgb(107,101,96);
 }
 
 /* ==== non-semantic helper classes ====================================== */
