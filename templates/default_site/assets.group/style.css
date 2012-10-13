@@ -321,19 +321,14 @@ nav.dashboard a {
 	margin-bottom: .6em;
 	text-decoration: none;
 	color: rgb(0,0,0);
+	height: auto;
 }
-nav.dashboard div#scores,
-nav.dashboard div#asset_manager {
+nav.dashboard div {
 	margin-bottom: 20px;
 }
-div#work_reports button {
+nav.dashboard button {
 	margin-bottom: 1em;
 }
-div#work_reports a,
-div#scores a {
-	height: 30px;
-}
-
 
 /*****************************
 *  Equipment Manager
@@ -580,7 +575,7 @@ div.details_submit {
 .single-numeric td:nth-child(3) {
 	padding: 0.4em 0.8em;
 }
-.backgroundImage {
+.active {
 	background: rgb(227,238,255) !important;
 }
 

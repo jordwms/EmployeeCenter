@@ -24,8 +24,9 @@ nav .active {
 	{exp:workreports:wrDetails projid="{segment_3}"}
 	{form_open}
 	<fieldset id="topOfTicket">
-		<h2>Work Report {project_id}</h2>
-
+		<header>
+			<h2>Work Report {project_id}</h2>
+		</footer>
 		<h3>Execution Date</h3>
 		<div class="row-fluid">
 			<div class="span12">
@@ -57,9 +58,14 @@ nav .active {
 				</table>
 			</div>
 		</div>
+		<footer>
+
+		</footer>
 	</fieldset>
 	<fieldset id="customer">
-		<h3>Customer</h3>
+		<header>
+			<h3>Customer</h3>
+		</header>
 		<div class="row-fluid">
 			<div class="span12">
 				<table>
@@ -122,12 +128,17 @@ nav .active {
 				</table>
 			</div>
 		</div>
+		<footer>
+
+		</footer>
 	</fieldset>
 
 	<fieldset id="resources" class="single-numeric">
-		<h3>Resources</h3>
-		<div class="row-fluid">
-			<div class="span12">
+		<header>
+			<h3>Resources</h3>
+		</header>
+		<div>
+			<div>
 				<table>
 					{resources}
 					<tr>
@@ -143,10 +154,15 @@ nav .active {
 				</table>
 			</div>
 		</div>
+		<footer>
+			<div class="btn">+ Add</div>
+		</footer>
 	</fieldset>
 
 	<fieldset id="sales_items" class="single-numeric">
-		<h3>Sales Items</h3>
+		<header>
+			<h3>Sales Items</h3>
+		</header>
 		<div class="row-fluid">
 			<div class="span12">
 				<table>
@@ -166,10 +182,15 @@ nav .active {
 				</table>
 			</div>
 		</div>
+		<div>
+			<div class="btn">+ Add</div>
+		</div>
 	</fieldset>
 
 	<fieldset id="materials" class="single-numeric">
-		<h3>Material Consumption</h3>
+		<header>
+			<h3>Material Consumption</h3>
+		</header>
 		<div class="row-fluid">
 			<div class="span12">
 				<table>
@@ -188,6 +209,9 @@ nav .active {
 					{/materials}
 				</table>
 			</div>
+		<div>
+			<div class="btn">+ Add</div>
+		</div>
 		</div>
 	</fieldset>
 
@@ -256,18 +280,15 @@ nav .active {
 		$('#work_reports_details').parent().parent().addClass('details_background');
 
 		$('input,textarea').focus(function() {
-		    $(this).parent().parent().addClass('backgroundImage');
+		    $(this).parent().parent().addClass('active');
 		});
 		$('input,textarea').blur(function() {
-		    $(this).parent().parent().removeClass('backgroundImage');
+		    $(this).parent().parent().removeClass('active');
 		});
 
 		$('#topOfTicket tr,.single-numeric tr,.textarea tr').click(function() {
 		    $(this).find("input,textarea").focus().select();
 		});
-
-		//$('#form_nav').affix();
-		//$('#form_nav').scrollspy();
 
 		//Customer TypeAhead
 		$('input[name="customer_name"]').typeahead({
