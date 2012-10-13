@@ -7,7 +7,7 @@ class work_report extends axapta {
 
 	protected $customer_id                 = 'SALESTABLE.CUSTACCOUNT';
 	protected $customer_name               = 'SALESTABLE.SALESNAME';
-	protected $customer_refrence           = 'SALESTABLE.CUSTOMERREF';
+	protected $customer_reference           = 'SALESTABLE.CUSTOMERREF';
 	protected $customer_contact_person_id  = 'SALESTABLE.CONTACTPERSONID';
 
 	//protected $invoice_account             = 'SALESTABLE.INVOICEACCOUNT';
@@ -134,7 +134,7 @@ class work_report extends axapta {
 		}
 
 		$status->bindValue('project_id', $options['project_id'], PDO::PARAM_STR);
-		$status->bindValue('employee_id', $options['employee_id'], PDO::PARAM_STR);
+		// $status->bindValue('employee_id', $options['employee_id'], PDO::PARAM_STR);
 		$status->bindValue('company_id', $options['company_id'], PDO::PARAM_STR);
 
 		return $status->execute();

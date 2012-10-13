@@ -32,7 +32,7 @@ class materials extends axapta {
 			$options = array('film_indicator' => '1');
 		} else {
 			//$options['contract_valid'] = '1';
-			//$options['film_indicator'] = '1';
+			$options['film_indicator'] = '1';
 		}
 
 		$query = $this->build_SELECT();
