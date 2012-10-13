@@ -274,6 +274,7 @@ class Workreports {
 						sales_responsible,
 
 						execution_datetime,
+						status,
 
 						company_id,
 						rtd_reference,

@@ -6,7 +6,7 @@
 	<table>
 	{exp:workreports:wrList}
 		<tr>
-			<td class="color_bar"></td>
+			<td class="{status}"></td>
 			<td>
 				<a href="{path='workreports/details/{project_link}'}" class="work_reports">
 					<div>
@@ -29,7 +29,7 @@
 		</tr>
 	{/exp:workreports:wrList}
 	</table>
-	<div class="btn-group">
+	<div class="btn-group dropup">
 		<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
 		New
 		<span class="caret"></span>

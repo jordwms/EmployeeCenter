@@ -424,10 +424,27 @@ table .dark {
 
 #work_reports_index table {
 	width: 100%;
+	margin-bottom: 1em;
 }
-#work_reports_index .color_bar {
-	width: 5px;
+#work_reports_index .rejected {
+	background-color: red;
+}
+#work_reports_index .new {
+	background-color: orange;
+}
+#work_reports_index .progress {
+	background-color: yellow;
+}
+#work_reports_index .accepted,
+#work_reports_index .approval
+ {
 	background-color: green;
+}
+#work_reports_index td:nth-child(1) {
+	width: 5px;
+}
+#work_reports_index td:nth-child(2) {
+	padding: 0;
 }
 #work_reports_index h3 {
 	font-size: 100%;
@@ -453,20 +470,7 @@ a.work_reports {
 	position: relative;
 	height: auto;
 	border-bottom: 1px solid rgb(207,207,207);
-
-	background-image: linear-gradient(bottom, rgb(227,227,227) 24%, rgb(240,240,240) 50%);
-	background-image: -o-linear-gradient(bottom, rgb(227,227,227) 24%, rgb(240,240,240) 50%);
-	background-image: -moz-linear-gradient(bottom, rgb(227,227,227) 24%, rgb(240,240,240) 50%);
-	background-image: -webkit-linear-gradient(bottom, rgb(227,227,227) 24%, rgb(240,240,240) 50%);
-	background-image: -ms-linear-gradient(bottom, rgb(227,227,227) 24%, rgb(240,240,240) 50%);
-
-	background-image: -webkit-gradient(
-		linear,
-		left bottom,
-		left top,
-		color-stop(0.24, rgb(227,227,227)),
-		color-stop(0.5, rgb(240,240,240))
-	);
+	background-color: rgb(240,240,240);
 }
 a.work_reports:hover {
 	background: rgb(242,247,255) !important;
@@ -484,10 +488,20 @@ a.work_reports span {
 	text-decoration: underline;
 }
 
+.btn-group {
+	margin-left: 1em;
+}
+.dropdown-toggle {
+	margin-bottom: 2em;
+}
+
 /*** Details ***/
 
 #work_reports_details {
 	margin: 0 5px;
+}
+#work_reports_details fieldset {
+	padding: 1.3em 0;
 }
 #work_reports_details input,
 #work_reports_details textarea {
@@ -499,13 +513,51 @@ a.work_reports span {
 	line-height: 1.2em;
 	font-size: 0.9em;
 }
-.details_background {
-	background-color: rgb(240,240,240);
+
+#form_nav {
+	margin: 5px 0;
 }
+#form_nav span {
+	display: none;
+}
+#form_nav .nav {
+	margin: 0;
+}
+#form_nav .nav > li {
+	background-color: rgb(107,101,96);
+	margin-top: 3px;
+	text-align: center;
+	width: 48px;
+}
+#form_nav .nav > li > a {
+	border: 1px solid rgb(207,207,207);
+}
+#form_nav .nav > li > a:hover {
+  text-decoration: none;
+  background-color: rgb(242,247,255);
+  color: rgb(0,0,0);
+}
+nav.affix {
+	position: fixed;
+	bottom: 0;
+	z-index: 1000;
+	margin: 0 auto;
+}
+.active {
+	background: rgb(227,238,255) !important;
+}
+.active a {
+	background: rgb(227,238,255) !important;
+	color: rgb(0,0,0) !important;
+}
+
 #work_reports_details h3 {
 	border-bottom-color: rgb(177,177,177);
 }
 
+#topOfTicket {
+	padding-top: 0.5em !important;
+}
 #topOfTicket h3:nth-child(1) {
 	text-align: center;
 }
@@ -517,33 +569,20 @@ a.work_reports span {
 }
 #topOfTicket table,
 #customer table,
-.single-numeric table,
-div.details_submit {
-	margin: 1em 1em 2em 0.5em;
+.single-numeric table {
+	margin: 0.5em 0;
 }
 #topOfTicket table,
 #customer table,
 .single-numeric table,
 .textarea table {
-	width: 96%;
+	width: 99%;
 }
 #topOfTicket tr,
 #customer tr,
 .single-numeric tr,
 .textarea tr {
-	background-image: linear-gradient(bottom, rgb(227,227,227) 24%, rgb(240,240,240) 50%);
-	background-image: -o-linear-gradient(bottom, rgb(227,227,227) 24%, rgb(240,240,240) 50%);
-	background-image: -moz-linear-gradient(bottom, rgb(227,227,227) 24%, rgb(240,240,240) 50%);
-	background-image: -webkit-linear-gradient(bottom, rgb(227,227,227) 24%, rgb(240,240,240) 50%);
-	background-image: -ms-linear-gradient(bottom, rgb(227,227,227) 24%, rgb(240,240,240) 50%);
-
-	background-image: -webkit-gradient(
-		linear,
-		left bottom,
-		left top,
-		color-stop(0.24, rgb(227,227,227)),
-		color-stop(0.5, rgb(240,240,240))
-	);
+	background-color: rgb(240,240,240);
 }
 #topOfTicket table td,
 #customer table td,
@@ -598,17 +637,24 @@ div.details_submit {
 .single-numeric td:nth-child(3) {
 	padding: 0.4em 0.8em;
 }
-.backgroundImage {
-	background: rgb(227,238,255) !important;
-}
 
-.textarea table {
-	margin: 0 1em 0 0.5em;
+.textarea {
+	padding: 0 !important;
+}
+#remarks {
+	padding-top: 2.5em !important;
+}
+#order_description {
+	padding-bottom: 1.5em !important;
 }
 .textarea textarea {
 	height: 4em;
 	margin: 0.4em;
 	width: 150px;
+}
+
+div.details_submit  {
+	margin-bottom: 5em;
 }
 
 
@@ -1078,6 +1124,14 @@ Android/HD mobile styles
 		margin: 20px 15%;
 	}
 
+	#form_nav span {
+		display: inline;
+	}
+	#form_nav .nav li {
+		font-size: 10px;
+		width: auto;
+	}
+
 	#topOfTicket .omit_label,
 	#customer .omit_label {
 		display: table-cell;
@@ -1087,6 +1141,12 @@ Android/HD mobile styles
 		display: none;
 	}
 
+	#topOfTicket table,
+	#customer table,
+	.single-numeric table,
+	.textarea table {
+		width: 100%;
+	}
 	.textarea table td:nth-child(1) {
 		width: 291px;
 	}
@@ -1279,6 +1339,10 @@ Android/HD mobile styles
 	}
 	a.work_reports > div:nth-child(4) {
 		float: left;
+	}
+
+	#form_nav .nav li {
+		font-size: 13px;
 	}
 
 	#topOfTicket tr:hover,
