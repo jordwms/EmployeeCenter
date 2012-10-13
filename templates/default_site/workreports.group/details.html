@@ -73,25 +73,9 @@ nav .active {
 						<td colspan="3">Name</td>
 					</tr>
 					<tr>
-						<td><input type="text" autocorrect="off" autocapitalize="off" name="customer_name" value="{customer_name}" /></td>
+						<td><input type="text" autocomplete="off" autocorrect="off" autocapitalize="off" name="customer_name" value="{customer_name}" /></td>
 						<td class="omit_label">Name</td>
 						<td><pre>{customer_address}</pre></td>
-					</tr>
-				</table>
-			</div>
-		</div>
-
-		<h3>Customer Contact Person</h3>
-		<div class="row-fluid">
-			<div class="span12">
-				<table>
-					<tr class="wp_lores">
-						<td colspan="3">Name</td>
-					</tr>
-					<tr>
-						<td><input type="text" autocorrect="off" autocapitalize="off" name="customer_contact_name" value="{customer_contact_name}" /></td>
-						<td class="omit_label">Name</td>
-						<td>4735 Walnut Street</br>Boulder, CO 80301<br />720-369-3644</td>
 					</tr>
 				</table>
 			</div>
@@ -113,6 +97,26 @@ nav .active {
 			</div>
 		</div>
 
+		<h3>Customer Contact Person</h3>
+		<div class="row-fluid">
+			<div class="span12">
+				<table>
+					<tr class="wp_lores">
+						<td colspan="3">Name</td>
+					</tr>
+					<tr>
+						<td><input type="text" autocomplete="off" autocorrect="off" autocapitalize="off" name="customer_contact_name" value="{customer_contact_name}" /></td>
+						<td class="omit_label">Name</td>
+						<td>
+							phone: <a href="tel://{customer_contact_phone}">{customer_contact_phone}</a></br>
+							cell: <a href="tel://{customer_contact_cell}">{customer_contact_cell}</a></br>
+							email: <a href="mailto:{customer_contact_email}">{customer_contact_email}</a></br>
+						</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+
 		<h3>Work Location</h3>
 		<div class="row-fluid">
 			<div class="span12">
@@ -121,9 +125,9 @@ nav .active {
 						<td colspan="3">Location</td>
 					</tr>
 					<tr>
-						<td><input type="text" autocorrect="off" autocapitalize="off" name="work_location_name" value="{work_location_name}" /></td>
+						<td><input type="text" autocomplete="off" autocorrect="off" autocapitalize="off" name="work_location_name" value="{work_location_name}" /></td>
 						<td class="omit_label">Location</td>
-						<td>4735 Walnut Street</br>Boulder, CO 80301<br />720-369-3644{work_location_address}</td>
+						<td><pre class="address">{work_location_address}</pre></td>
 					</tr>
 				</table>
 			</div>
