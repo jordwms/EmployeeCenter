@@ -607,8 +607,6 @@ class Workreports {
 
 			$data[0]['actions'] = ''; // initializing 'actions' so we can have 1 concatonated string
 
-			echo $data[0]['status']; die;
-
 			if ($data[0]['status'] < 4){
 				if( in_array('WA DISP',$employee['groups'][$data[0]['company_id']]) || in_array('WA ADMIN',$employee['groups'][$data[0]['company_id']]) ){
 					// Save button
