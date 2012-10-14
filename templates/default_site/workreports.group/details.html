@@ -1,16 +1,5 @@
 {embed="assets/header"}
 <div id="work_reports_details" >
-    <nav id="form_nav" class='applus-gray' data-spy="affix" data-offset-top="120">
-        <ul class="nav">
-            <li><a href="#topOfTicket">RTD Info</a></li>
-            <li><a href="#customer">Customer Info</a></li>
-            <li><a href="#resources">Resources</a></li>
-            <li><a href="#sales_items">Sales Items</a></li>
-            <li><a href="#materials">Materials</a></li>
-            <li><a href="#remarks">Remarks</a></li>
-        </ul>
-    </nav>
-
     {exp:workreports:wrDetails projid="{segment_3}"}
     {form_open}
     <fieldset id="topOfTicket">
@@ -136,7 +125,7 @@
                         <td>
                             <input type="hidden" name="resources[{resource_id}][resource_id]" value="{resource_id}">
                             <input type="hidden" name="resources[{resource_id}][name]" value="{name}">
-                            <input type="number" name="resources[{resource_id}][qty]" min="0" step=".1" size="5" placeholder="Hours">
+                            <input type="number" name="resources[{resource_id}][qty]" min="0" step=".1" size="5" placeholder="Hours" value="{if qty}{qty}{/if}">
                         </td>
                         <td class="unit">Total Hours</td>
                         <td>{name}</td>
@@ -170,7 +159,7 @@
                             <input type="hidden" name="salesItems[{dimension_id}|{item_id}][item_id]" value="{item_id}" />
                             <input type="hidden" name="salesItems[{dimension_id}|{item_id}][name]" value="{name}" />
                             <input type="hidden" name="salesItems[{dimension_id}|{item_id}][unit]" value="{unit}" />
-                            <input type="number" name="salesItems[{dimension_id}|{item_id}][qty]" min="0" step=".1" size="5" placeholder="Qty" />
+                            <input type="number" name="salesItems[{dimension_id}|{item_id}][qty]" min="0" step=".1" size="5" placeholder="Qty" value="{if qty}{qty}{/if}"/>
                         </td>
                         <td class="unit">{unit}</td>
                         <td>{name}</td>
@@ -205,7 +194,7 @@
                             <input type="hidden" name="materials[{dimension_id}|{item_id}][item_id]" value="{item_id}" />
                             <input type="hidden" name="materials[{dimension_id}|{item_id}][name]" value="{name}" />
                             <input type="hidden" name="materials[{dimension_id}|{item_id}][unit]" value="{unit}" />
-                            <input type="number" name="materials[{dimension_id}|{item_id}][qty]" min="0" step="1" placeholder="Qty" />
+                            <input type="number" name="materials[{dimension_id}|{item_id}][qty]" min="0" step="1" placeholder="Qty" value="{if qty}{qty}{/if}"/>
                         </td>
                         <td>{unit}</td>
                         <td>{name}</td>
@@ -275,7 +264,7 @@
                 <table>
                     <tr>
                         <td>
-                            <textarea name="customer_signature">This will be a signature box very soon</textarea>
+                            <textarea name="customer_signature" placeholder="This will be a signature box very soon"></textarea>
                         </td>
                         <td>Customer Approval</td>
                     </tr>
@@ -285,11 +274,21 @@
     </fieldset>
 
     <div class="details_submit">
-        <input type="submit" class="btn" value="Save">
-        <input type="submit" class="btn" value="Submit">
+        {actions}
     </div>
     {form_close}
-    {/exp:workreports:wrDetails}
+    {/exp:workreports:wrDetails}    
+
+    <nav id="form_nav" data-spy="affix" data-offset-top="0">
+        <ul class="nav">
+            <li><a href="#topOfTicket">1<span>: RTD Info</span></a></li>
+            <li><a href="#customer">2<span>: Customer Info</span></a></li>
+            <li><a href="#resources">3<span>: Resources</span></a></li>
+            <li><a href="#sales_items">4<span>: Sales Items</span></a></li>
+            <li><a href="#materials">5<span>: Materials</span></a></li>
+            <li><a href="#remarks">6<span>: Remarks</span></a></li>
+        </ul>
+    </nav>
 </div>
 {embed="assets/scripts"}
 
