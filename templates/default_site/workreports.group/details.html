@@ -1,25 +1,6 @@
 {embed="assets/header"}
-<style type="text/css">
-nav.affix {
-	position: fixed;
-	top: 0;
-	z-index: 1000;
-}
-nav .active {
-	background-color: rgb(242,247,255);
-}
-</style>
+
 <div id="work_reports_details" >
-	<nav id="form_nav" class='applus-gray' data-spy="affix" data-offset-top="120">
-		<ul class="nav">
-			<li><a href="#topOfTicket">RTD Info</a></li>
-			<li><a href="#customer">Customer Info</a></li>
-			<li><a href="#resources">Resources</a></li>
-			<li><a href="#sales_items">Sales Items</a></li>
-			<li><a href="#materials">Materials</a></li>
-			<li><a href="#remarks">Remarks</a></li>
-		</ul>
-	</nav>
 
 	{exp:workreports:wrDetails projid="{segment_3}"}
 	{form_open}
@@ -267,8 +248,19 @@ nav .active {
 	</div>
 	{form_close}
 	{/exp:workreports:wrDetails}
+
+	<nav id="form_nav" data-spy="affix" data-offset-top="0">
+		<ul class="nav">
+			<li><a href="#topOfTicket">1<span>: RTD Info</span></a></li>
+			<li><a href="#customer">2<span>: Customer Info</span></a></li>
+			<li><a href="#resources">3<span>: Resources</span></a></li>
+			<li><a href="#sales_items">4<span>: Sales Items</span></a></li>
+			<li><a href="#materials">5<span>: Materials</span></a></li>
+			<li><a href="#remarks">6<span>: Remarks</span></a></li>
+		</ul>
+	</nav>
+
 </div>
-{embed="assets/footer-page"}
 {embed="assets/scripts"}
 
 <script type="text/javascript" src="{path="assets/bootstrap-typeahead"}"></script>
@@ -279,8 +271,6 @@ nav .active {
 <script type="text/javascript">
 	$(document).ready(function() {
 		var customer_id = $('input[name=customer_id]').val();
-
-		$('#work_reports_details').parent().parent().addClass('details_background');
 
 		$('input,textarea').focus(function() {
 		    $(this).parent().parent().addClass('active');
@@ -356,5 +346,3 @@ nav .active {
 	});
 
 </script>
-	
-{embed="assets/footer-html"}
