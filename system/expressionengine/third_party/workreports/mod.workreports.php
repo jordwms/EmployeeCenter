@@ -796,8 +796,8 @@ class Workreports {
 						'submission_datetime'   => time(),
 						'status'				=> $status,
 						'company_id'			=> $this->EE->input->post('company_id'), #AKA DATAAREAID
-						//'cost_center'			=> $this->EE->input->post('cost_center'), #AKA DIMENSION2_
-						'customer_name'			=> $this->EE->input->post('customer_name'),
+						// 'cost_center'			=> $this->EE->input->post('cost_center'), #AKA DIMENSION2_
+						// 'customer_name'			=> $this->EE->input->post('customer_name'),
 						'customer_id'			=> $this->EE->input->post('customer_id'),
 						'project_id'			=> $this->EE->input->post('project_id'),
 						'customer_reference' 	=> $this->EE->input->post('customer_reference'),
@@ -814,38 +814,83 @@ class Workreports {
 					$success['wr_reports'] = $this->EE->db->affected_rows();
 
 					// Update wr_resources entries
-					$resources = $this->EE->input->post('resources');
-					foreach($resources as $resource) {
-						$data = array(
-							'qty' 			=> $resource['qty']
+					$resources_form = $this->EE->input->post('resources');
+					$this->EE->db->select('resource_id');
+					$this->EE->db->from('wr_resources');
+					$this->EE->db->where('report_id', $report_id);
+
+					$resources_db = $this->EE->db->get();
+
+					foreach($resources_form as $resource) {
+						if(in_array($resource['resource_id'], $resources_db){
+							$data = array(
+								'qty' 			=> $resource['qty']
+								);
+							$this->EE->db->where('report_id', $report_id );
+							$this->EE->db->where('resource_id', $resource['resource_id']);
+							$this->EE->db->update('wr_resources', $data);
+						} else {
+							$data = array(
+								'report_id'		=> $report_id,
+								'name'          => $resource['name'],
+								'resource_id' 	=> $resource['resource_id'],
+								'qty' 			=> $resource['qty']
 							);
-						$this->EE->db->where('report_id', $report_id );
-						$this->EE->db->where('resource_id', $resource['resource_id']);
-						$this->EE->db->update('wr_resources', $data);
+							$this->EE->db->insert('wr_resources', $data);
+						}
 					}
 
 					// Make wr_items entries
-					$sales_items = $this->EE->input->post('salesItems');
-					foreach($sales_items as $item) {
-						$data = array(
-							'qty'           => $item['qty']
-						);
-						$this->EE->db->where('report_id', $report_id );
+					$sales_items_form = $this->EE->input->post('salesItems');
+					foreach($sales_items_form as $item) {
+						$this->EE->db->select('item_id, dimension_id');
+						$this->EE->db->from('wr_resources');
+						$this->EE->db->where('report_id', $report_id);
 						$this->EE->db->where('item_id', $item['item_id']);
-						$this->EE->db->update('wr_items', $data);
+						$this->EE->db->where('dimension_id', $item['dimension_id'];
+						$items_db = $this->EE->db->count_all_results();
+
+
+						if($items_db == 1) {
+							$data = array(
+								'qty'           => $item['qty']
+							);
+							$this->EE->db->where('report_id', $report_id );
+							$this->EE->db->where('item_id', $item['item_id']);
+							$this->EE->db->update('wr_items', $data);
+						} else {
+							$data = array(
+								'report_id' 	=> $report_id,
+								'name' 			=> $item['name'],
+								'dimension_id'  => $item['dimension_id'],
+								'item_id' 		=> $item['item_id'],
+								'qty'           => $item['qty'],
+								'unit'			=> $item['unit']
+							);
+							$this->EE->db->insert('wr_items', $data);
+						}
 					}
 					
 					// Not every report uses materials
 					if(isset($materials) ) {
 						// Make wr_materials entries
-						$materials = $this->EE->input->post('materials');
-						foreach($materials as $material) {
-							$data = array(
-								'qty'				=> $material['qty']
-							);
-							$this->EE->db->where('report_id', $report_id );
+						$materials_form = $this->EE->input->post('materials');
+						foreach($materials_form as $material) {
+							$this->EE->db->select('item_id, dimension_id');
+							$this->EE->db->from('wr_resources');
+							$this->EE->db->where('report_id', $report_id);
 							$this->EE->db->where('item_id', $item['item_id']);
-							$this->EE->db->update('wr_materials', $data);
+							$this->EE->db->where('dimension_id', $item['dimension_id'];
+							$materials_db = $this->EE->db->count_all_results();
+						
+							if($materials_db == 1) {
+								$data = array(
+									'qty'				=> $material['qty']
+								);
+								$this->EE->db->where('report_id', $report_id );
+								$this->EE->db->where('item_id', $item['item_id']);
+								$this->EE->db->update('wr_materials', $data);
+							}
 						}
 					}
 				}
