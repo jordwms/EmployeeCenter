@@ -7,6 +7,7 @@ class Workreports {
 		$this->EE =& get_instance();
 		$this->EE->load->library('axapta/axapta');
 		$this->EE->load->library('mysql');
+		$this->EE->config->set_item('compress_output', FALSE); 
 	}
 	
 	/*
@@ -26,25 +27,39 @@ class Workreports {
 			$method  = $this->EE->input->get('method');
 			$output  = $this->EE->input->get('output');
 
-			$query = $this->EE->input->post('query');
+			if( !is_array($options = $this->EE->input->post('options'))) {
+				$options = array();
+			}
+
 
 			switch ($method) {
 				
 				case 'employee':
+                    // $options = array_merge($options, array(
+                        
+                    // ));
 				    $return_data = $this->EE->axapta->employee->get_remote( array('email' => $this->EE->session->userdata('email')) );
 					break;
 
 				case 'company':
+                    // $options = array_merge($options, array(
+                        
+                    // ));
 					$return_data = $this->EE->axapta->company->get_remote( array('id' => '107') );
 					break;
 
 				case 'cost_center':
+                    // $options = array_merge($options, array(
+                        
+                    // ));
 					$return_data = $this->EE->axapta->cost_center->get_remote( array('id' => $employee['cost_center_id'], 'company_id' => $employee['company_id']) );
 					break;
 
 				case 'customer':
+                    // $options = array_merge($options, array(
+                        
+                    // ));
 					$return_data = $this->EE->axapta->customer->get_remote( array(
-						'name' => array('like', $query),
 						'company_id' => $employee['company_id'],
 						//'department_id' => $employee['department_id'],
 						'cost_center_id' => $employee['cost_center_id'],
@@ -53,42 +68,48 @@ class Workreports {
 					break;
 
 				case 'work_location':
-					$options = array(
-						'company_id' => $employee['company_id'], 
-						'cost_center_id' => $employee['cost_center_id'],
-						'name' => array('like', $query)
-					);
+					$options = array_merge($options, array(
+						'company_id' => $employee['company_id']
+					));
 					$return_data = $this->EE->axapta->work_location->get_remote( $options );
 					break;
 
 				case 'contact_person':
-					$options = array(
-						//'customer_id' => '107.CUS000769'
-						'company_id' => $employee['company_id'],
-						'name' => array('like', $query)
-					);
-
+					$options = array_merge($options, array(
+						'company_id' => $employee['company_id']
+					));
 					$return_data = $this->EE->axapta->contact_person->get_remote( $options );
 					break;
 
 				case 'work_report':
-					$options = array(
+					$options = array_merge($options, array(
 						'project_id' => '07.005532/001/120820'
-					);
+					));
 					$return_data = $this->EE->axapta->work_report->get_remote( $options );
 					break;
 
 				case 'template':
-					$options = array(
+					$options = array_merge($options, array(
 						//'company_id' => $employee['company_id'],
 						'export_reason' => 'TEMPLATE',
 						'execution_date' => '2012-01-01'
-					);
+					));
 					$return_data = $this->EE->axapta->work_report->get_remote( $options );
 					break;
 
-				case 'resources':
+				case 'project_resources':
+                    // $options = array_merge($options, array(
+                        
+                    // ));
 					$return_data = $this->EE->axapta->resources->get_remote( array('project_id' => '07.005532/001/120820') );
+					break;
+
+				case 'resources':
+					$options = array_merge($options, array(
+						'company_id' => $employee['company_id'],
+						'department_id' => $employee['department_id']
+					));
+					$return_data = $this->EE->axapta->employee->get_remote( $options );
 					break;
 
 				case 'materials':
@@ -99,18 +120,23 @@ class Workreports {
 					break;
 
 				case 'sales_items':
+                    // $options = array_merge($options, array(
+                        
+                    // ));
 					$return_data = $this->EE->axapta->sales_items->get_remote( array('project_id' => '07.005532/001/120820') );
 					break;
 
 				case 'contract_items':
-					$options = array(
-						'contract_id' => '10.000109',
-						'film_indicator' => '1'
-					);
+    				$options = array_merge($options, array(
+    					
+    				));
 					$return_data = $this->EE->axapta->contract_items->get_remote( $options );
 					break;
 
 				case 'dispatch_list':
+                    // $options = array_merge($options, array(
+                        
+                    // ));
 					$return_data = $this->EE->axapta->dispatch_list->get_remote(array(
 						'employee_id' => $employee['id']
 						//'modified_datetime' => array('<', time())
@@ -134,8 +160,7 @@ class Workreports {
 					case 'json':
 						header('Cache-Control: no-cache, must-revalidate');
 						header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
-						header('Content-type: application/json');
-
+						header('Content-type: application/json; charset=utf8');
 						echo json_encode($return_data);
 					break;
 					
@@ -152,6 +177,7 @@ class Workreports {
 					break;
 				}
 				
+				ob_end_flush(  );
 			} else {
 				echo '<h1>error</h1></br>';
 				echo '<p>no return data</p>';
@@ -168,7 +194,6 @@ class Workreports {
 			// We use axapta's status to know if we've already synced a work report
 			$dispatch_list = $this->EE->axapta->dispatch_list->get_remote(array(
 				'employee_id' => $employee_id
-				,'status' => 0
 			));
 
 			$templates = $this->EE->axapta->work_report->get_remote( array( 
@@ -176,9 +201,10 @@ class Workreports {
 				,'execution_date' => '2012-01-01' 
 			) );
 
+			$all_reports = array_merge($dispatch_list, $templates);
 
 			//loop over dispatch list and sync the work report to mysql
-			foreach ($dispatch_list as $dispatch_item) {
+			foreach ($all_reports as $dispatch_item) {
 				$this->EE->db->select('project_id');
 				$this->EE->db->from('wr_reports');
 				$this->EE->db->where('project_id', $dispatch_item['project_id']);
@@ -188,47 +214,89 @@ class Workreports {
 				
 					//get workreport from axapta and add to mysql
 					$work_report = $this->EE->axapta->work_report->get_remote( array( 'project_id' => $dispatch_item['project_id'] ) );
-
+					
+					$customer = $this->EE->axapta->customer->get_remote( array( 'id' => $work_report[0]['customer_id'] ) );
+					
 					// Insert each entry to the MySQL database
 					$data = array(
-						'project_id' 			=> $work_report[0]['project_id'],
-			            'sales_id' 				=> $work_report[0]['sales_id'],
+						'project_id' 				=> $work_report[0]['project_id'],
+			            'sales_id' 					=> $work_report[0]['sales_id'],
 			            //'submitter_id' 			=> $employee_id,
-			            'customer_id' 			=> $work_report[0]['customer_id'],
-			            'customer_name' 		=> $work_report[0]['customer_name'],
-			            'customer_reference' 	=> $work_report[0]['customer_reference'],
-			            'customer_contact_id' 	=> $work_report[0]['customer_contact_person_id'],
-			            'company_id'	 		=> $work_report[0]['company_id'],
-			            'department_id' 		=> $work_report[0]['department_id'],
-			            'cost_center_id' 		=> $work_report[0]['cost_center_id'],
-			            'technique_id' 			=> $work_report[0]['technique_id'],
-			            'contract_id' 			=> $work_report[0]['contract_id'],
-			            // 'deadline_datetime' 	=> date('Y-M-d', $work_report[0]['deadline_date']),
-			            'rtd_reference' 		=> $work_report[0]['rtd_reference'],
-			            'sales_responsible' 	=> $work_report[0]['sales_responsible'],
-			            'crew_leader_id' 		=> $work_report[0]['crew_leader_id'],
-			            'team_contact_id' 		=> $work_report[0]['team_contact_person_id'],
-			           	// 'work_location_name' => $work_report[0]['work_location_name'],
-			            // 'work_location_id' 	=> $work_report[0]['work_location_id'],
-			            // 'work_location_address'	=> $work_report[0]['work_location_address'],
-			            'work_location_address' => $work_report[0]['work_location_address'],
-			            'object_description' 	=> $work_report[0]['object_description'],
-			            'order_description' 	=> $work_report[0]['order_description'], 
-			            'research_norm_id' 		=> $work_report[0]['research_norm_id'], 
-			            'research_procedure_id' => $work_report[0]['research_procedure_id'],
-			            'research_spec_id' 		=> $work_report[0]['research_spec_id'],
-			           	'review_procedure_id' 	=> $work_report[0]['review_procedure_id'],
-			            'review_spec_id' 		=> $work_report[0]['review_spec_id'],
-			            'status' 				=> 1,
-			            'created_by' 			=> $work_report[0]['created_by'],
-			            'modified_by' 			=> $work_report[0]['modified_by'],
-			            'modified_datetime' 	=> $work_report[0]['modified_datetime'],
-			            'created_datetime' 		=> $work_report[0]['created_datetime'],
-			            'execution_datetime' 	=> $work_report[0]['execution_datetime']
+
+			            'customer_id' 				=> $work_report[0]['customer_id'],
+			            'customer_name' 			=> $work_report[0]['customer_name'],
+			            'customer_reference' 		=> $work_report[0]['customer_reference'],
+			            'customer_address' 			=> $customer[0]['address'],
+			            'customer_phone' 			=> $customer[0]['phone'],
+			            //'customer_email' 			=> $customer[0]['email'],
+			            'customer_fax' 				=> $customer[0]['fax'],
+
+			            'customer_contact_id'	 	=> $work_report[0]['customer_contact_person_id'],
+
+			            'company_id'	 			=> $work_report[0]['company_id'],
+			            'department_id' 			=> $work_report[0]['department_id'],
+			            'cost_center_id' 			=> $work_report[0]['cost_center_id'],
+			            'technique_id' 				=> $work_report[0]['technique_id'],
+
+			            'contract_id' 				=> $work_report[0]['contract_id'],
+
+			            // 'deadline_datetime'  	=> $work_report[0]['deadline_datetime'],
+			            'rtd_reference' 			=> $work_report[0]['rtd_reference'],
+			            'sales_responsible' 		=> $work_report[0]['sales_responsible'],
+			            'crew_leader_id' 			=> $work_report[0]['crew_leader_id'],
+
+			            'team_contact_id' 			=> $work_report[0]['team_contact_person_id'],
+
+			            'work_location_id'   		=> $work_report[0]['work_location_id'],
+			           	'work_location_name'    	=> $work_report[0]['work_location_name'],
+			            'work_location_address' 	=> $work_report[0]['work_location_address'],
+
+			            'object_description' 		=> $work_report[0]['object_description'],
+			            'order_description' 		=> $work_report[0]['order_description'],
+
+			            'research_norm_id' 			=> $work_report[0]['research_norm_id'], 
+			            'research_procedure_id' 	=> $work_report[0]['research_procedure_id'],
+			            'research_spec_id' 			=> $work_report[0]['research_spec_id'],
+
+			           	'review_procedure_id' 		=> $work_report[0]['review_procedure_id'],
+			            //'review_norm_id' 			=> $work_report[0]['review_norm_id'],  //missing from mysql :(
+			            'review_spec_id' 			=> $work_report[0]['review_spec_id'],
+
+			            'status' 					=> 1,
+			            'template_indicator' 		=> $work_report[0]['export_reason'],
+
+			            'created_by' 				=> $work_report[0]['created_by'],
+			            'modified_by' 				=> $work_report[0]['modified_by'],
+			            'modified_datetime' 		=> $work_report[0]['modified_datetime'],
+			            'created_datetime' 			=> $work_report[0]['created_datetime'],
+			            'execution_datetime' 		=> $work_report[0]['execution_datetime']
 						);
+
+					if( $customer_contact = $this->EE->axapta->contact_person->get_remote( array( 'id' => $work_report[0]['customer_contact_person_id'] ) )){
+						array_merge($data, array(
+				            'customer_contact_name' 	=> $customer_contact[0]['name'],
+				            'customer_contact_email' 	=> $customer_contact[0]['email'],
+				            'customer_contact_phone' 	=> $customer_contact[0]['phone'],
+				            'customer_contact_mobile' 	=> $customer_contact[0]['cell_phone']
+			            ));
+					}
+					
+					// if( $team_contact = $this->EE->axapta->contact_person->get_remote( array( 'id' => $work_report['team_contact_id'] ) )){
+					// 	array_merge($data, array(
+					// 		'team_contact_id'	 		=> $work_report[0]['team_contact_person_id'],
+					// 		'team_contact_name' 		=> $team_contact[0]['name'],
+					// 		'team_contact_email' 		=> $team_contact[0]['email'],
+					// 		'team_contact_phone' 		=> $team_contact[0]['phone'],
+					// 		'team_contact_mobile' 		=> $team_contact[0]['cell_phone']
+					//	));
+					// }
+
 					$this->EE->db->insert('wr_reports', $data);
 					$report_id = $this->EE->db->insert_id();
 
+					if( !$this->EE->db->affected_rows() == count($work_report) ){
+						// WE HAD A PROBLEM, DELETED EVERYTHING AND SHOW ERROR
+					}
 
 					//get resources from axapta and add to mysql
 					$resources = $this->EE->axapta->resources->get_remote( array( 'project_id' => $dispatch_item['project_id'] ) );
@@ -242,6 +310,9 @@ class Workreports {
 						$this->EE->db->insert('wr_resources', $data);
 					}
 
+					if( !$this->EE->db->affected_rows() == count($resources) ){
+						// WE HAD A PROBLEM, DELETED EVERYTHING AND SHOW ERROR
+					}
 
 					//get sales items from axapta and add to mysql
 					$sales_items = $this->EE->axapta->sales_items->get_remote( array( 'project_id' => $dispatch_item['project_id'] ) );
@@ -258,6 +329,9 @@ class Workreports {
 						$this->EE->db->insert('wr_items', $data);
 					}
 
+					if( !$this->EE->db->affected_rows() == count($sales_items) ){
+						// WE HAD A PROBLEM, DELETED EVERYTHING AND SHOW ERROR
+					}
 
 					//get materials from axapta and add to mysql
 					$materials = $this->EE->axapta->materials->get_remote( array( 'project_id' => $dispatch_item['project_id'] ) );
@@ -274,22 +348,18 @@ class Workreports {
 
 						$this->EE->db->insert('wr_materials', $data);
 					}
-					if( $this->EE->db->affected_rows() == count($materials) ){
-						//passed
+
+					if( !$this->EE->db->affected_rows() == count($materials) ){
+						// WE HAD A PROBLEM, DELETED EVERYTHING AND SHOW ERROR
 					}
 
-					// echo "<pre>"; print_r($work_report); echo "</pre>"; 
-					// echo "<pre>"; print_r($resources); echo "</pre>"; 
-					// echo "<pre>"; print_r($sales_items); echo "</pre>"; 
-					// echo "<pre>"; print_r($materials); echo "</pre>"; 
-
 					//set status in axapta to 1 to know we've already synced this item
-					$this->EE->axapta->work_report->set_ax_status(array(
-						'employee_id' => $employee_id,
-						'company_id'  => $work_report[0]['company_id'],
-						'project_id'  => $work_report[0]['project_id'],
-						'status'      => 1
-					));
+					// $this->EE->axapta->work_report->set_ax_status(array(
+					// 	'employee_id' => $employee_id,
+					// 	'company_id'  => $work_report[0]['company_id'],
+					// 	'project_id'  => $work_report[0]['project_id'],
+					// 	'status'      => 1
+					// ));
 				}
 			}
 
@@ -311,14 +381,14 @@ class Workreports {
 					$message = '';
 					foreach ($employee['groups'] as $companies) {
 						if( in_array('WA TECH', $companies) ){
-							$message .= 'You have '.$this->wrCount($employee['id']).' Work Reports assigned to you'.'<br>';
+							$message .= 'You have '.$this->count($employee, 'WA TECH').' Work Reports assigned to you'.'<br>';
 							//$message = $this->EE->lang->line('');
 						}
 						if( in_array('WA DISP', $companies) ){
-							$message .= 'You have '.$this->wrCount($employee['id']).' Work Reports awaiting DISPATCHER approval'.'<br>';
+							$message .= 'You have '.$this->count($employee, 'WA DISP').' Work Reports awaiting DISPATCHER approval'.'<br>';
 						}
 						if( in_array('WA ADMIN', $companies) ){
-							$message .= 'You have '.$this->wrCount($employee['id']).' Work Reports awaiting ADMIN approval'.'<br>';
+							$message .= 'You have '.$this->count($employee, 'WA ADMIN').' Work Reports awaiting ADMIN approval'.'<br>';
 						}
 					}
 				} else {
@@ -338,11 +408,31 @@ class Workreports {
 		return $message;
 	}
 
-	function wrCount($employee_id) {
+	function count($employee, $group_id) {
 		$this->EE->db->select('*');
-		$this->EE->db->where('resource_id', $employee_id);
 		$this->EE->db->from('wr_reports');
-		$this->EE->db->join('wr_resources','wr_resources.report_id = wr_reports.id' );
+
+		switch ($group_id) {
+			case 'WA TECH':
+				$this->EE->db->join('wr_resources','wr_resources.report_id = wr_reports.id' );
+				$this->EE->db->where('resource_id', $employee['id']);
+				$this->EE->db->where('status <', 3);
+				break;
+
+			case 'WA DISP':
+				$this->EE->db->where('sales_responsible', $employee['id']);
+				$this->EE->db->where('status', 4);
+				break;
+
+			case 'WA ADMIN':
+				$this->EE->db->where('status', 5);
+
+				$this->EE->db->where('company_id', $employee['company_id']);
+				$this->EE->db->where('department_id', $employee['department_id']);
+				break;
+		}
+		
+		
 		return $this->EE->db->count_all_results();
 	}
 
@@ -432,6 +522,7 @@ class Workreports {
 			$this->EE->db->select('
 						id,
 						project_id,
+						contract_id,
 						sales_id,
 						crew_leader_id,
 						sales_responsible,
@@ -500,8 +591,10 @@ class Workreports {
 										'project_id'			=> $data[0]['project_id'],
 										'id' 					=> $data[0]['crew_leader_id'],
 										'execution_datetime'	=> $data[0]['execution_datetime'],
+										'contract_id'      	    => $data[0]['contract_id'],
 										'company_id'			=> $data[0]['company_id'],
 										'customer_id'			=> $data[0]['customer_id'],
+										'customer_contract_id'	=> $data[0]['customer_id'],
 										'rtd_reference'			=> $data[0]['rtd_reference'],
 										'work_location_name'	=> $data[0]['work_location_name'],
 										'work_location_address' => $data[0]['work_location_address']
@@ -554,10 +647,7 @@ class Workreports {
 
 	function contract_items(){
 		if( $contract_id = $this->EE->TMPL->fetch_param('contract_id') ){
-
-			$options = array(
-				'contract_id' => $contract_id
-			);
+			$options = array('contract_id' => $contract_id);
 		} else {
 			return FALSE;
 		}

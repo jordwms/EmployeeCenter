@@ -6,7 +6,7 @@ class work_location extends axapta {
 	protected $department_id  = 'CUSTTABLE.DIMENSION';
 	protected $cost_center_id = 'CUSTTABLE.DIMENSION2_';
 	protected $name           = '[ADDRESS].NAME';
-	protected $customer_id    = 'CUSTTABLE.ACCOUNTNUM';
+	protected $customer_id    = 'LTRIM(CUSTTABLE.ACCOUNTNUM)';
 	protected $customer_name  = 'CUSTTABLE.NAME';
 	protected $address        = '[ADDRESS].ADDRESS';
 	protected $street         = '[ADDRESS].STREET';
