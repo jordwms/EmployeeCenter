@@ -468,7 +468,7 @@ class Workreports {
 						sales_responsible,
 
 						execution_datetime,
-						status,
+						wr_status.status,
 
 						company_id,
 						rtd_reference,
@@ -492,6 +492,7 @@ class Workreports {
 
 			$this->EE->db->from('wr_reports');
 			$this->EE->db->join('wr_resources','wr_resources.report_id = wr_reports.id' );
+			$this->EE->db->join('wr_status', 'wr_status.id = wr_reports.status');
 			$this->EE->db->where('resource_id', $employee[0]['id']);
 			$this->EE->db->order_by('execution_datetime', 'desc');
 			// $this->EE->db->where('status', 0);
