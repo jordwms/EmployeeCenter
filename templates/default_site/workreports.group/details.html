@@ -263,8 +263,7 @@ nav .active {
 	</fieldset>
 
 	<div class="details_submit">
-		<input type="submit" name="save" class="btn" value="Save">
-		<input type="submit" name="submit" class="btn" value="Submit">
+		{actions}
 	</div>
 	{form_close}
 	{/exp:workreports:wrDetails}
@@ -294,7 +293,7 @@ nav .active {
 		    $(this).find("input,textarea").focus().select();
 		});
 
-		//Customer TypeAhead
+		// Customer TypeAhead
 		$('input[name="customer_name"]').typeahead({
 			source: function(typeahead, query){
 		        $.post(

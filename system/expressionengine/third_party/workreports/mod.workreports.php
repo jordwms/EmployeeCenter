@@ -422,6 +422,7 @@ class Workreports {
 	function wrDetails() {
 		// if ( ($employee = $this->EE->axapta->employee()) ) {
 			$employee = $this->EE->axapta->employee->get_remote( array('email' => $this->EE->session->userdata('email')) );
+			$employee = $employee[0];
 			$project_id = str_replace('-', '/', $this->EE->TMPL->fetch_param('projid') );
 
 			$submit_uri = $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$this->EE->functions->fetch_action_id('Workreports', 'submit_for_approval');
@@ -466,7 +467,8 @@ class Workreports {
 						customer_contact_phone,
 						customer_contact_mobile,
 
-						export_reason
+						export_reason,
+						status
 			');
 
 			$this->EE->db->from('wr_reports');
@@ -479,8 +481,6 @@ class Workreports {
 			$data[0]['materials'] = $this->EE->db->get_where('wr_materials', array('report_id' => $data[0]['id']) )->result_array();
 
 			$data[0]['sales_items'] = $this->EE->db->get_where('wr_items', array('report_id' => $data[0]['id']) )->result_array();
-
-			// echo "<pre>"; print_r($data[0]['resources']); die;
 
 			if ( $data[0]['export_reason'] == 'TEMPLATE' ){
 				$data[0]['resources'][0]['resource_id'] = $employee[0]['id'];
@@ -510,6 +510,39 @@ class Workreports {
 			);
 			$data[0]['form_open'] = $this->EE->functions->form_declaration($form_open);
 			$data[0]['form_close'] = '</form>';
+
+			$data[0]['actions'] = ''; // initializing 'actions' so we can have 1 concatonated string
+
+			echo $data[0]['status']; die;
+
+			if ($data[0]['status'] < 4){
+				if( in_array('WA DISP',$employee['groups'][$data[0]['company_id']]) || in_array('WA ADMIN',$employee['groups'][$data[0]['company_id']]) ){
+					// Save button
+					$data[0]['actions'].= '<input type="submit" name="save" class="btn" value="Save">';
+					
+					if($data[0]['status'] < 3){
+						// Submit + Approve button
+						$data[0]['actions'].= '<input type="submit" name="submit" class="btn" value="Submit and Approve">';
+					}
+					
+					if($data[0]['status'] > 2 && $data[0]['status'] < 5 ){
+						// Approve button, Reject button
+						$data[0]['actions'].= '<input type="submit" name="approve" class="btn" value="Approve">';
+						$data[0]['actions'].= '<input type="submit" name="reject" class="btn" value="Reject">';
+					}
+
+				} else { // NOT DISP/ADMIN
+					if($data[0]['status'] < 3){
+						// Submit button, Save button
+						$data[0]['actions'].= '<input type="submit" name="submit" class="btn" value="Submit">';
+						$data[0]['actions'].= '<input type="submit" name="save" class="btn" value="Save">';
+					}
+					if($data[0]['status'] > 2) {
+						// No buttons!
+					}
+
+				}
+			}
 
 			$tagdata = $this->EE->TMPL->tagdata;
 			$this->return_data = $this->EE->TMPL->parse_variables( $tagdata,  $data );
@@ -549,32 +582,34 @@ class Workreports {
 			$employee = $employee[0];
 			$success = array();
 
-			$status = 2;
-
-			// If the user just wanted to save the WR, status = incomplete/in-progress, it will remain open until saved. 
-			if ( $this->EE->input->post('submit') ) {
-				if(in_array('WA DISP',$employee['groups'][$this->EE->input->post('company_id')])) {
-					$status = 3;
-				}
-				if(in_array('WA ADMIN',$employee['groups'][$this->EE->input->post('company_id')])) {
-					$status = 4;
-				}
-			}
-
 			// IF this is a new entry:
 			// 1. Duplicate the entry
 			// 2. Fill new entry with form data
 			// ELSE:
 			// -  Update a current entry
 
-			// Find out by searching the wr_reports table
+			// Search for this WR wr_reports
 			$this->EE->db->select('*');
 			$this->EE->db->where('project_id', $this->EE->input->post('project_id') );
 			$query = $this->EE->db->get('wr_reports')->row_array();
 
-			// echo "<pre>"; print_r($query); die;
+			if ($query['status'] < 2 && $this->EE->input->post('save') ) {
+				$status = 2;
+			} else {
+				$status = $query['status'];
+			}
 
-
+			// If the user wanted to save OR approve the WR, it will remain open until saved. 
+			if ( $this->EE->input->post('submit') || $this->EE->input->post('approve') ) {
+				if(in_array('WA DISP',$employee['groups'][$this->EE->input->post('company_id')])) {
+					$status = 3;
+				}
+				if(in_array('WA ADMIN',$employee['groups'][$this->EE->input->post('company_id')])) {
+					$status = 4;
+				}
+			} elseif ( $this->EE->input->post('reject') ) {
+				$status = 0;
+			}
 
 			if ( array_key_exists('id', $query) ){
 				$report_id = $query['id'];
@@ -665,7 +700,7 @@ class Workreports {
 						}
 					}
 				} else { // the entry is already uniquely in the DB
-					
+
 					$data = array(
 						'submitter_id'			=> $employee['id'], #should be employee name
 						'execution_datetime'	=> strtotime($this->EE->input->post('execution_date')),

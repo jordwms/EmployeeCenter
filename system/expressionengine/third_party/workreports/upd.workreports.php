@@ -265,10 +265,10 @@ class Workreports_upd {
 
 		if( $current < '1.3.2') {
 			$fields = array(
-				'work_location_address'	=> array('name' => 'work_location_address', 'type' => 'varchar', 'constraint' => '255'),
-				'team_contact_address'	=> array('name' => 'team_contact_address', 	'type' => 'varchar', 'constraint' => '255'),
-				'customer_address'		=> array('name' => 'customer_address', 		'type' => 'varchar', 'constraint' => '255'),
-				'template_indicator'	=> array('name' => 'export_reason', 		'type' => 'varchar', 'constraint' => '50')
+				'work_location_address'	=> array('name' => 'work_location_address', 'type' => 'varchar', 'constraint' => '60'),
+				'team_contact_address'	=> array('name' => 'team_contact_address', 	'type' => 'varchar', 'constraint' => '60'),
+				'customer_address'		=> array('name' => 'customer_address', 		'type' => 'varchar', 'constraint' => '60'),
+				'template_indicator'	=> array('name' => 'export_reason', 		'type' => 'varchar', 'constraint' => '60')
 				);
 			$this->EE->dbforge->modify_column('wr_reports', $fields);
 	
