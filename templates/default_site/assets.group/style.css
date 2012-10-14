@@ -330,14 +330,11 @@ nav.dashboard div {
 nav.dashboard button {
 	margin-bottom: 1em;
 }
-<<<<<<< HEAD
-=======
+
 div#work_reports a,
 div#scores a {
 	height: auto;
 }
-
->>>>>>> morgan
 
 /*****************************
 *  Equipment Manager
@@ -516,11 +513,6 @@ a.work_reports span {
 	line-height: 1.2em;
 	font-size: 0.9em;
 }
-<<<<<<< HEAD
-.details_background {
-	background-color: rgb(240,240,240);
-=======
-
 #form_nav {
 	margin: 5px 0;
 }
@@ -535,7 +527,6 @@ a.work_reports span {
 	margin-top: 3px;
 	text-align: center;
 	width: 48px;
->>>>>>> morgan
 }
 #form_nav .nav > li > a {
 	border: 1px solid rgb(207,207,207);
@@ -646,12 +637,6 @@ nav.affix {
 .single-numeric td:nth-child(3) {
 	padding: 0.4em 0.8em;
 }
-<<<<<<< HEAD
-.active {
-	background: rgb(227,238,255) !important;
-}
-=======
->>>>>>> morgan
 
 .textarea {
 	padding: 0 !important;
@@ -1142,8 +1127,6 @@ Android/HD mobile styles
 		margin: 20px 15%;
 	}
 
-<<<<<<< HEAD
-=======
 	#form_nav span {
 		display: inline;
 	}
@@ -1152,7 +1135,6 @@ Android/HD mobile styles
 		width: auto;
 	}
 
->>>>>>> morgan
 	#topOfTicket .omit_label,
 	#customer .omit_label {
 		display: table-cell;
