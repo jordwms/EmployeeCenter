@@ -1,273 +1,295 @@
 {embed="assets/header"}
-<style type="text/css">
-nav.affix {
-	position: fixed;
-	top: 0;
-	z-index: 1000;
-}
-nav .active {
-	background-color: rgb(242,247,255);
-}
-</style>
 <div id="work_reports_details" >
-	<nav id="form_nav" class='applus-gray' data-spy="affix" data-offset-top="120">
-		<ul class="nav">
-			<li><a href="#topOfTicket">RTD Info</a></li>
-			<li><a href="#customer">Customer Info</a></li>
-			<li><a href="#resources">Resources</a></li>
-			<li><a href="#sales_items">Sales Items</a></li>
-			<li><a href="#materials">Materials</a></li>
-			<li><a href="#remarks">Remarks</a></li>
-		</ul>
-	</nav>
+    <nav id="form_nav" class='applus-gray' data-spy="affix" data-offset-top="120">
+        <ul class="nav">
+            <li><a href="#topOfTicket">RTD Info</a></li>
+            <li><a href="#customer">Customer Info</a></li>
+            <li><a href="#resources">Resources</a></li>
+            <li><a href="#sales_items">Sales Items</a></li>
+            <li><a href="#materials">Materials</a></li>
+            <li><a href="#remarks">Remarks</a></li>
+        </ul>
+    </nav>
 
-	{exp:workreports:wrDetails projid="{segment_3}"}
-	{form_open}
-	<fieldset id="topOfTicket">
-		<header>
-			<h2>Work Report {project_id}</h2>
-		</footer>
-		<h3>Execution Date</h3>
-		<div class="row-fluid">
-			<div class="span12">
-				<table>
-					<tr class="wp_lores">
-						<td colspan="3">Execution Date</td>
-					</tr>
-					<tr>
-						<td class="workreports_date"><input type="date" name="execution_date" value="{execution_datetime format="%Y-%m-%d"}" /></td>
-						<td class="omit_label">Execution Date</td>
-						<td></td>
-					</tr>
-				</table>
-			</div>
-		</div>
+    {exp:workreports:wrDetails projid="{segment_3}"}
+    {form_open}
+    <fieldset id="topOfTicket">
+        <h2>Work Report {project_id}</h2>
+        <h3>Execution Date</h3>
+        <div class="row-fluid">
+            <div class="span12">
+                <table>
+                    <tr class="wp_lores">
+                        <td colspan="3">Execution Date</td>
+                    </tr>
+                    <tr>
+                        <td class="workreports_date"><input type="date" name="execution_date" value="{execution_datetime format="%Y-%m-%d"}" /></td>
+                        <td class="omit_label">Execution Date</td>
+                        <td></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
 
-		<h3>RTD Refrence#</h3>
-		<div class="row-fluid">
-			<div class="span12">
-				<table>
-					<tr class="wp_lores">
-						<td colspan="3">RTD Ref#</td>
-					</tr>
-					<tr>
-						<td><input type="text" name="rtd_ref" value="{rtd_reference}" /></td>
-						<td class="omit_label">RTD Ref#</td>
-						<td></td>
-					</tr>
-				</table>
-			</div>
-		</div>
-		<footer>
+        <h3>RTD Refrence#</h3>
+        <div class="row-fluid">
+            <div class="span12">
+                <table>
+                    <tr class="wp_lores">
+                        <td colspan="3">RTD Ref#</td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" name="rtd_ref" value="{rtd_reference}" /></td>
+                        <td class="omit_label">RTD Ref#</td>
+                        <td></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <footer>
 
-		</footer>
-	</fieldset>
-	<fieldset id="customer">
-		<header>
-			<h3>Customer</h3>
-		</header>
-		<div class="row-fluid">
-			<div class="span12">
-				<table>
-					<tr class="wp_lores">
-						<td colspan="3">Name</td>
-					</tr>
-					<tr>
-						<td><input type="text" autocomplete="off" autocorrect="off" autocapitalize="off" name="customer_name" value="{customer_name}" /></td>
-						<td class="omit_label">Name</td>
-						<td><pre>{customer_address}</pre></td>
-					</tr>
-				</table>
-			</div>
-		</div>
+        </footer>
+    </fieldset>
+    <fieldset id="customer">
+        <h3>Customer</h3>
+        <div class="row-fluid">
+            <div class="span12">
+                <table>
+                    <tr class="wp_lores">
+                        <td colspan="3">Name</td>
+                    </tr>
+                    <tr>
+                        <td><input disabled="" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" name="customer_name" value="{customer_name}" /></td>
+                        <td class="omit_label">Name</td>
+                        <td><pre>{customer_address}</pre></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
 
-		<h3>Customer Refrence</h3>
-		<div class="row-fluid">
-			<div class="span12">
-				<table>
-					<tr class="wp_lores">
-						<td colspan="3">Customer Ref#</td>
-					</tr>
-					<tr>
-						<td><input type="text" name="customer_reference" value="{customer_reference}" /></td>
-						<td class="omit_label">Customer Ref#</td>
-						<td></td>
-					</tr>
-				</table>
-			</div>
-		</div>
+        <h3>Customer Refrence</h3>
+        <div class="row-fluid">
+            <div class="span12">
+                <table>
+                    <tr class="wp_lores">
+                        <td colspan="3">Customer Ref#</td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" name="customer_reference" value="{customer_reference}" /></td>
+                        <td class="omit_label">Customer Ref#</td>
+                        <td></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
 
-		<h3>Customer Contact Person</h3>
-		<div class="row-fluid">
-			<div class="span12">
-				<table>
-					<tr class="wp_lores">
-						<td colspan="3">Name</td>
-					</tr>
-					<tr>
-						<td><input type="text" autocomplete="off" autocorrect="off" autocapitalize="off" name="customer_contact_name" value="{customer_contact_name}" /></td>
-						<td class="omit_label">Name</td>
-						<td>
-							phone: <a href="tel://{customer_contact_phone}">{customer_contact_phone}</a></br>
-							cell: <a href="tel://{customer_contact_cell}">{customer_contact_cell}</a></br>
-							email: <a href="mailto:{customer_contact_email}">{customer_contact_email}</a></br>
-						</td>
-					</tr>
-				</table>
-			</div>
-		</div>
+        <h3>Customer Contact Person</h3>
+        <div class="row-fluid">
+            <div class="span12">
+                <table>
+                    <tr class="wp_lores">
+                        <td colspan="3">Name</td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" autocomplete="off" autocorrect="off" autocapitalize="off" name="customer_contact_name" value="{customer_contact_name}" /></td>
+                        <td class="omit_label">Name</td>
+                        <td>
+                            phone: <a id="phone" href="tel://{customer_contact_phone}">{customer_contact_phone}</a></br>
+                            cell: <a id="cell" href="tel://{customer_contact_mobile}">{customer_contact_mobile}</a></br>
+                            email: <a id="email" href="mailto:{customer_contact_email}">{customer_contact_email}</a></br>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
 
-		<h3>Work Location</h3>
-		<div class="row-fluid">
-			<div class="span12">
-				<table>
-					<tr class="wp_lores">
-						<td colspan="3">Location</td>
-					</tr>
-					<tr>
-						<td><input type="text" autocomplete="off" autocorrect="off" autocapitalize="off" name="work_location_name" value="{work_location_name}" /></td>
-						<td class="omit_label">Location</td>
-						<td><pre class="address">{work_location_address}</pre></td>
-					</tr>
-				</table>
-			</div>
-		</div>
-		<footer>
+        <h3>Work Location</h3>
+        <div class="row-fluid">
+            <div class="span12">
+                <table>
+                    <tbody>
+                    <tr class="wp_lores">
+                        <td colspan="3">Location</td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" autocomplete="off" autocorrect="off" autocapitalize="off" name="work_location_name" value="{work_location_name}" /></td>
+                        <td class="omit_label">Location</td>
+                        <td><pre class="address"><a href="//maps.google.com/maps?q={work_location_address}">{work_location_address}</a></pre></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <footer>
 
-		</footer>
-	</fieldset>
+        </footer>
+    </fieldset>
 
-	<fieldset id="resources" class="single-numeric">
-		<header>
-			<h3>Resources</h3>
-		</header>
-		<div>
-			<div>
-				<table>
-					{resources}
-					<tr>
-						<td>
-							<input type="hidden" name="resources[{resource_id}][resource_id]" value="{resource_id}">
-							<input type="hidden" name="resources[{resource_id}][name]" value="{name}">
-							<input type="number" name="resources[{resource_id}][qty]" min="0" step=".1" size="5" placeholder="Hours">
-						</td>
-						<td>Total Hours</td>
-						<td>{name}</td>
-					</tr>
-					{/resources}
-				</table>
-			</div>
-		</div>
-		<footer>
-			<div class="btn">+ Add</div>
-		</footer>
-	</fieldset>
+    <fieldset id="resources" class="single-numeric">
+        <h3>Resources</h3>
+        <div>
+            <div>
+                <table>
+                    <tbody>
+                    {resources}
+                    <tr>
+                        <td>
+                            <input type="hidden" name="resources[{resource_id}][resource_id]" value="{resource_id}">
+                            <input type="hidden" name="resources[{resource_id}][name]" value="{name}">
+                            <input type="number" name="resources[{resource_id}][qty]" min="0" step=".1" size="5" placeholder="Hours">
+                        </td>
+                        <td class="unit">Total Hours</td>
+                        <td>{name}</td>
+                    </tr>
+                    {/resources}
+                    <tr id="new_resource">
+                        <td>
+                            <input type="hidden" name="resource_id" value="">
+                            <input type="hidden" name="name" value="">
+                            <input type="number" disabled="disabled" name="qty" min="0" step=".1" size="5" placeholder="Hours" />
+                        </td>
+                        <td>Total Hours</td>
+                        <td><input type="text" autocomplete="off" autocorrect="off" autocapitalize="off" name="new_resource" /></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </fieldset>
 
-	<fieldset id="sales_items" class="single-numeric">
-		<header>
-			<h3>Sales Items</h3>
-		</header>
-		<div class="row-fluid">
-			<div class="span12">
-				<table>
-					{sales_items}
-					<tr>
-						<td>
-							<input type="hidden" name="salesItems[{dimension_id}|{item_id}][dimension_id]" value="{dimension_id}" />
-							<input type="hidden" name="salesItems[{dimension_id}|{item_id}][item_id]" value="{item_id}" />
-							<input type="hidden" name="salesItems[{dimension_id}|{item_id}][name]" value="{name}" />
-							<input type="hidden" name="salesItems[{dimension_id}|{item_id}][unit]" value="{unit}" />
-							<input type="number" name="salesItems[{dimension_id}|{item_id}][qty]" min="0" step=".1" size="5" placeholder="Qty" />
-						</td>
-						<td>{unit}</td>
-						<td>{name}</td>
-					</tr>
-					{/sales_items}
-				</table>
-			</div>
-		</div>
-		<div>
-			<div class="btn">+ Add</div>
-		</div>
-	</fieldset>
+    <fieldset id="sales_items" class="single-numeric">
+        <h3>Sales Items</h3>
+        <div class="row-fluid">
+            <div class="span12">
+                <table>
+                    <tbody>
+                    {sales_items}
+                    <tr>
+                        <td>
+                            <input type="hidden" name="salesItems[{dimension_id}|{item_id}][dimension_id]" value="{dimension_id}" />
+                            <input type="hidden" name="salesItems[{dimension_id}|{item_id}][item_id]" value="{item_id}" />
+                            <input type="hidden" name="salesItems[{dimension_id}|{item_id}][name]" value="{name}" />
+                            <input type="hidden" name="salesItems[{dimension_id}|{item_id}][unit]" value="{unit}" />
+                            <input type="number" name="salesItems[{dimension_id}|{item_id}][qty]" min="0" step=".1" size="5" placeholder="Qty" />
+                        </td>
+                        <td class="unit">{unit}</td>
+                        <td>{name}</td>
+                    </tr>
+                    {/sales_items}
+                    <tr class="new" id="new_sales_item">
+                        <td>
+                            <input type="hidden" name="dimension_id" value="" />
+                            <input type="hidden" name="item_id" value="" />
+                            <input type="hidden" name="name" value="" />
+                            <input type="hidden" name="unit" value="" />
+                            <input type="number" disabled="disabled" name="qty" min="0" step=".1" size="5" placeholder="Qty" />
+                        </td>
+                        <td>Unit</td>
+                        <td><input type="text" autocomplete="off" autocorrect="off" autocapitalize="off" name="new_sales_item" ></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </fieldset>
 
-	<fieldset id="materials" class="single-numeric">
-		<header>
-			<h3>Material Consumption</h3>
-		</header>
-		<div class="row-fluid">
-			<div class="span12">
-				<table>
-					{materials}
-					<tr>
-						<td>
-							<input type="hidden" name="materials[{dimension_id}|{item_id}][dimension_id]" value="{dimension_id}">
-							<input type="hidden" name="materials[{dimension_id}|{item_id}][item_id]" value="{item_id}">
-							<input type="hidden" name="materials[{dimension_id}|{item_id}][name]" value="{name}">
-							<input type="hidden" name="materials[{dimension_id}|{item_id}][unit]" value="{unit}">
-							<input type="number" name="materials[{dimension_id}|{item_id}][qty]" min="0" step=".1" placeholder="Qty" />
-						</td>
-						<td>{unit}</td>
-						<td>{name}</td>
-					</tr>
-					{/materials}
-				</table>
-			</div>
-		<div>
-			<div class="btn">+ Add</div>
-		</div>
-		</div>
-	</fieldset>
+    <fieldset id="materials" class="single-numeric">
+        <h3>Material Consumption</h3>
+        <div class="row-fluid">
+            <div class="span12">
+                <table>
+                    {materials}
+                    <tr>
+                        <td>
+                            <input type="hidden" name="materials[{dimension_id}|{item_id}][dimension_id]" value="{dimension_id}" />
+                            <input type="hidden" name="materials[{dimension_id}|{item_id}][item_id]" value="{item_id}" />
+                            <input type="hidden" name="materials[{dimension_id}|{item_id}][name]" value="{name}" />
+                            <input type="hidden" name="materials[{dimension_id}|{item_id}][unit]" value="{unit}" />
+                            <input type="number" name="materials[{dimension_id}|{item_id}][qty]" min="0" step="1" placeholder="Qty" />
+                        </td>
+                        <td>{unit}</td>
+                        <td>{name}</td>
+                    </tr>
+                    {/materials}
+                    <tr class="new" id="new_material">
+                        <td>
+                            <input type="hidden" name="dimension_id" value="" />
+                            <input type="hidden" name="item_id" value="" />
+                            <input type="hidden" name="name" value="" />
+                            <input type="hidden" name="unit" value="" />
+                            <input disabled="disabled" type="number" name="qty" min="0" step=".1" placeholder="Qty" />
+                        </td>
+                        <td class="unit">Unit</td>
+                        <td><input type="text" autocomplete="off" autocorrect="off" autocapitalize="off" name="new_material" /></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </fieldset>
 
-	<fieldset id="remarks" class="textarea">
-		<div class="row-fluid">
-			<div class="span12">
-				<table>
-					<tr>
-						<td>
-							<textarea name="remarks"></textarea>
-						</td>
-						<td>Remarks</td>
-					</tr>
-				</table>
-			</div>
-		</div>
-	</fieldset>
-	<fieldset id="object_description" class="textarea">
-		<div class="row-fluid">
-			<div class="span12">
-				<table>
-					<tr>
-						<td>
-							<textarea name="object_description">{object_description}</textarea>
-						</td>
-						<td>Object Description</td>
-					</tr>
-				</table>
-			</div>
-		</div>
-	</fieldset>
-	<fieldset id="order_description" class="textarea">
-		<div class="row-fluid">
-			<div class="span12">
-				<table>
-					<tr>
-						<td>
-							<textarea name="order_description">{order_description}</textarea>
-						</td>
-						<td>Order Description</td>
-					</tr>
-				</table>
-			</div>
-		</div>
-	</fieldset>
+    <fieldset id="remarks" class="textarea">
+        <div class="row-fluid">
+            <div class="span12">
+                <table>
+                    <tr>
+                        <td>
+                            <textarea name="remarks"></textarea>
+                        </td>
+                        <td>Remarks</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </fieldset>
+    <fieldset id="object_description" class="textarea">
+        <div class="row-fluid">
+            <div class="span12">
+                <table>
+                    <tr>
+                        <td>
+                            <textarea name="object_description">{object_description}</textarea>
+                        </td>
+                        <td>Object Description</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </fieldset>
+    <fieldset id="order_description" class="textarea">
+        <div class="row-fluid">
+            <div class="span12">
+                <table>
+                    <tr>
+                        <td>
+                            <textarea name="order_description">{order_description}</textarea>
+                        </td>
+                        <td>Order Description</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </fieldset>
+    <fieldset id="customer_approval" class="textarea">
+        <div class="row-fluid">
+            <div class="span12">
+                <table>
+                    <tr>
+                        <td>
+                            <textarea name="customer_signature">This will be a signature box very soon</textarea>
+                        </td>
+                        <td>Customer Approval</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </fieldset>
 
-	<div class="details_submit">
-		<input type="submit" class="btn" value="Save">
-		<input type="submit" class="btn" value="Submit">
-	</div>
-	{form_close}
-	{/exp:workreports:wrDetails}
+    <div class="details_submit">
+        <input type="submit" class="btn" value="Save">
+        <input type="submit" class="btn" value="Submit">
+    </div>
+    {form_close}
+    {/exp:workreports:wrDetails}
 </div>
 {embed="assets/footer-page"}
 {embed="assets/scripts"}
@@ -278,84 +300,243 @@ nav .active {
 <script type="text/javascript" src="{path="assets/jQueryFormValidator"}"></script>
 
 <script type="text/javascript">
-	$(document).ready(function() {
-		var customer_id = $('input[name=customer_id]').val();
+    //Customer Contact TypeAhead
+    function customer_contacts(){
+        $.post(
+            '?ACT=43&output=json&method=contact_person',
+            {
+                options: {
+                    customer_id: $('input[name=customer_id]').val()
+                }
+            },
+            function (data) {
+                $('input[name="customer_contact_name"]').typeahead({
+                    source: data,
+                    onselect: function(selection){
+                        $(this.$element).parent().parent().find("#phone").html(selection.phone)
+                        $(this.$element).parent().parent().find("#cell").html(selection.cell_phone)
+                        $(this.$element).parent().parent().find("#email").html(selection.email)
 
-		$('#work_reports_details').parent().parent().addClass('details_background');
+                        $('input[name=customer_contact_id]').val(selection.id)
+                    },
+                    property: 'name',
+                    items: 6
+                })
+            }
+        )
+    }
 
-		$('input,textarea').focus(function() {
-		    $(this).parent().parent().addClass('active');
-		});
-		$('input,textarea').blur(function() {
-		    $(this).parent().parent().removeClass('active');
-		});
+    //Work Location TypeAhead
+    function work_locations(){
+         $.post( 
+            '?ACT=43&output=json&method=work_location',
+            {
+                options: {
+                    customer_id: $('input[name=customer_id]').val()
+                }
+            },
+            function (data) {
+                $('input[name="work_location_name"]').typeahead({
+                    source: data,
+                    onselect: function(selection){
+                        $(this.$element).parent().parent().find('pre.address').html('<a href="//maps.google.com/maps?q='+selection.address+'">'+selection.address+'</a>')
+                        $('input[name=work_location_id]').val(selection.id)
+                    },
+                    property: 'name',
+                    items: 6
+                })
+            }
+        )
+    }
 
-		$('#topOfTicket tr,#customer tr,.single-numeric tr,.textarea tr').click(function() {
-		    $(this).find("input,textarea").focus().select();
-		});
+    //New Resources TypeAhead
+    function new_resources(){
+         $.post(
+            '?ACT=43&output=json&method=resources',
+            {
+                options: {
+                    
+                }
+            },
+            function (data) {
+                
+                $('input[name="new_resource"]').typeahead({
+                    source: data,
+                    onselect: function(selection){
+                        var new_row = $(this.$element).parents('tr').clone()
+                        new_row.removeAttr('id')
+                        
+                        new_row.find(':input[name="qty"]').removeAttr('disabled')
+                        new_row.find(':input[name="qty"]').attr('name', 'resources[' + selection.id + '][qty]')
 
-		//Customer TypeAhead
-		$('input[name="customer_name"]').typeahead({
-			source: function(typeahead, query){
-		        $.post(
-		        	'https://dev.vxray.com/robert/EmployeeCenter/?ACT=43&output=json&method=customer', 
-		        	{ query: query, customer_id: customer_id },
-		        	function (data) {
-		        		if(data){
-		            		return typeahead.process(data);
-		            	}
-		        	}
-		        );
-		    },
-		    onselect: function(selection){
-		    	$(this.$element).parent().next().next().html('<pre>'+selection.address+'</pre>');
-				$('input[name=customer_id]').val(selection.id);
-		    },
-   			property: 'name',
-		    items: 6
-		});
+                        new_row.find(':input[name="resource_id"]').attr('name', 'resources[' + selection.id + '][resource_id]').val(selection.id)
+                        new_row.find(':input[name="name"]').attr('name', 'resources[' + selection.id + '][name]').val(selection.name)
 
-		//Customer Contact TypeAhead
-		$('input[name="customer_contact_name"]').typeahead({
-			source: function(typeahead, query){
-		        $.post(
-		        	'https://dev.vxray.com/robert/EmployeeCenter/?ACT=43&output=json&method=contact_person', 
-		        	{ query: query, customer_id: customer_id },
-		        	function (data) {
-		            	return typeahead.process(data);
-		        	}
-		        );
-		    },
-		    onselect: function(selection){
-		    	$(this.$element).parent().next().next().html('p:'+selection.phone+'</br>c:'+selection.cell_phone+'</br>e:'+selection.email);
-		    	$('input[name=customer_contact_id]').val(selection.id);
-		    },
-   			property: 'name',
-		    items: 6
-		});
+                        new_row.find('.unit').html(selection.unit)
 
-		//Work Location TypeAhead
-		$('input[name="work_location_name"]').typeahead({
-			source: function(typeahead, query){
-		        $.post(
-		        	'https://dev.vxray.com/robert/EmployeeCenter/?ACT=43&output=json&method=work_location', 
-		        	{ query: query, customer_id: customer_id },
-		        	function (data) {
-		        		if(data){
-		            		return typeahead.process(data);
-		            	}
-		        	}
-		        );
-		    },
-		    onselect: function(selection){
-		    	$(this.$element).parent().next().next().html('<pre>'+selection.address+'</pre>');
-		    	$('input[name=work_location_id]').val(selection.id);
-		    },
-   			property: 'name',
-		    items: 6
-		});
-	});
+                        new_row.find(':input[name="new_resource"]').replaceWith(this.$element.val())
+
+                        new_row.insertBefore($(this.$element).parents('tr'))
+
+                        $(this.$element).val('');
+                    },
+                    property: 'name',
+                    items: 6
+                });
+            }
+        );
+    }
+
+    //New Sales Items TypeAhead
+    function new_sales_items(){
+         $.post(
+            '?ACT=43&output=json&method=contract_items',
+            {
+                options: {
+                    contract_id: $('input[name=contract_id]').val()
+                  , film_indicator: 0
+                }
+            },
+            function (data) {
+                
+                $('input[name="new_sales_item"]').typeahead({
+                    source: data,
+                    onselect: function(selection){
+                        var new_row = $(this.$element).parents('tr').clone()
+                        new_row.removeAttr('id')
+                        
+                        new_row.find(':input[name="qty"]').removeAttr('disabled')
+                        new_row.find(':input[name="qty"]').attr('name', 'resources[' + selection.id + '][qty]')
+
+                        new_row.find(':input[name="dimension_id"]').attr('name', 'resources[' + selection.id + '][dimension_id]').val(selection.dimension_id)
+                        new_row.find(':input[name="item_id"]').attr('name', 'resources[' + selection.id + '][item_id]').val(selection.item_id)
+                        new_row.find(':input[name="name"]').attr('name', 'resources[' + selection.id + '][name]').val(selection.name)
+                        new_row.find(':input[name="unit"]').attr('name', 'resources[' + selection.id + '][unit]').val(selection.unit)
+
+                        new_row.find('.unit').html(selection.unit)
+
+                        new_row.find(':input[name="new_sales_item"]').replaceWith(this.$element.val())
+
+                        new_row.insertBefore($(this.$element).parents('tr'))
+
+                        $(this.$element).val('');
+                    },
+                    property: 'name',
+                    items: 6
+                });
+            }
+        );
+    }
+
+    //New Materials TypeAhead
+    function new_materials(){
+         $.post(
+            '?ACT=43&output=json&method=contract_items', 
+            { 
+                options: {
+                    contract_id: $('input[name=contract_id]').val()
+                  , film_indicator: 1
+                } 
+            },
+                function (data) {
+                
+                $('input[name="new_material"]').typeahead({
+                    source: data,
+                    onselect: function(selection){
+                        var new_row = $(this.$element).parents('tr').clone()
+                        new_row.removeAttr('id')
+                        
+                        new_row.find(':input[name="qty"]').removeAttr('disabled')
+                        new_row.find(':input[name="qty"]').attr('name', 'materials[' + selection.id + '][qty]')
+
+                        new_row.find(':input[name="dimension_id"]').attr('name', 'materials[' + selection.id + '][dimension_id]').val(selection.dimension_id)
+                        new_row.find(':input[name="item_id"]').attr('name', 'materials[' + selection.id + '][item_id]').val(selection.item_id)
+                        new_row.find(':input[name="name"]').attr('name', 'materials[' + selection.id + '][name]').val(selection.config_name)
+                        new_row.find(':input[name="unit"]').attr('name', 'materials[' + selection.id + '][unit]').val(selection.unit)
+
+                        new_row.find('.unit').html(selection.unit)
+
+                        new_row.find(':input[name="new_resource"]').replaceWith(this.$element.val())
+
+                        new_row.insertBefore($(this.$element).parents('tr'))
+
+                        $(this.$element).val('');
+                    },
+                    property: 'config_name',
+                    items: 6
+                });
+            }
+        );
+    }
+
+    $(document).ready(function() {
+        $('#work_reports_details').parent().parent().addClass('details_background');
+
+        $('input,textarea').focus(function() {
+            $(this).parent().parent().addClass('active');
+        });
+        $('input,textarea').blur(function() {
+            $(this).parent().parent().removeClass('active');
+        });
+
+        $('#topOfTicket tr,#customer tr,.single-numeric tr,.textarea tr').click(function() {
+            $(this).find("input,textarea").focus().select();
+        });
+
+        work_locations(  );
+        customer_contacts(  );
+
+        new_resources(  );
+        new_sales_items(  );
+        new_materials(  );
+
+
+        //Customer TypeAhead
+
+        // $.post(
+        //     '?ACT=43&output=json&method=customer', 
+        //     { options:{} },
+        //     function (data) {
+        //        if(data){
+        //      $('input[name="customer_name"]').typeahead({
+        //          source: data,
+        //          onselect: function(selection){
+        //              $(this.$element).parent().next().next().html('<pre>'+selection.address+'</pre>');
+        //              $('input[name=customer_id]').val(selection.id);
+
+        //              customer_contacts(selection.id);
+        //              work_locations = get_work_locations(selection.id);
+        //          },
+        //          property: 'name',
+        //          items: 6
+        //      });
+        //        }
+        //     }
+        // );
+
+
+        //Customer Contact TypeAhead
+        /*
+        $('input[name="customer_contact_name"]').typeahead({
+            source: function(typeahead, query){
+                $.post(
+                    'https://dev.vxray.com/robert/EmployeeCenter/?ACT=43&output=json&method=contact_person', 
+                    { query: query, customer_id: customer_id },
+                    function (data) {
+                        return typeahead.process(data);
+                    }
+                );
+            },
+            onselect: function(selection){
+                $(this.$element).parent().next().next().html('p:'+selection.phone+'</br>c:'+selection.cell_phone+'</br>e:'+selection.email);
+                $('input[name=customer_contact_id]').val(selection.id);
+            },
+            property: 'name',
+            items: 6
+        });
+        */
+    });
 
 </script>
-	
+    
 {embed="assets/footer-html"}
