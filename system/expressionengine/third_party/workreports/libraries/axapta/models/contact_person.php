@@ -10,7 +10,7 @@ class contact_person extends axapta {
 	protected $department_id = 'CUSTTABLE.DIMENSION';
 	protected $cost_center   = 'CUSTTABLE.DIMENSION2_';
 
-	protected $customer_id   = 'CUSTTABLE.ACCOUNTNUM';
+	protected $customer_id   = 'LTRIM(CUSTTABLE.ACCOUNTNUM)';
 	protected $customer_name = 'CUSTTABLE.NAME';
 
 
