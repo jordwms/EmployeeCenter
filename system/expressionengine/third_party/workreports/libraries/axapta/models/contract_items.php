@@ -3,6 +3,7 @@ class contract_items extends axapta {
 	protected $id                  = 'LTRIM(PRICEDISCTABLE.INVENTDIMID)';
 	protected $item_id             = 'LTRIM(INVENTTABLE.ITEMID)';
 	protected $name                = 'PRICEDISCTABLE.RTDITEMNAME';
+	protected $config_name         = 'CONFIGTABLE.NAME';
 	protected $unit                = 'PRICEDISCTABLE.UNITID';
 	protected $price_type          = 'PRICEDISCTABLE.RTDPRICETYPE';
 	protected $price               = 'PRICEDISCTABLE.AMOUNT';
