@@ -1,6 +1,6 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 class Workreports_upd {
-	var $version = '1.3.1';
+	var $version = '1.3.2';
 
 	function __construct() {
 		$this->EE =& get_instance();
@@ -199,7 +199,7 @@ class Workreports_upd {
 				'customer_contact_name' 	=> array('type' => 'varchar',   'constraint' => '50'), // CustomerContactPersonName
 				'customer_contact_email' 	=> array('type' => 'varchar',   'constraint' => '50'), // CustomerContactPersonEmail
 				'customer_contact_phone' 	=> array('type' => 'varchar',   'constraint' => '50'), // CustomerContactPersonPhone
-				'customer_contact_mobile' 	=> array('type' => 'varchar',   'constraint' => '50') // CustomerContactPersonCellPhone
+				'customer_contact_mobile' 	=> array('type' => 'varchar',   'constraint' => '50')  // CustomerContactPersonCellPhone
 			);
 			$this->EE->dbforge->add_column('wr_reports', $fields);
 
@@ -227,14 +227,14 @@ class Workreports_upd {
 				'created_by'			=> array('type' => 'varchar',   'constraint' => '50'),
 				'modified_date'			=> array('type' => 'varchar',   'constraint' => '50'),
 				'modified_time'			=> array('type' => 'varchar',   'constraint' => '50'),
-				'project_id'			=> array('type' => 'varchar',   'constraint' => '50'), // already in inital install - don't add again!
+				'project_id'			=> array('type' => 'varchar',   'constraint' => '50'), // already in initial install - don't add again!
 				'modified_by'			=> array('type' => 'varchar',   'constraint' => '50')
 			);
 			$this->EE->dbforge->add_column('wr_reports', $fields);
 		}
 
 		if( $current < '1.3.1') {
-			//remove unnecessary fields:
+			// Remove unnecessary fields:
 			$this->EE->dbforge->drop_column('wr_reports', 'project_order_id');
 			$this->EE->dbforge->drop_column('wr_reports', 'project_work_order_id');
 			$this->EE->dbforge->drop_column('wr_reports', 'project_work_report_id');
@@ -252,17 +252,64 @@ class Workreports_upd {
 
 			$this->EE->dbforge->drop_column('wr_reports', 'invoice_account');
 
-			//modifiy existing fields:
+			// Modify existing fields:
 			$fields = array( 
-				'created_date'    => array('name' => 'created_datetime', 'type' => 'int', 'constraint' => '10'),
-				'modified_date'    => array('name' => 'modified_datetime', 'type' => 'int', 'constraint' => '10'),
+				'created_date'    	=> array('name' => 'created_datetime', 'type' => 'int', 'constraint' => '10'),
+				'modified_date'    	=> array('name' => 'modified_datetime', 'type' => 'int', 'constraint' => '10'),
 				'execution_date'    => array('name' => 'execution_datetime', 'type' => 'int', 'constraint' => '10'),
-				'deadline_date'    => array('name' => 'deadline_datetime', 'type' => 'int', 'constraint' => '10'),
-				'submission_date'    => array('name' => 'submission_datetime', 'type' => 'int', 'constraint' => '10')
+				'deadline_date'    	=> array('name' => 'deadline_datetime', 'type' => 'int', 'constraint' => '10'),
+				'submission_date'   => array('name' => 'submission_datetime', 'type' => 'int', 'constraint' => '10')
+			);
+			$this->EE->dbforge->modify_column('wr_reports', $fields);
+		}
 
+		if( $current < '1.3.2') {
+			$fields = array(
+				'work_location_address'	=> array('name' => 'work_location_address', 'type' => 'varchar', 'constraint' => '255'),
+				'team_contact_address'	=> array('name' => 'team_contact_address', 	'type' => 'varchar', 'constraint' => '255'),
+				'customer_address'		=> array('name' => 'customer_address', 		'type' => 'varchar', 'constraint' => '255'),
+				'template_indicator'	=> array('name' => 'export_reason', 		'type' => 'varchar', 'constraint' => '50')
+				);
+			$this->EE->dbforge->modify_column('wr_reports', $fields);
+	
+			/*******************************************************************************************
+			 *	Create wr_status table
+			 *******************************************************************************************/
+			$this->EE->dbforge->add_field(array(
+				'id'                              	=> array('type' => 'int',     	'constraint' => '10', 'unsigned' => TRUE),
+				'status'							=> array('type' => 'varchar', 	'constraint' => '50')
+			));
+			$this->EE->dbforge->add_key('id', TRUE);
+
+			$this->EE->dbforge->create_table('wr_status');
+
+			// Fill with values
+			$data = array(
+				array(
+					'id' 	 => 0,
+					'status' => 'rejected'
+				), array(
+					'id' 	 => 1,
+					'status' => 'dispatched'
+				), array(
+					'id' 	 => 2,
+					'status' => 'in_progress'
+				), array(
+					'id' 	 => 3,
+					'status' => 'completed'
+				), array(
+					'id' 	 => 4,
+					'status' => 'supervisor_approved'
+				), array(
+					'id' 	 => 5,
+					'status' => 'admin_approved'
+				), array(
+					'id' 	 => 6,
+					'status' => 'xml_approved'
+				)
 			);
 
-			$this->EE->dbforge->modify_column('wr_reports', $fields);
+			$this->EE->db->insert_batch('wr_status', $data);
 		}
 
 		return TRUE;

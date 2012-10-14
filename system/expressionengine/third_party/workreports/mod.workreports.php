@@ -420,6 +420,7 @@ class Workreports {
 	// Remake of wrDetails(), but it comes from MySQL instead of Axapta
 	function wrDetails() {
 		// if ( ($employee = $this->EE->axapta->employee()) ) {
+			$employee = $this->EE->axapta->employee->get_remote( array('email' => $this->EE->session->userdata('email')) );
 			$project_id = str_replace('-', '/', $this->EE->TMPL->fetch_param('projid') );
 
 			$submit_uri = $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$this->EE->functions->fetch_action_id('Workreports', 'submit_for_approval');
@@ -462,7 +463,9 @@ class Workreports {
 						customer_contact_name,
 						customer_contact_email,
 						customer_contact_phone,
-						customer_contact_mobile
+						customer_contact_mobile,
+
+						export_reason
 			');
 
 			$this->EE->db->from('wr_reports');
@@ -476,7 +479,15 @@ class Workreports {
 
 			$data[0]['sales_items'] = $this->EE->db->get_where('wr_items', array('report_id' => $data[0]['id']) )->result_array();
 
-			$data[0]['resources'] = $this->EE->db->get_where('wr_resources', array('report_id' => $data[0]['id']) )->result_array();
+			// echo "<pre>"; print_r($data[0]['resources']); die;
+
+			if ( $data[0]['export_reason'] == 'TEMPLATE' ){
+				$data[0]['resources'][0]['resource_id'] = $employee[0]['id'];
+				$data[0]['resources'][0]['name'] = $employee[0]['name'];
+			}else {
+				$data[0]['resources'] = $this->EE->db->get_where('wr_resources', array('report_id' => $data[0]['id']) )->result_array();
+			}
+
 
 			$form_open = array(
 				'action'		=> $submit_uri,
@@ -560,7 +571,7 @@ class Workreports {
 			$this->EE->db->where('project_id', $this->EE->input->post('project_id') );
 			$query = $this->EE->db->get('wr_reports')->row_array();
 
-			echo "<pre>"; print_r($query); die;
+			// echo "<pre>"; print_r($query); die;
 
 
 
@@ -571,86 +582,85 @@ class Workreports {
 				// echo "-------------";
 				// echo "<pre>"; print_r($_POST); die;
 
-							// If this was built from a template...
-				if ( array_key_exists('template_indicator', $query) ){
-					if($query['template_indicator'] == 'TEMPLATE'){
-						$employee_id = explode('.', $employee['id']);// $employee_id[2] will be section 1 of project_id
-						$day = getdate();
+				// If this report was built from a template...
+				if($query['export_reason'] == 'TEMPLATE'){
+					$employee_id = explode('.', $employee['id']);// $employee_id[2] will be section 1 of $project_id
+					$day = getdate();
+					$project_id = explode('/',$this->EE->input->post('project_id') );
 
-						// finds sequence # -> number or reports since midnight of current day
-						$this->EE->db->like('submitter_id', $employee['id'] );
-						$this->EE->db->from('wr_reports');
-						$this->EE->db->where('submission_datetime >', time('Y-M-d') );
-						
-						$sequence_id = $this->EE->db->count_all_results();
+					// finds sequence # -> number or reports since 12 A.M. of current day
+					$this->EE->db->like('submitter_id', $employee['id'] );
+					$this->EE->db->from('wr_reports');
+					$this->EE->db->where('submission_datetime >', time('Y-M-d') );
+					
+					$sequence_id = $this->EE->db->count_all_results()+1;
 
-						$project_id = $employee_id[2].'/'.$day['yday'].'/'.$sequence_id;
+					$project_id[2] = $employee_id[2].$day['yday'].$sequence_id; // NEW segment 3
 
-						// Insert a new work report using the data found in the template, but creating a unique project ID
+					// Insert a new work report using the data found in the template, but creating a unique project ID
+					$data = array(
+						'submitter_id'			=> $employee['id'],
+						'execution_datetime'	=> strtotime($this->EE->input->post('execution_date')),
+						'submission_datetime'   => time(),
+						'status'				=> $status,
+						'company_id'			=> $this->EE->input->post('company_id'), #AKA DATAAREAID
+						//'cost_center'			=> $this->EE->input->post('cost_center'), #AKA DIMENSION2_
+						'customer_name'			=> $this->EE->input->post('customer_name'),
+						'customer_id'			=> $this->EE->input->post('customer_id'),
+						'project_id'			=> implode('/', $project_id),
+						'customer_reference' 	=> $this->EE->input->post('customer_reference'),
+						'rtd_reference'			=> $this->EE->input->post('rtd_reference'),
+						'work_location_name' 	=> $this->EE->input->post('work_location_name'),
+						'customer_contact_name'	=> $this->EE->input->post('customer_contact_name'),
+						'object_description'	=> $this->EE->input->post('object_description'),
+						'order_description'     => $this->EE->input->post('order_description'),
+						'remarks'               => $this->EE->input->post('remarks')
+						);
+
+					$this->EE->db->insert('wr_reports', $data);
+					$success['wr_reports'] = $this->EE->db->affected_rows();
+					$report_id = $this->EE->db->insert_id();
+
+					// Update wr_resources entries
+					$resources = $this->EE->input->post('resources');
+					foreach($resources as $resource) {
 						$data = array(
-							'submitter_id'			=> $employee['id'],
-							'execution_datetime'	=> strtotime($this->EE->input->post('execution_date')),
-							'submission_datetime'   => time(),
-							'status'				=> $status,
-							'company_id'			=> $this->EE->input->post('company_id'), #AKA DATAAREAID
-							//'cost_center'			=> $this->EE->input->post('cost_center'), #AKA DIMENSION2_
-							'customer_name'			=> $this->EE->input->post('customer_name'),
-							'customer_id'			=> $this->EE->input->post('customer_id'),
-							'project_id'			=> $project_id,
-							'customer_reference' 	=> $this->EE->input->post('customer_reference'),
-							'rtd_reference'			=> $this->EE->input->post('rtd_reference'),
-							'work_location_name' 	=> $this->EE->input->post('work_location_name'),
-							'customer_contact_name'	=> $this->EE->input->post('customer_contact_name'),
-							'object_description'	=> $this->EE->input->post('object_description'),
-							'order_description'     => $this->EE->input->post('order_description'),
-							'remarks'               => $this->EE->input->post('remarks')
+							'report_id'		=> $report_id,
+							'name'          => $resource['name'],
+							'resource_id' 	=> $resource['resource_id'],
+							'qty' 			=> $resource['qty']
 							);
+						$this->EE->db->insert('wr_resources', $data);
+					}
 
-						$this->EE->db->insert('wr_reports', $data);
-						$success['wr_reports'] = $this->EE->db->affected_rows();
-						$report_id = $this->EE->db->insert_id();
-
-						// Update wr_resources entries
-						$resources = $this->EE->input->post('resources');
-						foreach($resources as $resource) {
+					// Make wr_items entries
+					$sales_items = $this->EE->input->post('salesItems'); # needs to be 'sales_items'
+					foreach($sales_items as $item) {
+						$data = array(
+							'report_id' 	=> $report_id,
+							'name' 			=> $item['name'],
+							'dimension_id'  => $item['dimension_id'],
+							'item_id' 		=> $item['item_id'],
+							'qty'           => $item['qty'],
+							'unit'			=> $item['unit']
+						);
+						$this->EE->db->insert('wr_items', $data);
+					}
+					
+					// Not every report uses materials
+					if(isset($materials) ) {
+						// Make wr_materials entries
+						$materials = $this->EE->input->post('materials');
+						foreach($materials as $material) {
 							$data = array(
-								'report_id'		=> $report_id,
-								'name'          => $resource['name'],
-								'resource_id' 	=> $resource['resource_id'],
-								'qty' 			=> $resource['qty']
-								);
-							$this->EE->db->insert('wr_resources', $data);
-						}
-
-						// Make wr_items entries
-						$sales_items = $this->EE->input->post('salesItems');
-						foreach($sales_items as $item) {
-							$data = array(
-								'report_id' 	=> $report_id,
-								'name' 			=> $item['name'],
-								'dimension_id'  => $item['dimension_id'],
-								'item_id' 		=> $item['item_id'],
-								'qty'           => $item['qty'],
-								'unit'			=> $item['unit']
+								'report_id'			=> $report_id,
+								'dimension_id'      => $material['dimension_id'],
+								'item_id' 			=> $material['item_id'],
+								'name' 			    => $material['name'],
+								'unit' 			    => $material['unit'],
+								'qty'				=> $material['qty']
 							);
-							$this->EE->db->insert('wr_items', $data);
-						}
-						
-						// Not every report uses materials
-						if(isset($materials) ) {
-							// Make wr_materials entries
-							$materials = $this->EE->input->post('materials');
-							foreach($materials as $material) {
-								$data = array(
-									'report_id'			=> $report_id,
-									'dimension_id'      => $material['dimension_id'],
-									'item_id' 			=> $material['item_id'],
-									'name' 			    => $material['name'],
-									'unit' 			    => $material['unit'],
-									'qty'				=> $material['qty']
-								);
-								$this->EE->db->insert('wr_materials', $data);
-							}
+							$this->EE->db->insert('wr_materials', $data);
 						}
 					}
 				} else { // the entry is already uniquely in the DB
