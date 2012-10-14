@@ -822,7 +822,7 @@ class Workreports {
 					$resources_db = $this->EE->db->get();
 
 					foreach($resources_form as $resource) {
-						if(in_array($resource['resource_id'], $resources_db){
+						if( in_array($resource['resource_id'], $resources_db) ){
 							$data = array(
 								'qty' 			=> $resource['qty']
 								);
@@ -847,7 +847,7 @@ class Workreports {
 						$this->EE->db->from('wr_resources');
 						$this->EE->db->where('report_id', $report_id);
 						$this->EE->db->where('item_id', $item['item_id']);
-						$this->EE->db->where('dimension_id', $item['dimension_id'];
+						$this->EE->db->where('dimension_id', $item['dimension_id']);
 						$items_db = $this->EE->db->count_all_results();
 
 
@@ -880,7 +880,7 @@ class Workreports {
 							$this->EE->db->from('wr_resources');
 							$this->EE->db->where('report_id', $report_id);
 							$this->EE->db->where('item_id', $item['item_id']);
-							$this->EE->db->where('dimension_id', $item['dimension_id'];
+							$this->EE->db->where('dimension_id', $item['dimension_id'] );
 							$materials_db = $this->EE->db->count_all_results();
 						
 							if($materials_db == 1) {
