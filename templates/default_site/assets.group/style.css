@@ -644,9 +644,6 @@ nav.affix {
 #remarks {
 	padding-top: 2.5em !important;
 }
-#order_description {
-	padding-bottom: 1.5em !important;
-}
 .textarea textarea {
 	height: 4em;
 	margin: 0.4em;
@@ -654,9 +651,12 @@ nav.affix {
 }
 
 div.details_submit  {
+	margin-top: 1.5em;
 	margin-bottom: 5em;
 }
-
+.details_submit input {
+	margin-right: .5em;
+}
 
 /*****************************
 *  Content
