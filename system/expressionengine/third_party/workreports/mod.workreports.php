@@ -576,8 +576,8 @@ class Workreports {
 			$data[0]['sales_items'] = $this->EE->db->get_where('wr_items', array('report_id' => $data[0]['id']) )->result_array();
 
 			if ( $data[0]['export_reason'] == 'TEMPLATE' ){
-				$data[0]['resources'][0]['resource_id'] = $employee[0]['id'];
-				$data[0]['resources'][0]['name'] = $employee[0]['name'];
+				$data[0]['resources'][0]['resource_id'] = $employee['id'];
+				$data[0]['resources'][0]['name'] = $employee['name'];
 			}else {
 				$data[0]['resources'] = $this->EE->db->get_where('wr_resources', array('report_id' => $data[0]['id']) )->result_array();
 			}
@@ -729,14 +729,15 @@ class Workreports {
 						'execution_datetime'	=> strtotime($this->EE->input->post('execution_date')),
 						'submission_datetime'   => time(),
 						'status'				=> $status,
-						'company_id'			=> $this->EE->input->post('company_id'), #AKA DATAAREAID
+						'company_id'			=> $query['company_id'], #AKA DATAAREAID
 						//'cost_center'			=> $this->EE->input->post('cost_center'), #AKA DIMENSION2_
-						'customer_name'			=> $this->EE->input->post('customer_name'),
-						'customer_id'			=> $this->EE->input->post('customer_id'),
+						'customer_name'			=> $query['customer_name'],
+						'customer_id'			=> $query['customer_id'],
 						'project_id'			=> implode('/', $project_id),
 						'customer_reference' 	=> $this->EE->input->post('customer_reference'),
 						'rtd_reference'			=> $this->EE->input->post('rtd_reference'),
 						'work_location_name' 	=> $this->EE->input->post('work_location_name'),
+                        'customer_contact_id'   => $this->EE->input->post('customer_contact_id'),
 						'customer_contact_name'	=> $this->EE->input->post('customer_contact_name'),
 						'object_description'	=> $this->EE->input->post('object_description'),
 						'order_description'     => $this->EE->input->post('order_description'),
@@ -760,7 +761,7 @@ class Workreports {
 					}
 
 					// Make wr_items entries
-					$sales_items = $this->EE->input->post('salesItems'); # needs to be 'sales_items'
+					$sales_items = $this->EE->input->post('sales_items'); # needs to be 'sales_items'
 					foreach($sales_items as $item) {
 						$data = array(
 							'report_id' 	=> $report_id,
@@ -842,7 +843,7 @@ class Workreports {
 					}
 
 					// Make wr_items entries
-					$sales_items_form = $this->EE->input->post('salesItems');
+					$sales_items_form = $this->EE->input->post('sales_items');
 					foreach($sales_items_form as $item) {
 						$this->EE->db->select('item_id, dimension_id');
 						$this->EE->db->from('wr_items');
