@@ -816,11 +816,12 @@ class Workreports {
 
 					// Update wr_resources entries
 					$resources_form = $this->EE->input->post('resources');
+					
 					$this->EE->db->select('resource_id');
 					$this->EE->db->from('wr_resources');
 					$this->EE->db->where('report_id', $report_id);
 
-					$resources_db = $this->EE->db->get();
+					$resources_db = $this->EE->db->get()->result_array();
 
 					foreach($resources_form as $resource) {
 						if( in_array($resource['resource_id'], $resources_db) ){
@@ -845,7 +846,7 @@ class Workreports {
 					$sales_items_form = $this->EE->input->post('salesItems');
 					foreach($sales_items_form as $item) {
 						$this->EE->db->select('item_id, dimension_id');
-						$this->EE->db->from('wr_resources');
+						$this->EE->db->from('wr_items');
 						$this->EE->db->where('report_id', $report_id);
 						$this->EE->db->where('item_id', $item['item_id']);
 						$this->EE->db->where('dimension_id', $item['dimension_id']);
