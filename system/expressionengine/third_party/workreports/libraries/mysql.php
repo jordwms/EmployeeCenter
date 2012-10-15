@@ -124,7 +124,7 @@ class mysql {
 			// Explode project_id into 'order', 'work order' and 'work report' sections
 			$project_id = explode('/', $report_query['project_id']);
 
-			$dir = '/ax-public/'.$report_query['company_id'].'/Project Management/'.$report_query['customer_id'].' '.$report_query['customer_name'].'/';
+			$dir = '/ax-public/'.$report_query['company_id'].'/Customer Reporting/Tablet Interface/';
 			$file = $project_id[0].' '.$project_id[0].'.'.$project_id[1].'.'.$project_id[2].' [TEST].xml';
 
 			// If directory DNE, create

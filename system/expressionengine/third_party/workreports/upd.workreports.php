@@ -1,6 +1,6 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 class Workreports_upd {
-	var $version = '1.3.2';
+	var $version = '1.3.3';
 
 	function __construct() {
 		$this->EE =& get_instance();
@@ -310,6 +310,15 @@ class Workreports_upd {
 			);
 
 			$this->EE->db->insert_batch('wr_status', $data);
+		}
+
+		if($current < '1.3.3') {
+			$fields = array(
+				'work_location_address'	=> array('name' => 'work_location_address', 'type' => 'varchar', 'constraint' => '255'),
+				'team_contact_address'	=> array('name' => 'team_contact_address', 	'type' => 'varchar', 'constraint' => '255'),
+				'customer_address'		=> array('name' => 'customer_address', 		'type' => 'varchar', 'constraint' => '255')
+				);
+			$this->EE->dbforge->modify_column('wr_reports', $fields);
 		}
 
 		return TRUE;
