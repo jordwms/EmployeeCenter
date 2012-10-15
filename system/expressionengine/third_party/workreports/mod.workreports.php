@@ -263,7 +263,7 @@ class Workreports {
 			            'review_spec_id' 			=> $work_report[0]['review_spec_id'],
 
 			            'status' 					=> 1,
-			            'template_indicator' 		=> $work_report[0]['export_reason'],
+			            'export_reason' 	    	=> $work_report[0]['export_reason'],
 
 			            'created_by' 				=> $work_report[0]['created_by'],
 			            'modified_by' 				=> $work_report[0]['modified_by'],
