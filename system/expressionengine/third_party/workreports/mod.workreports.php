@@ -494,6 +494,7 @@ class Workreports {
 			$this->EE->db->join('wr_resources','wr_resources.report_id = wr_reports.id' );
 			$this->EE->db->join('wr_status', 'wr_status.id = wr_reports.status');
 			$this->EE->db->where('resource_id', $employee[0]['id']);
+			$this->EE->db->where('wr_reports.status <', 4);
 			$this->EE->db->order_by('execution_datetime', 'desc');
 			// $this->EE->db->where('status', 0);
 
