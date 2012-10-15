@@ -429,15 +429,14 @@ table .dark {
 #work_reports_index .rejected {
 	background-color: red;
 }
-#work_reports_index .new {
+#work_reports_index .dispatched {
 	background-color: orange;
 }
-#work_reports_index .progress {
+#work_reports_index .in_progress {
 	background-color: yellow;
 }
-#work_reports_index .accepted,
-#work_reports_index .approval
- {
+#work_reports_index .supervisor_approved,
+#work_reports_index .admin_approved {
 	background-color: green;
 }
 #work_reports_index td:nth-child(1) {
