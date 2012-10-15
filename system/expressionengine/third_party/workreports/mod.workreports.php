@@ -816,15 +816,14 @@ class Workreports {
 
 					// Update wr_resources entries
 					$resources_form = $this->EE->input->post('resources');
-					
-					$this->EE->db->select('resource_id');
-					$this->EE->db->from('wr_resources');
-					$this->EE->db->where('report_id', $report_id);
-
-					$resources_db = $this->EE->db->get()->result_array();
 
 					foreach($resources_form as $resource) {
-						if( in_array($resource['resource_id'], $resources_db) ){
+                        $this->EE->db->select('resource_id');
+                        $this->EE->db->from('wr_resources');
+                        $this->EE->db->where('report_id', $report_id);
+                        $this->EE->db->where('resource_id', $resource['resource_id']);
+
+						if($this->EE->db->count_all_results() > 0){
 							$data = array(
 								'qty' 			=> $resource['qty']
 								);
@@ -853,7 +852,7 @@ class Workreports {
 						$items_db = $this->EE->db->count_all_results();
 
 
-						if($items_db == 1) {
+						if($items_db > 1) {
 							$data = array(
 								'qty'           => $item['qty']
 							);
@@ -879,13 +878,13 @@ class Workreports {
 						$materials_form = $this->EE->input->post('materials');
 						foreach($materials_form as $material) {
 							$this->EE->db->select('item_id, dimension_id');
-							$this->EE->db->from('wr_resources');
+							$this->EE->db->from('wr_materials');
 							$this->EE->db->where('report_id', $report_id);
 							$this->EE->db->where('item_id', $item['item_id']);
 							$this->EE->db->where('dimension_id', $item['dimension_id'] );
 							$materials_db = $this->EE->db->count_all_results();
 						
-							if($materials_db == 1) {
+							if($materials_db > 1) {
 								$data = array(
 									'qty'				=> $material['qty']
 								);
