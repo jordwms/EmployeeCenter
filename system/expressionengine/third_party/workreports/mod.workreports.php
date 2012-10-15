@@ -797,10 +797,10 @@ class Workreports {
 						'execution_datetime'	=> strtotime($this->EE->input->post('execution_date')),
 						'submission_datetime'   => time(),
 						'status'				=> $status,
-						'company_id'			=> $this->EE->input->post('company_id'), #AKA DATAAREAID
+						// 'company_id'			=> $this->EE->input->post('company_id'), #AKA DATAAREAID
 						// 'cost_center'			=> $this->EE->input->post('cost_center'), #AKA DIMENSION2_
 						// 'customer_name'			=> $this->EE->input->post('customer_name'),
-						'customer_id'			=> $this->EE->input->post('customer_id'),
+						// 'customer_id'			=> $this->EE->input->post('customer_id'),
 						'project_id'			=> $this->EE->input->post('project_id'),
 						'customer_reference' 	=> $this->EE->input->post('customer_reference'),
 						'rtd_reference'			=> $this->EE->input->post('rtd_reference'),
