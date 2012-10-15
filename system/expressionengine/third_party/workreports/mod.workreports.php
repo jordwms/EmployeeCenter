@@ -570,6 +570,8 @@ class Workreports {
 			// $this->EE->db->where('crew_leader_id', $employee);
 
 			$data[0] = $this->EE->db->get()->row_array();
+			// echo "<pre>"; print_r($data[0]); die;
+
 
 			$data[0]['materials'] = $this->EE->db->get_where('wr_materials', array('report_id' => $data[0]['id']) )->result_array();
 
@@ -701,6 +703,7 @@ class Workreports {
 				$status = 0;
 			}
 
+			// If the MySQL query came back with a result...
 			if ( array_key_exists('id', $query) ){
 				$report_id = $query['id'];
 							
@@ -720,6 +723,7 @@ class Workreports {
 					$this->EE->db->where('submission_datetime >', time('Y-M-d') );
 					
 					$sequence_id = $this->EE->db->count_all_results()+1;
+					$sequence_id+=1;
 
 					$project_id[2] = $employee_id[2].$day['yday'].$sequence_id; // NEW segment 3
 
