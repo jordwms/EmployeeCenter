@@ -726,7 +726,8 @@ class Workreports {
 					$sequence_id = $this->EE->db->count_all_results()+1;
 					$sequence_id+=1;
 
-					$project_id[2] = $employee_id[2].$day['yday'].$sequence_id; // NEW segment 3
+					$project_id[2] = crc32( $employee_id[2].time() );
+					// $project_id[2] = $employee_id[2].$day['yday'].$sequence_id; // NEW segment 3
 
 					// Insert a new work report using the data found in the template, but creating a unique project ID
 					$data = array(

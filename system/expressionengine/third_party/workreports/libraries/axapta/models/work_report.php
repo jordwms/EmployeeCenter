@@ -123,7 +123,7 @@ class work_report extends axapta {
 	 */
 	//function set_approval($projid=NULL, $dataAreaID=NULL, $emplID=NULL, $approved=TRUE) {
 	function set_ax_status($options=NULL){
-		$query = 'UPDATE Salestable SET RtdApproved = :status WHERE PROJID = :project_id AND DATAAREAID = :company_id';
+		$query = 'UPDATE Salestable SET RtdApproved = :status , RtdApprovedBy = :employee_id WHERE PROJID = :project_id AND DATAAREAID = :company_id';
 
 		$status = $this->conn->prepare($query);
 
@@ -134,7 +134,7 @@ class work_report extends axapta {
 		}
 
 		$status->bindValue('project_id', $options['project_id'], PDO::PARAM_STR);
-		// $status->bindValue('employee_id', $options['employee_id'], PDO::PARAM_STR);
+		$status->bindValue('employee_id', $options['employee_id'], PDO::PARAM_STR);
 		$status->bindValue('company_id', $options['company_id'], PDO::PARAM_STR);
 
 		return $status->execute();
