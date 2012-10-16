@@ -1,6 +1,6 @@
 <?php
 class contact_person extends axapta {
-	protected $id            = 'CONTACTPERSON.CONTACTPERSONID';
+	protected $id            = 'LTRIM(CONTACTPERSON.CONTACTPERSONID)';
 	protected $name          = 'CONTACTPERSON.NAME';
 	protected $email         = 'CONTACTPERSON.EMAIL';
 	protected $phone         = 'CONTACTPERSON.PHONE';
@@ -32,7 +32,7 @@ class contact_person extends axapta {
 		$query = $this->build_SELECT();
 
 		$query .= 'FROM CONTACTPERSON'.NL;
-		$query .= 'LEFT JOIN CUSTTABLE ON CUSTTABLE.ACCOUNTNUM = CONTACTPERSON.CUSTACCOUNT AND CUSTTABLE.DATAAREAID = CONTACTPERSON.DATAAREAID'.NL;
+		$query .= 'LEFT JOIN CUSTTABLE ON LTRIM(CUSTTABLE.ACCOUNTNUM) = LTRIM(CONTACTPERSON.CUSTACCOUNT) AND CUSTTABLE.DATAAREAID = CONTACTPERSON.DATAAREAID'.NL;
 
 		$query .= $this->build_WHERE($options);
 
