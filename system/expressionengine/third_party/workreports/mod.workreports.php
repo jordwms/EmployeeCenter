@@ -35,36 +35,35 @@ class Workreports {
 			switch ($method) {
 				
 				case 'employee':
-                    // $options = array_merge($options, array(
-                        
-                    // ));
-				    $return_data = $this->EE->axapta->employee->get_remote( array('email' => $this->EE->session->userdata('email')) );
+                    $options = array_merge($options, array(
+                        'email' => $this->EE->session->userdata('email')
+                    ));
+				    $return_data = $this->EE->axapta->employee->get_remote( $options );
 					break;
 
 				case 'company':
-                    // $options = array_merge($options, array(
-                        
-                    // ));
-					$return_data = $this->EE->axapta->company->get_remote( array('id' => '107') );
+                    $options = array_merge($options, array(
+                        'id' => $employee['company_id']
+                    ));
+					$return_data = $this->EE->axapta->company->get_remote( $options );
 					break;
 
 				case 'cost_center':
-                    // $options = array_merge($options, array(
-                        
-                    // ));
-					$return_data = $this->EE->axapta->cost_center->get_remote( array('id' => $employee['cost_center_id'], 'company_id' => $employee['company_id']) );
+                    $options = array_merge($options, array(
+                        'id' => $employee['cost_center_id'], 
+                        'company_id' => $employee['company_id']
+                    ));
+					$return_data = $this->EE->axapta->cost_center->get_remote( $options );
 					break;
 
 				case 'customer':
-                    // $options = array_merge($options, array(
-                        
-                    // ));
-					$return_data = $this->EE->axapta->customer->get_remote( array(
-						'company_id' => $employee['company_id'],
-						//'department_id' => $employee['department_id'],
+                    $options = array_merge($options, array(
+                        'company_id' => $employee['company_id'],
+						'department_id' => $employee['department_id'],
 						'cost_center_id' => $employee['cost_center_id'],
 						'blocked' => 0
-					));
+                    ));
+					$return_data = $this->EE->axapta->customer->get_remote( $options );
 					break;
 
 				case 'work_location':
@@ -76,14 +75,15 @@ class Workreports {
 
 				case 'contact_person':
 					$options = array_merge($options, array(
-						'company_id' => $employee['company_id']
+						'company_id' => $employee['company_id'],
+						'id' => '107..SYB2001377'
 					));
 					$return_data = $this->EE->axapta->contact_person->get_remote( $options );
 					break;
 
 				case 'work_report':
 					$options = array_merge($options, array(
-						'project_id' => '07.005532/001/120820'
+						'project_id' => '07.005541/001/121013'
 					));
 					$return_data = $this->EE->axapta->work_report->get_remote( $options );
 					break;
@@ -98,32 +98,33 @@ class Workreports {
 					break;
 
 				case 'project_resources':
-                    // $options = array_merge($options, array(
-                        
-                    // ));
-					$return_data = $this->EE->axapta->resources->get_remote( array('project_id' => '07.005532/001/120820') );
+                    $options = array_merge($options, array(
+                        //'project_id' => '07.005532/001/120820'
+                    ));
+					$return_data = $this->EE->axapta->resources->get_remote( $options );
 					break;
 
 				case 'resources':
 					$options = array_merge($options, array(
-						'company_id' => $employee['company_id'],
-						'department_id' => $employee['department_id']
+						// 'company_id' => $employee['company_id'],
+						// 'department_id' => $employee['department_id'],
+						'status' => 1
 					));
 					$return_data = $this->EE->axapta->employee->get_remote( $options );
 					break;
 
 				case 'materials':
 					$options = array(
-						'project_id' => '07.003464/142/120802'
+						//'project_id' => '07.003464/142/120802'
 					);
 					$return_data = $this->EE->axapta->materials->get_remote( $options );
 					break;
 
 				case 'sales_items':
-                    // $options = array_merge($options, array(
-                        
-                    // ));
-					$return_data = $this->EE->axapta->sales_items->get_remote( array('project_id' => '07.005532/001/120820') );
+                    $options = array_merge($options, array(
+                        //'project_id' => '07.005532/001/120820'
+                    ));
+					$return_data = $this->EE->axapta->sales_items->get_remote( $options );
 					break;
 
 				case 'contract_items':
@@ -134,13 +135,10 @@ class Workreports {
 					break;
 
 				case 'dispatch_list':
-                    // $options = array_merge($options, array(
-                        
-                    // ));
-					$return_data = $this->EE->axapta->dispatch_list->get_remote(array(
-						'employee_id' => $employee['id']
-						//'modified_datetime' => array('<', time())
-					));
+                    $options = array_merge($options, array(
+                        'employee_id' => $employee['id']
+                    ));
+					$return_data = $this->EE->axapta->dispatch_list->get_remote( $options );
 					break;
 
 				case 'sync':
