@@ -3,10 +3,10 @@ class work_report extends axapta {
 	protected $project_id                  = 'SALESTABLE.PROJID';
 	protected $export_reason               = 'SALESTABLE.EXPORTREASON';
 
-	protected $sales_id                    = 'SALESTABLE.SALESID';
+	protected $sales_id                    = 'LTRIM(SALESTABLE.SALESID)';
 
-	protected $customer_id                 = 'SALESTABLE.CUSTACCOUNT';
-	protected $customer_name               = 'SALESTABLE.SALESNAME';
+	protected $customer_id                 = 'LTRIM(SALESTABLE.CUSTACCOUNT)';
+	//protected $customer_name               = 'SALESTABLE.SALESNAME';
 	protected $customer_reference           = 'SALESTABLE.CUSTOMERREF';
 	protected $customer_contact_person_id  = 'SALESTABLE.CONTACTPERSONID';
 
@@ -79,7 +79,7 @@ class work_report extends axapta {
 		$query .= 'LEFT JOIN PROJTABLE AS WORKORDER  ON WORKORDER.PROJID             = WORKREPORT.PARENTID    AND WORKORDER.DATAAREAID            = SALESTABLE.DATAAREAID'.NL;
 		$query .= 'LEFT JOIN RTDPROJORDERTABLE       ON RTDPROJORDERTABLE.PROJID     = WORKORDER.PARENTID     AND RTDPROJORDERTABLE.DATAAREAID    = SALESTABLE.DATAAREAID AND RTDPROJORDERTABLE.PROJID <> \'\''.NL;
 		$query .= 'LEFT JOIN RTDEMPLPERWORKREPORT    ON RTDEMPLPERWORKREPORT.PROJID  = SALESTABLE.PROJID      AND RTDEMPLPERWORKREPORT.DATAAREAID = SALESTABLE.DATAAREAID AND RTDEMPLPERWORKREPORT.TASKID = \'Crew Leader\''.NL;
-		$query .= 'LEFT JOIN RTDSALESPROCEDURE       ON RTDSALESPROCEDURE.SALESID    = SALESTABLE.SALESID     AND RTDSALESPROCEDURE.DATAAREAID    = SALESTABLE.DATAAREAID'.NL;
+		$query .= 'LEFT JOIN RTDSALESPROCEDURE       ON LTRIM(RTDSALESPROCEDURE.SALESID)    = LTRIM(SALESTABLE.SALESID)     AND RTDSALESPROCEDURE.DATAAREAID    = SALESTABLE.DATAAREAID'.NL;
 
 		$query .= $this->build_WHERE($options);
 
