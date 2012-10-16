@@ -80,7 +80,10 @@
                         <td colspan="3">Name</td>
                     </tr>
                     <tr>
-                        <td><input type="text" autocomplete="off" autocorrect="off" autocapitalize="off" name="customer_contact_name" value="{customer_contact_name}" /></td>
+                        <td>
+                            <input type="hidden" name="customer_contact_id" value="{customer_contact_id}">
+                            <input type="text" autocomplete="off" autocorrect="off" autocapitalize="off" name="customer_contact_name" value="{customer_contact_name}" />
+                        </td>
                         <td class="omit_label">Name</td>
                         <td>
                             phone: <a id="phone" href="tel://{customer_contact_phone}">{customer_contact_phone}</a></br>
