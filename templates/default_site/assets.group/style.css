@@ -430,14 +430,20 @@ table .dark {
 	background-color: red;
 }
 #work_reports_index .dispatched {
-	background-color: orange;
+	background-color: green;
 }
 #work_reports_index .in_progress {
-	background-color: yellow;
+	background-color: orange;
+}
+#work_reports_index .completed {
+	background-color: royalblue;
 }
 #work_reports_index .supervisor_approved,
 #work_reports_index .admin_approved {
-	background-color: green;
+	background-color: blueviolet;
+}
+#work_reports_index .xml_accepted {
+	background-color: gray;
 }
 #work_reports_index td:nth-child(1) {
 	width: 5px;
