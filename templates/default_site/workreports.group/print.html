@@ -4,6 +4,8 @@
 
   <title>Applus RTD Work Report</title>
 
+  {exp:workreports:wrDetails projid="{segment_3}"}
+
   <style type="text/css">
 
     html { font-size: 100%; overflow-y: scroll; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
@@ -59,6 +61,7 @@
       border: 0;
       width: 4px;
       padding: 0;
+      height: 6px;
     }
     table#contact td.no_border_contact {
       width: 5px;
@@ -150,7 +153,6 @@
 
 <body>
 
-  {exp:workreports:wrDetails projid="{segment_3}"}
   <!-- Header Table -->
 
   <table id="header">
@@ -193,7 +195,7 @@
       </td>
     </tr>
     <tr>
-      <td rowspan="2">
+      <td rowspan="3">
         <h1>Client</h1>
         <p>{SalesName}</p>
         <p>{SalesAddress}</p>
@@ -205,19 +207,22 @@
         <p>Fax: {CustomerFax}</p>
         <p>Email: {CustomerEmail}</p>
       </td>
-      <td rowspan="2" class="no_border"></td>
-      <td rowspan="2">
+      <td rowspan="3" class="no_border"></td>
+      <td rowspan="3">
         <h1>Work Location</h1>
         <p>{DeliveryName}</p>
         <p>{DeliveryAddress}</p>
       </td>
-      <td rowspan="2" class="no_border_contact"></td>
+      <td rowspan="3" class="no_border_contact"></td>
       <td>
         <h1>Customer Reference</h1>
         <span>Order 07.003325 Work Order 015</span>
         <p>Customer Reference</p>
         <span>GPS/CAD/GIS/API</span>
       </td>
+    </tr>
+    <tr>
+      <td class="no_border"></td>
     </tr>
     <tr>
       <td>&nbsp;</td>
