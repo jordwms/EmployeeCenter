@@ -1,6 +1,5 @@
 {embed="assets/header"}
 <div id="work_reports_details" >
-    {exp:workreports:example}{/exp:workreports:example}
     {exp:workreports:wrDetails projid="{segment_3}"}
     {form_open}
     <fieldset id="topOfTicket">
@@ -276,6 +275,7 @@
 
     <div class="details_submit">
         {actions}
+        <a href="{path='workreports/print/{segment_3}}"><input type="button" class="btn" value="PDF"></input></a>
     </div>
     {form_close}
     {/exp:workreports:wrDetails}    
