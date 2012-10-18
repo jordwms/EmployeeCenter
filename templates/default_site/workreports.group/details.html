@@ -290,7 +290,7 @@
                 <table>
                     <tr>
                         <td>
-                            <textarea name="customer_signature" placeholder="This will be a signature box very soon"></textarea>
+                            <canvas id="signature" style="height: 250px; width: 100%; border: 1px solid black;"></canvas>
                         </td>
                         <td>Customer Approval</td>
                     </tr>
@@ -320,6 +320,7 @@
 
 <script type="text/javascript" src="{path="assets/bootstrap-typeahead"}"></script>
 <script type="text/javascript" src="{path="assets/bootstrap-scrollspy"}"></script>
+<script type="text/javascript" src="{path="assets/canvas-drawr"}"></script>
 <script type="text/javascript" src="{path="assets/jQueryFormValidator"}"></script>
 
 <script type="text/javascript">
@@ -520,6 +521,11 @@
         new_resources(  );
         new_sales_items(  );
         new_materials(  );
+
+        var signature_box = new CanvasDrawr({
+            id:"signature", 
+            size: 5
+        });
     });
 
 </script>
