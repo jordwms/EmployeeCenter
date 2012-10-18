@@ -250,8 +250,8 @@ class Workreports {
 			            'research_procedure_id' 	=> $work_report[0]['research_procedure_id'],
 			            'research_spec_id' 			=> $work_report[0]['research_spec_id'],
 
-			           	'review_procedure_id' 		=> $work_report[0]['review_procedure_id'],
 			            //'review_norm_id' 			=> $work_report[0]['review_norm_id'],  //missing from mysql :(
+			           	'review_procedure_id' 		=> $work_report[0]['review_procedure_id'],
 			            'review_spec_id' 			=> $work_report[0]['review_spec_id'],
 
 			            'status' 					=> 1,
@@ -528,6 +528,9 @@ class Workreports {
 						rtd_reference,
 						object_description,
 						order_description,
+
+						research_procedure_id,
+						review_procedure_id,
 
 						work_location_id,
 						work_location_name,
