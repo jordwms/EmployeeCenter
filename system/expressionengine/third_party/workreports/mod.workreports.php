@@ -639,26 +639,6 @@ class Workreports {
 		// }
 	}
 
-
-	function contract_items(){
-		if( $contract_id = $this->EE->TMPL->fetch_param('contract_id') ){
-			$options = array('contract_id' => $contract_id);
-		} else {
-			return FALSE;
-		}
-
-		if( $film_indicator = $this->EE->TMPL->fetch_param('film_indicator') ){
-			$options['film_indicator'] = $film_indicator;
-		}
-
-		$return_data = $this->EE->axapta->contract_items->get_remote( $options );
-
-		$tagdata = $this->EE->TMPL->tagdata;
-
-		return $this->EE->TMPL->parse_variables( $tagdata, $return_data );
-	}
-
-
 	/*
 	 *  Posts a work report to the MySQL database for supervisor/admin approval
 	 */ 
@@ -810,7 +790,7 @@ class Workreports {
 				 *	First set $report_id to the existing report
 				 */
 
-				echo '<pre>UPDATE:<br>'; print_r($data); echo '</pre>';
+				//echo '<pre>UPDATE:<br>'; print_r($data); echo '</pre>';
 
 				$report_id = $existing_wr['id'];
 
