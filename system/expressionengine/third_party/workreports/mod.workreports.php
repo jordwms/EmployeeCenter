@@ -300,7 +300,7 @@ class Workreports {
 					}
 
 					//get resources from axapta and add to mysql
-					$resources = $this->EE->axapta->resources->get_remote( array( 'project_id' => $dispatch_item['project_id'] ) );
+					$resources = $this->EE->axapta->project_resources->get_remote( array( 'project_id' => $dispatch_item['project_id'] ) );
 
 					foreach($resources as $resource) {
 						$data = array(
