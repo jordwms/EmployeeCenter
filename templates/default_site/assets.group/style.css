@@ -518,35 +518,38 @@ a.work_reports span {
 	line-height: 1.2em;
 	font-size: 0.9em;
 }
-#form_nav {
-	margin: 5px 0;
+
+/*
+ *	Bottom hovering form nav for use with scroll spy
+ */
+form nav {
+	position: fixed;
+	bottom: 0;
+	z-index: 1000;
+	margin: 5px auto;
+
 }
-#form_nav span {
+form nav span {
 	display: none;
 }
-#form_nav .nav {
+form nav .nav {
 	margin: 0;
 }
-#form_nav .nav > li {
+form nav .nav > li {
 	background-color: rgb(107,101,96);
 	margin-top: 3px;
 	text-align: center;
 	width: 48px;
 }
-#form_nav .nav > li > a {
+form nav .nav > li > a {
 	border: 1px solid rgb(207,207,207);
 }
-#form_nav .nav > li > a:hover {
+form nav .nav > li > a:hover {
   text-decoration: none;
   background-color: rgb(242,247,255);
   color: rgb(0,0,0);
 }
-nav.affix {
-	position: fixed;
-	bottom: 0;
-	z-index: 1000;
-	margin: 0 auto;
-}
+
 .active {
 	background: rgb(227,238,255) !important;
 }
@@ -1132,10 +1135,10 @@ Android/HD mobile styles
 		margin: 20px 15%;
 	}
 
-	#form_nav span {
+	form nav span {
 		display: inline;
 	}
-	#form_nav .nav li {
+	form nav .nav li {
 		font-size: 10px;
 		width: auto;
 	}
@@ -1349,7 +1352,7 @@ Android/HD mobile styles
 		float: left;
 	}
 
-	#form_nav .nav li {
+	form nav .nav li {
 		font-size: 13px;
 	}
 

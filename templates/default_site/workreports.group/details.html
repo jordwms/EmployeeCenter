@@ -48,6 +48,7 @@
                     </tr>
                     <tr>
                         <td><input disabled="disabled" type="text" name="review_procedure_id" value="{review_procedure_id}" /></td>
+                        <td class="omit_label"></td>
                         <td>Review Procedure</td>
                     </tr>
                     </tbody>
@@ -301,10 +302,8 @@
     <div class="details_submit">
         {actions}
     </div>
-    {form_close}
-    {/exp:workreports:wrDetails}    
 
-    <nav id="form_nav" data-spy="affix" data-offset-top="0">
+    <nav id="form_nav">
         <ul class="nav">
             <li><a href="#topOfTicket">1<span>: RTD Info</span></a></li>
             <li><a href="#customer">2<span>: Customer Info</span></a></li>
@@ -314,12 +313,13 @@
             <li><a href="#remarks">6<span>: Remarks</span></a></li>
         </ul>
     </nav>
+    {form_close}
+    {/exp:workreports:wrDetails}
 </div>
 {embed="assets/scripts"}
 
 <script type="text/javascript" src="{path="assets/bootstrap-typeahead"}"></script>
 <script type="text/javascript" src="{path="assets/bootstrap-scrollspy"}"></script>
-<script type="text/javascript" src="{path="assets/bootstrap-affix"}"></script>
 <script type="text/javascript" src="{path="assets/jQueryFormValidator"}"></script>
 
 <script type="text/javascript">
