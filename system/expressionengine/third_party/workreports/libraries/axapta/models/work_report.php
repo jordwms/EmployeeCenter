@@ -122,7 +122,7 @@ class work_report extends axapta {
 	 *
 	 */
 	//function set_approval($projid=NULL, $dataAreaID=NULL, $emplID=NULL, $approved=TRUE) {
-	function set_ax_status($options=NULL){
+	function set_approval($options=NULL){
 		$query = 'UPDATE Salestable SET RtdApproved = :status , RtdApprovedBy = :employee_id WHERE PROJID = :project_id AND DATAAREAID = :company_id';
 
 		$status = $this->conn->prepare($query);
