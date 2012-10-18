@@ -81,14 +81,13 @@
                     </tr>
                     <tr>
                         <td>
-                            <input type="hidden" name="customer_contact_id" value="{customer_contact_id}">
                             <input type="text" autocomplete="off" autocorrect="off" autocapitalize="off" name="customer_contact_name" value="{customer_contact_name}" />
                         </td>
                         <td class="omit_label">Name</td>
                         <td>
-                            phone: <a id="phone" href="tel://{customer_contact_phone}">{customer_contact_phone}</a></br>
-                            cell: <a id="cell" href="tel://{customer_contact_mobile}">{customer_contact_mobile}</a></br>
-                            email: <a id="email" href="mailto:{customer_contact_email}">{customer_contact_email}</a></br>
+                            <div>phone: <a id="phone" href="tel://{customer_contact_phone}">{customer_contact_phone}</a></div>
+                            <div>cell: <a id="cell" href="tel://{customer_contact_mobile}">{customer_contact_mobile}</a></div>
+                            <div>email: <a id="email" href="mailto:{customer_contact_email}">{customer_contact_email}</a></div>
                         </td>
                     </tr>
                 </table>
@@ -106,7 +105,9 @@
                     <tr>
                         <td><input type="text" autocomplete="off" autocorrect="off" autocapitalize="off" name="work_location_name" value="{work_location_name}" /></td>
                         <td class="omit_label">Location</td>
-                        <td><pre class="address"><a href="//maps.google.com/maps?q={work_location_address}">{work_location_address}</a></pre></td>
+                        <td>
+                            <pre class="address"><a href="//maps.google.com/maps?q={work_location_address}">{work_location_address}</a></pre>
+                        </td>
                     </tr>
                     </tbody>
                 </table>
@@ -314,11 +315,17 @@
                 $('input[name="customer_contact_name"]').typeahead({
                     source: data,
                     onselect: function(selection){
-                        $(this.$element).parent().parent().find("#phone").html(selection.phone)
-                        $(this.$element).parent().parent().find("#cell").html(selection.cell_phone)
-                        $(this.$element).parent().parent().find("#email").html(selection.email)
-
-                        $('input[name=customer_contact_id]').val(selection.id)
+                        var parent = $(this.$element).parents('tr')
+                            parent.find("#phone").html(selection.phone)
+                                .attr('href', 'tel://'+selection.phone)
+                                .after('<input type="hidden" name="customer_contact_phone" value="'+selection.phone+'" />')
+                            parent.find("#cell").html(selection.cell_phone)
+                                .attr('href', 'tel://'+selection.cell_phone)
+                                .after('<input type="hidden" name="customer_contact_cell" value="'+selection.cell_phone+'" />')
+                            parent.find("#email").html(selection.email)
+                                .attr('href', 'mailto:'+selection.email)
+                                .after('<input type="hidden" name="customer_contact_email" value="'+selection.email+'" />')
+                                .after('<input type="hidden" name="customer_contact_id" value="'+selection.id+'" />')
                     },
                     property: 'name',
                     items: 6
@@ -340,8 +347,11 @@
                 $('input[name="work_location_name"]').typeahead({
                     source: data,
                     onselect: function(selection){
-                        $(this.$element).parent().parent().find('pre.address').html('<a href="//maps.google.com/maps?q='+selection.address+'">'+selection.address+'</a>')
-                        $('input[name=work_location_id]').val(selection.id)
+                        console.log($(this.$element).parents('tr').find('pre.address'))
+                        $(this.$element).parents('tr').find('pre.address')
+                            .html('<a href="//maps.google.com/maps?q='+selection.address+'">'+selection.address+'</a>')
+                            .before('<input type="hidden" name="work_location_address" value="'+selection.address+'" />')
+                            .before('<input type="hidden" name="work_location_id" value="'+selection.id+'" />')
                     },
                     property: 'name',
                     items: 6
@@ -356,7 +366,7 @@
             '?ACT=43&output=json&method=resources',
             {
                 options: {
-                    conpany_id:  $('input[name=company_id]').val()
+                    company_id:  $('input[name=company_id]').val()
                 }
             },
             function (data) {

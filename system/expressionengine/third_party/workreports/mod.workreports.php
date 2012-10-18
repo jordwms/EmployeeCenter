@@ -75,8 +75,8 @@ class Workreports {
 
 				case 'contact_person':
 					$options = array_merge($options, array(
-						'company_id' => $employee['company_id'],
-						'id' => '107..SYB2001377'
+						'company_id' => $employee['company_id']
+						//, 'id' => '107..SYB2001377'
 					));
 					$return_data = $this->EE->axapta->contact_person->get_remote( $options );
 					break;
@@ -106,11 +106,11 @@ class Workreports {
 
 				case 'resources':
 					$options = array_merge($options, array(
-						// 'company_id' => $employee['company_id'],
+						//'company_id' => $employee['company_id'],
 						// 'department_id' => $employee['department_id'],
 						'status' => 1
 					));
-					$return_data = $this->EE->axapta->employee->get_remote( $options );
+					$return_data = $this->EE->axapta->resources->get_remote( $options );
 					break;
 
 				case 'materials':
@@ -660,261 +660,338 @@ class Workreports {
 
 
 	/*
-	* Posts a work report to the MySQL database for supervisor/admin approval
-	*/ 
+	 *  Posts a work report to the MySQL database for supervisor/admin approval
+	 */ 
 	function submit_for_approval() {
-		// If the form has valid data process, else rerender the page with error messages.
-		if ( $employee = $this->EE->axapta->employee->get_remote(array( 'email' => $this->EE->session->userdata('email') ) ) ) {
+		/* 
+		 *  Get the employee object for the currently logged in user.  If invalid object returned, fail out of this process
+		 *  @TODO redirect to login screen upon failing to get valid user object
+		 */
+		if ( $employee = $this->EE->axapta->employee->get_remote(array( 'email' => $this->EE->session->userdata('email') )) ) {
 			$employee = $employee[0];
-			$success = array();
+			//$success = array();
 
-			// IF this is a new entry:
-			// 1. Duplicate the entry
-			// 2. Fill new entry with form data
-			// ELSE:
-			// -  Update a current entry
-
-			// Search for this WR wr_reports
-			$this->EE->db->select('*');
+			// Get the work report already in the cache (MySQL)
 			$this->EE->db->where('project_id', $this->EE->input->post('project_id') );
-			$query = $this->EE->db->get('wr_reports')->row_array();
+			$existing_wr = $this->EE->db->get('wr_reports')->row_array();
 
-			if ($query['status'] < 2 && $this->EE->input->post('save') ) {
+
+			/*** Status Decision Tree **************************************************************
+			 *  
+			 *  Technitions with Dispatcher and/or Admin are able to "short cut" a seperate approval step
+			 *  Also, status of approval will be maintained if work report is saved
+			 *  while always updating status to inprogress if not yet completed by tech
+			 */
+
+			if ($existing_wr['status'] < 2 && $this->EE->input->post('save') ) {
 				$status = 2;
 			} else {
-				$status = $query['status'];
+				$status = $existing_wr['status'];
 			}
 
-			// If the user wanted to save OR approve the WR, it will remain open until saved. 
 			if ( $this->EE->input->post('submit') || $this->EE->input->post('approve') ) {
-				if(in_array('WA DISP',$employee['groups'][$this->EE->input->post('company_id')])) {
+				if(in_array('WA TECH',$employee['groups'][$this->EE->input->post('company_id')])) {
 					$status = 3;
 				}
-				if(in_array('WA ADMIN',$employee['groups'][$this->EE->input->post('company_id')])) {
+				if(in_array('WA DISP',$employee['groups'][$this->EE->input->post('company_id')])) {
 					$status = 4;
+				}
+				if(in_array('WA ADMIN',$employee['groups'][$this->EE->input->post('company_id')])) {
+					$status = 5;
 				}
 			} elseif ( $this->EE->input->post('reject') ) {
 				$status = 0;
 			}
 
-			// If the MySQL query came back with a result...
-			if ( array_key_exists('id', $query) ){
-				$report_id = $query['id'];
-							
-				// echo "<pre>"; print_r($query);
-				// echo "-------------";
-				// echo "<pre>"; print_r($_POST); die;
+			/*** Work Report Form Data ************************************************************************
+			 *
+			 *  Begin by building the basic data array that will be used regarless if update or new from template
+			 *  These are the fields that are always updatable
+			 */
+			$data = array(
+				'submitter_id'			=> $employee['id'],
+				'execution_datetime'	=> strtotime($this->EE->input->post('execution_date')),
+				'submission_datetime'   => time(),
+				'status'				=> $status,
 
-				// If this report was built from a template...
-				if($query['export_reason'] == 'TEMPLATE'){
-					$employee_id = explode('.', $employee['id']);// $employee_id[2] will be section 1 of $project_id
-					$day = getdate();
-					$project_id = explode('/',$this->EE->input->post('project_id') );
+				'rtd_reference'			=> $this->EE->input->post('rtd_reference'),
 
-					// finds sequence # -> number or reports since 12 A.M. of current day
-					$this->EE->db->like('submitter_id', $employee['id'] );
-					$this->EE->db->from('wr_reports');
-					$this->EE->db->where('submission_datetime >', time('Y-M-d') );
-					
-					$sequence_id = $this->EE->db->count_all_results()+1;
-					$sequence_id+=1;
+				'customer_reference' 	=> $this->EE->input->post('customer_reference'),
 
-					$project_id[2] = crc32( $employee_id[2].time() );
-					// $project_id[2] = $employee_id[2].$day['yday'].$sequence_id; // NEW segment 3
+				'object_description'	=> $this->EE->input->post('object_description'),
+				'order_description'     => $this->EE->input->post('order_description'),
+				'remarks'               => $this->EE->input->post('remarks')
+			);
 
-					// Insert a new work report using the data found in the template, but creating a unique project ID
-					$data = array(
-						'submitter_id'			=> $employee['id'],
-						'execution_datetime'	=> strtotime($this->EE->input->post('execution_date')),
-						'submission_datetime'   => time(),
-						'status'				=> $status,
-						'company_id'			=> $query['company_id'], #AKA DATAAREAID
-						//'cost_center'			=> $this->EE->input->post('cost_center'), #AKA DIMENSION2_
-						'customer_name'			=> $query['customer_name'],
-						'customer_id'			=> $query['customer_id'],
-						'project_id'			=> implode('/', $project_id),
-						'customer_reference' 	=> $this->EE->input->post('customer_reference'),
-						'rtd_reference'			=> $this->EE->input->post('rtd_reference'),
-						'work_location_name' 	=> $this->EE->input->post('work_location_name'),
-                        'customer_contact_id'   => $this->EE->input->post('customer_contact_id'),
-						'customer_contact_name'	=> $this->EE->input->post('customer_contact_name'),
-						'object_description'	=> $this->EE->input->post('object_description'),
-						'order_description'     => $this->EE->input->post('order_description'),
-						'remarks'               => $this->EE->input->post('remarks')
+			/*
+			 *  These are the fields that could be updated, but if they are not, we need to preserve the existing data in MySQL
+			 */
+			// CONTACT PERSON
+			if( $this->EE->input->post('customer_contact_id') ){
+				$data = array_merge($data, array(
+					'customer_contact_id'     => $this->EE->input->post('customer_contact_id'),
+					'customer_contact_name'   => $this->EE->input->post('customer_contact_name'),
+					'customer_contact_phone'  => $this->EE->input->post('customer_contact_phone'),
+					'customer_contact_mobile' => $this->EE->input->post('customer_contact_cell'),
+					'customer_contact_email'  => $this->EE->input->post('customer_contact_email')
+				));
+			}
+			// WORK LOCATION
+			if( $this->EE->input->post('work_location_id') ){
+				$data = array_merge($data, array(
+					'work_location_id'      => $this->EE->input->post('work_location_id'),
+					'work_location_name'      => $this->EE->input->post('work_location_name'),
+					'work_location_address' => $this->EE->input->post('work_location_address')
+				));
+			}
+
+			/*** Form Actions / Data Processing *****************************************************************
+			 *
+			 *  Now that we have the data from the form, let's see if we're gonna make a new report based on a template
+			 *  OR update the data in an existing report
+			 */
+			if($existing_wr['export_reason'] == 'TEMPLATE'){
+				/*
+				 *  NEW FROM TEMPLATE
+				 *  Begin by building a new project_id (>= 8 char long)
+				 */
+
+				echo '<pre>TEMPLATE:<br>'; print_r($data); echo '</pre>';
+
+				/*
+				 *  project_id parts 
+				 *  [0] => order / [1] => work_order / [2] => work_report
+				 */
+				$project_id_parts = explode( '/', $existing_wr['project_id'] );
+
+				/*
+				 *  Old work_report_id algorithm
+				 *  Builds Last 4 of employee_id + day # of year (DDD) + sequence #
+				 *  ex: 02262911
+				 */
+
+				/*
+				 *  get sequence # -> number of reports since 12 A.M. of current day submitting with same customer/order
+				 */
+				// $this->EE->db->from( 'wr_reports' );
+				// $this->EE->db->where( 'submitter_id', $employee['id'] );
+				// $this->EE->db->like( 'project_id', $project_id_parts[0].'/'.$project_id_parts[1], 'after' );
+				// $sequence_id = $this->EE->db->count_all_results()+1;
+
+				// $employee_id_parts = explode('.', $employee['id']);// $employee_id[2] will be section 1 of $project_id
+				// $day_of_year = str_pad( date('z'), 3, '0', STR_PAD_LEFT );
+				// $project_id[2] = $employee_id[2].$date['yday'].$sequence_id;
+
+				/*
+				 *  New/better algorithm for unique work_report_id
+				 *  Take crc32 hash of time and employee id and
+				 *  replace 3rd segment of project_id w/ new work_report_id
+				 */
+				$project_id_parts[2] = crc32( $employee['id'].time() );
+				$project_id = implode('/', $project_id_parts);
+
+				/*
+				 *  Ammend $data with some additional stuff we need only if it's a template
+				 *  First Merge $exsisting_wr with $data from form
+				 *  Then ammend project_id and any other values necessary only for templates
+				 */
+				$data = array_merge($existing_wr, $data, array(
+					'project_id'    => $project_id, //new project id
+					'export_reason' => NULL         //make sure this isn't treated as a template in the future
+				));
+
+				$this->EE->db->insert('wr_reports', $data);
+				$success['wr_reports'] = $this->EE->db->affected_rows();
+
+				$report_id = $this->EE->db->insert_id();
+			} else {
+				/*
+				 *  Update Existing Work Report
+				 *	First set $report_id to the existing report
+				 */
+
+				echo '<pre>UPDATE:<br>'; print_r($data); echo '</pre>';
+
+				$report_id = $existing_wr['id'];
+
+				$this->EE->db->where('id', $report_id );
+				$this->EE->db->update('wr_reports', $data);
+				$success['wr_reports'] = $this->EE->db->affected_rows();
+			}
+
+			/*** Resources ***************************************************************
+			 *
+			 *  Update existing or insert new wr_resources entries
+			 *  Because we test if the resource already exists for the $report_id
+			 *  there is no need to treat template differently than update
+			 */
+			foreach($this->EE->input->post('resources') as $resource) {
+				/*
+				 *  First check if the quantity was actually updated to save some processing
+				 */
+				if( $resource['qty'] ){
+
+					//echo '<pre>RESOURCE QTY CHANGED:<br>'; print_r($resource); echo '</pre>';
+
+					/*
+					 *  Then check if resource already exists for $report_id
+					 */
+					$this->EE->db->select('resource_id');
+					$this->EE->db->from('wr_resources');
+					$this->EE->db->where('report_id', $report_id);
+					$this->EE->db->where('resource_id', $resource['resource_id']);
+
+					$count = $this->EE->db->count_all_results();
+
+					if( $count == 1 ){
+						/*
+						 *  The Resource DOES exist already, so just update the qty
+						 */
+						$data = array(
+							'qty' => $resource['qty']
 						);
-
-					$this->EE->db->insert('wr_reports', $data);
-					$success['wr_reports'] = $this->EE->db->affected_rows();
-					$report_id = $this->EE->db->insert_id();
-
-					// Update wr_resources entries
-					$resources = $this->EE->input->post('resources');
-					foreach($resources as $resource) {
+						$this->EE->db->where('report_id', $report_id );
+						$this->EE->db->where('resource_id', $resource['resource_id']);
+						$this->EE->db->update('wr_resources', $data);
+					} elseif( $count == 0 ) {
+						/*
+						 *  The Resource DOES NOT exist already, so insert new
+						 *  This should always be triggered if from TEMPLATE
+						 */
 						$data = array(
 							'report_id'		=> $report_id,
 							'name'          => $resource['name'],
 							'resource_id' 	=> $resource['resource_id'],
 							'qty' 			=> $resource['qty']
-							);
+						);
 						$this->EE->db->insert('wr_resources', $data);
+					} else {
+						/*
+						 *  There must be multiple resources existing with the same resource_id and thats' bad :(
+						 *  Lets not do anything to the database just to be safe
+						 @TODO Error trap this
+						 */
 					}
+				}
+			}
 
-					// Make wr_items entries
-					$sales_items = $this->EE->input->post('sales_items'); # needs to be 'sales_items'
-					foreach($sales_items as $item) {
+
+			/*** Sales Items ***************************************************************
+			 *
+			 *	Basically same process as resources
+			 */
+			foreach($this->EE->input->post('sales_items') as $item) {
+				if( $item['qty'] ) {
+
+					//echo '<pre>SALES ITEM QTY CHANGED:<br>'; print_r($item); echo '</pre>';
+
+					$this->EE->db->select('item_id, dimension_id');
+					$this->EE->db->from('wr_items');
+					$this->EE->db->where('report_id', $report_id);
+					$this->EE->db->where('item_id', $item['item_id']);
+					$this->EE->db->where('dimension_id', $item['dimension_id']);
+
+					$count = $this->EE->db->count_all_results();
+
+					if($count == 1) {
+						//UPDATE
+						$data = array(
+							'qty' => $item['qty']
+						);
+						$this->EE->db->where('report_id', $report_id );
+						$this->EE->db->where('item_id', $item['item_id']);
+						$this->EE->db->update('wr_items', $data);
+					} elseif( $count == 0 ) {
+						//INSERT
 						$data = array(
 							'report_id' 	=> $report_id,
-							'name' 			=> $item['name'],
 							'dimension_id'  => $item['dimension_id'],
 							'item_id' 		=> $item['item_id'],
+							'name' 			=> $item['name'],
 							'qty'           => $item['qty'],
 							'unit'			=> $item['unit']
 						);
 						$this->EE->db->insert('wr_items', $data);
+					} else {
+						/*
+						 *  There must be multiple resources existing with the same resource_id and thats' bad :(
+						 *  Lets not do anything to the database just to be safe
+						 @TODO Error trap this
+						 */
 					}
-					
-					// Not every report uses materials
-					if(isset($materials) ) {
-						// Make wr_materials entries
-						$materials = $this->EE->input->post('materials');
-						foreach($materials as $material) {
-							$data = array(
-								'report_id'			=> $report_id,
-								'dimension_id'      => $material['dimension_id'],
-								'item_id' 			=> $material['item_id'],
-								'name' 			    => $material['name'],
-								'unit' 			    => $material['unit'],
-								'qty'				=> $material['qty']
-							);
-							$this->EE->db->insert('wr_materials', $data);
-						}
-					}
-				} else { // the entry is already uniquely in the DB
+				}
+			}
+			
+			/*** Materials/Consumables ********************************************************
+			 *
+			 *	Basically same process as resources except not every work report has materials
+			 */
+			if( is_array($this->EE->input->post('materials')) ) {
+				foreach($this->EE->input->post('materials') as $material) {
+					if( $material['qty'] ){
 
-					$data = array(
-						'submitter_id'			=> $employee['id'], #should be employee name
-						'execution_datetime'	=> strtotime($this->EE->input->post('execution_date')),
-						'submission_datetime'   => time(),
-						'status'				=> $status,
-						// 'company_id'			=> $this->EE->input->post('company_id'), #AKA DATAAREAID
-						// 'cost_center'			=> $this->EE->input->post('cost_center'), #AKA DIMENSION2_
-						// 'customer_name'			=> $this->EE->input->post('customer_name'),
-						// 'customer_id'			=> $this->EE->input->post('customer_id'),
-						'project_id'			=> $this->EE->input->post('project_id'),
-						'customer_reference' 	=> $this->EE->input->post('customer_reference'),
-						'rtd_reference'			=> $this->EE->input->post('rtd_reference'),
-						'work_location_name' 	=> $this->EE->input->post('work_location_name'),
-						'customer_contact_name'	=> $this->EE->input->post('customer_contact_name'),
-						'object_description'	=> $this->EE->input->post('object_description'),
-						'order_description'     => $this->EE->input->post('order_description'),
-						'remarks'               => $this->EE->input->post('remarks')
-						);
+						//echo '<pre>MATERIAL QTY CHANGED:<br>'; print_r($material); echo '</pre>';
 
-					$this->EE->db->where('project_id', $this->EE->input->post('project_id') );
-					$this->EE->db->update('wr_reports', $data);
-					$success['wr_reports'] = $this->EE->db->affected_rows();
-
-					// Update wr_resources entries
-					$resources_form = $this->EE->input->post('resources');
-
-					foreach($resources_form as $resource) {
-                        $this->EE->db->select('resource_id');
-                        $this->EE->db->from('wr_resources');
-                        $this->EE->db->where('report_id', $report_id);
-                        $this->EE->db->where('resource_id', $resource['resource_id']);
-
-						if($this->EE->db->count_all_results() > 0){
-							$data = array(
-								'qty' 			=> $resource['qty']
-								);
-							$this->EE->db->where('report_id', $report_id );
-							$this->EE->db->where('resource_id', $resource['resource_id']);
-							$this->EE->db->update('wr_resources', $data);
-						} else {
-							$data = array(
-								'report_id'		=> $report_id,
-								'name'          => $resource['name'],
-								'resource_id' 	=> $resource['resource_id'],
-								'qty' 			=> $resource['qty']
-							);
-							$this->EE->db->insert('wr_resources', $data);
-						}
-					}
-
-					// Make wr_items entries
-					$sales_items_form = $this->EE->input->post('sales_items');
-					foreach($sales_items_form as $item) {
 						$this->EE->db->select('item_id, dimension_id');
-						$this->EE->db->from('wr_items');
+						$this->EE->db->from('wr_materials');
 						$this->EE->db->where('report_id', $report_id);
-						$this->EE->db->where('item_id', $item['item_id']);
-						$this->EE->db->where('dimension_id', $item['dimension_id']);
-						$items_db = $this->EE->db->count_all_results();
+						$this->EE->db->where('item_id', $material['item_id']);
+						$this->EE->db->where('dimension_id', $material['dimension_id'] );
 
-
-						if($items_db > 1) {
+						$count = $this->EE->db->count_all_results();
+					
+						if($count == 1) {
+							//UPDATE
 							$data = array(
-								'qty'           => $item['qty']
+								'qty' => $material['qty']
 							);
-							$this->EE->db->where('report_id', $report_id );
-							$this->EE->db->where('item_id', $item['item_id']);
-							$this->EE->db->update('wr_items', $data);
-						} else {
+							$this->EE->db->where('report_id', $report_id);
+							$this->EE->db->where('item_id', $material['item_id']);
+							$this->EE->db->where('dimension_id', $material['dimension_id'] );
+							$this->EE->db->update('wr_materials', $data);
+						} elseif( $count == 0 ) {
+							//INSERT
 							$data = array(
 								'report_id' 	=> $report_id,
-								'name' 			=> $item['name'],
-								'dimension_id'  => $item['dimension_id'],
-								'item_id' 		=> $item['item_id'],
-								'qty'           => $item['qty'],
-								'unit'			=> $item['unit']
+								'dimension_id'  => $material['dimension_id'],
+								'item_id' 		=> $material['item_id'],
+								'name' 			=> $material['name'],
+								'qty'           => $material['qty'],
+								'unit'			=> $material['unit']
 							);
 							$this->EE->db->insert('wr_items', $data);
-						}
-					}
-					
-					// Not every report uses materials
-					if(isset($materials) ) {
-						// Make wr_materials entries
-						$materials_form = $this->EE->input->post('materials');
-						foreach($materials_form as $material) {
-							$this->EE->db->select('item_id, dimension_id');
-							$this->EE->db->from('wr_materials');
-							$this->EE->db->where('report_id', $report_id);
-							$this->EE->db->where('item_id', $item['item_id']);
-							$this->EE->db->where('dimension_id', $item['dimension_id'] );
-							$materials_db = $this->EE->db->count_all_results();
-						
-							if($materials_db > 1) {
-								$data = array(
-									'qty'				=> $material['qty']
-								);
-								$this->EE->db->where('report_id', $report_id );
-								$this->EE->db->where('item_id', $item['item_id']);
-								$this->EE->db->update('wr_materials', $data);
-							}
+						} else {
+							/*
+							 *  There must be multiple resources existing with the same resource_id and thats' bad :(
+							 *  Lets not do anything to the database just to be safe
+							 @TODO Error trap this
+							 */
 						}
 					}
 				}
-			} 
-			if(in_array(0, $success)) {
-				show_error('error submitting work report');
-
-				// Delete all records where report_id
-			} else {
-				// $this->EE->axapta->set_approval($this->EE->input->post('projid'), $this->EE->input->post('DataAreaID'), $employee['id']);
-				if($status == 4) {
-					$this->EE->mysql->create_xml($report_id);
-				}
-				$this->EE->output->show_message(array(
-					'title'   => 'Information Accepted',
-		            'heading' => 'Thank you',
-		            'content' => 'Sucessfully submitted work report.',
-		            'link'    => array($this->EE->functions->form_backtrack('-1'), 'Return to Dashboard')
-		        ));
 			}
+
+			/*
+			 *  We're almost done.
+			 *  First, check if the work report has admin approval status
+			 *	If so, we need to export XML, set ax_status/approval == 1 and send a PDF if the customer contact has an email address.
+			 */
+			if($status == 5) {
+				$this->EE->mysql->create_xml($report_id);
+				$this->EE->axapta->work_report->set_approval(array(
+					'status' => 1,
+					'project_id' => ($project_id) ? $project_id : $existing_wr['project_id'],
+				    'employee_id' => $employee['id'],
+				    'company_id' => $existing_wr['company_id']
+				));
+			}
+			$this->EE->output->show_message(array(
+				'title'   => 'Information Accepted',
+				'heading' => 'Thank you',
+				'content' => 'Sucessfully submitted work report.',
+				'link'    => array($this->EE->functions->form_backtrack('0'), 'Return to Work Reports')
+			));
 			return TRUE;
-		} else {
-			return FALSE;
 		}
 	}
 }// END CLASS
