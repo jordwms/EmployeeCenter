@@ -1,31 +1,46 @@
 <?php
 class resources extends axapta {
-	protected $id           = 'EMPLTABLE.EMPLID';
-	protected $name         = 'EMPLTABLE.NAME';
-	protected $project_id   = 'RTDEMPLPERWORKREPORT.PROJID';
+	/* 
+	 *	these are the model properties
+	 *	they are defined as: $property_name = AXAPTAFIELD with any SQL operators (ie date formating)
+	 */
+	protected $id                 = 'EMPLID';
+	protected $name               = 'NAME';
+	protected $title              = 'TITLE';
+	protected $axapta_id          = 'USERID';
 
-	function __construct($conn){
+	protected $status             = 'STATUS';
+	protected $internal_external  = 'INTERNALEXTERNAL';
+	protected $hrm_active_flag    = 'HRMACTIVEINACTIVE';
+
+	protected $company_id         = 'DATAAREAID';
+	protected $department_id      = 'DIMENSION';
+	protected $cost_center_id     = 'DIMENSION2_';
+
+
+	function __construct($conn, $test = NULL){
 		$this->conn =& $conn;
 		$this->properties = $this->get_properties();
 	}
-	
+
 	/*
-	 *  Resources
+	 *	Employee Details
+	 *	
+	 *	Defaults: EMAIL = current user email
+	 *	Options: ANY COLUMN
+	 *
 	 */
 	function get_remote($options = NULL) {
-		//set some defaults
-		if( !is_array($options) ){
+		$this->explode_datetime($options);
 
-		} else {
+		//select all properties defined at top of class
+		$query = $this->build_select();
 
-		}
+		//from statement
+		$query .= 'FROM EMPLTABLE'.NL;
 
-		$query = $this->build_SELECT();
-
-		$query .= 'FROM RTDEMPLPERWORKREPORT'.NL;
-		$query .= 'LEFT JOIN EMPLTABLE ON RTDEMPLPERWORKREPORT.EMPLID = EMPLTABLE.EMPLID AND RTDEMPLPERWORKREPORT.DATAAREAID = EMPLTABLE.DATAAREAID'.NL;
-		
-		$query .= $this->build_WHERE( $options );
+		//build WHERE statements from passed options
+		$query .= $this->build_WHERE($options);
 
 		if( isset($_GET['output']) && $_GET['output'] == 'debug' ){
 			echo '<pre>'.$query.'</pre>';
@@ -34,15 +49,18 @@ class resources extends axapta {
 			echo '</pre>';
 		}
 
-		$resources = $this->conn->prepare($query);
+		//create the prepared statement
+		$employee_info = $this->conn->prepare($query);
 
-		$this->bind_option_values( $resources, $options );
+		//bind all option values
+		$this->bind_option_values($employee_info, $options);
 
-		$resources->setFetchMode(PDO::FETCH_NAMED);
-		$resources->execute();
+		//fetch all records
+		$employee_info->setFetchMode(PDO::FETCH_NAMED);
+		$employee_info->execute();
+		$employees = $employee_info->fetchAll();
 
-		$return_data = $resources->fetchAll();
 
-		return $this->fix_padding( $return_data );
+		return $this->fix_padding($employees);
 	}
 }
