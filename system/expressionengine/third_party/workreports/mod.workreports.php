@@ -7,43 +7,46 @@ class Workreports {
 		$this->EE =& get_instance();
 		$this->EE->load->library('axapta/axapta');
 		$this->EE->load->library('tcpdf/tcpdf');
-		// $this->EE->load->library('tcpdf/config/lang/eng');
 		$this->EE->load->library('mysql');
 		$this->EE->config->set_item('compress_output', FALSE); 
 	}
 
 	function wrPrint() {
-
 		// $this->EE->load->template('print');
 		require_once('libraries/tcpdf/config/lang/eng.php');
 
 		// create new PDF document
-		$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+		$pdf = new TCPDF('p', 'pt', 'ANSI_A', TRUE, 'UTF-8'); // North American Format
+		// $pdf = new TCPDF('p', 'pt', 'a4', TRUE, 'UTF-8');
 
 		// set document information
-		$pdf->SetCreator(PDF_CREATOR);
-		$pdf->SetAuthor('Nicola Asuni');
-		$pdf->SetTitle('TCPDF Example 061');
+		$pdf->SetCreator('Applus RTD');
+		$pdf->SetAuthor('Applus RTD');
+		$pdf->SetTitle('Test Work Report');
 		$pdf->SetSubject('TCPDF Tutorial');
-		$pdf->SetKeywords('TCPDF, PDF, example, test, guide');
+		$pdf->SetKeywords('TCPDF, PDF, test, report');
 
 		// set default header data
-		$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 061', PDF_HEADER_STRING);
+		$pdf->SetHeaderData('', 0, 'Applus RTD', '');
 
-		// set header and footer fonts
-		$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-		$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+		// remove default header/footer
+		$pdf->setPrintHeader(false);
+		$pdf->setPrintFooter(false);
+
+		// // set header and footer fonts
+		// $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+		// $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
 
 		// set default monospaced font
 		$pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 
 		//set margins
 		$pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
-		$pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
-		$pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+		// $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
+		// $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
 		//set auto page breaks
-		$pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+		$pdf->SetAutoPageBreak(FALSE, PDF_MARGIN_BOTTOM);
 
 		//set image scale factor
 		$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
@@ -73,8 +76,10 @@ class Workreports {
 		// define some HTML content with style
 		$html = $this->wrDetails();
 
+		// echo $html; die;
+
 		// output the HTML content
-		$pdf->writeHTML($html, true, false, true, false, '');
+		$pdf->writeHTML($html);
 
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -139,7 +144,7 @@ class Workreports {
 		// ---------------------------------------------------------
 
 		//Close and output PDF document
-		$pdf->Output('example_061.pdf', 'I');
+		$pdf->Output('work_report[TEST].pdf', 'I');
 	}
 	
 	/*
