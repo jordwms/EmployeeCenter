@@ -18,13 +18,23 @@
     p, span { margin: 0; font-size: 80%; }
     img { width: 295px; height: 70px; margin: 9px 0; }
 
+    /** Header **/
+
     header div {
       float: left;
       width: 50%;
       margin-bottom: 4px;
     }
     header:after,
-    .contact:after {
+    .contact:after,
+    .research > div:after,
+    .resources > div:after,
+    .equipment > div:after,
+    .items > div:after,
+    .remarks:after,
+    .materials_data:after,
+    .signature:after,
+    .signature_approval > div:nth-child(1):after {
       clear: both;
       display: block;
       height: 0;
@@ -36,8 +46,13 @@
       text-decoration: underline;
     }
 
+    /** Contact Info **/
+
     h3 {
       font-size: 85%;
+    }
+    .contact {
+      padding-bottom: 5px;
     }
     .contact > div {
       float: left;
@@ -76,6 +91,260 @@
       height: 82px;
     }
 
+    /** Research **/
+
+    .research > div {
+      float: left;
+      width: 458px;
+    }
+    .research_section > div,
+    .review_section > div {
+      border: 2px solid rgb(255,100,7);
+      margin-bottom: 4px;
+      padding: 4px;
+    }
+    .research_section > div {
+      margin-right: 4px;
+    }
+    .research_section > div:nth-child(1),
+    .review_section > div:nth-child(1) {
+      text-align: center;
+    }
+    .research_section > div:nth-child(2),
+    .review_section > div:nth-child(2) {
+      float: left;
+      width: 150px;
+      margin-right: 4px;
+      margin-bottom: 9px;
+    }
+    .review_section > div:nth-child(2) {
+      width: 149px;
+    }
+    .research_section > div:nth-child(3) {
+      float: left;
+      width: 276px;
+      margin-bottom: 9px;
+    }
+    .review_section > div:nth-child(3) {
+      float: left;
+      width: 281px;
+      margin-bottom: 9px;
+    }
+
+    /** Resources **/
+
+    .resources {
+      padding-bottom: 5px;
+    }
+    .resources > div {
+      width: 916px;
+    }
+    .resources_headers > div {
+      border: 2px solid rgb(255,100,7);
+      float: left;
+      margin-bottom: 4px;
+      padding: 4px;
+    }
+    .resources_name {
+      margin-right: 4px;
+      width: 205px;
+      height: 45px;
+    }
+    .resources_name h3 {
+      margin-top: 29px;
+    }
+    .resources_hours,
+    .resources_hours_begin {
+      text-align: center;
+      width: 188px;
+      height: 45px;
+    }
+    .resources_hours_begin {
+      border-right: none !important;
+    }
+    .resources_hours > div:nth-child(1),
+    .resources_hours_begin > div:nth-child(1) {
+      margin-bottom: 12px;
+    }
+    .resources_hours > div:nth-child(2),
+    .resources_hours > div:nth-child(3),
+    .resources_hours_begin > div:nth-child(2),
+    .resources_hours_begin > div:nth-child(3) {
+      float: left;
+      width: 50%;
+    }
+    .resources_rest {
+      border-right: none !important;
+      border-left: none !important;
+      margin-top: 20px;
+      width: 89px;
+      text-align: center;
+    }
+    .resources_data > div {
+      margin-bottom: 4px;
+      padding: 4px;
+      float: left;
+      border: 2px solid rgb(255,100,7);
+      border-right: none;
+      width: 89px;
+      text-align: center;
+    }
+    .resources_data > div:nth-child(8) {
+      border-right: 2px solid rgb(255,100,7) !important;
+    }
+    .resources_data_name {
+      border-right: 2px solid rgb(255,100,7) !important;
+      margin-right: 4px;
+      width: 205px !important;
+    }
+
+    /** Equipment **/
+
+    .equipment {
+      margin-bottom: 9px;
+    }
+    .equipment_headers > div,
+    .equipment_data > div {
+      border: 2px solid rgb(255,100,7);
+      float: left;
+      padding: 4px;
+    }
+    .equipment_headers > div {
+      border-right: none;
+      border-bottom: none;
+    }
+    .equipment_headers > div:nth-child(1),
+    .equipment_data > div:nth-child(1) {
+      border-right: 2px solid rgb(255,100,7) !important;
+      margin-right: 4px;
+      width: 205px;
+    }
+    .equipment_headers > div:nth-child(2),
+    .equipment_headers > div:nth-child(3) {
+      width: 287px;
+      text-align: center;
+    }
+    .equipment_headers > div:nth-child(4) {
+      border-right: 2px solid rgb(255,100,7) !important;
+      width: 89px;
+      text-align: center;
+    }
+    .equipment_data > div {
+      border-right: none;
+    }
+    .equipment_data > div:nth-child(2),
+    .equipment_data > div:nth-child(3) {
+      width: 287px;
+    }
+    .equipment_data > div:nth-child(4) {
+      border-right: 2px solid rgb(255,100,7) !important;
+      width: 89px;
+      text-align: right;
+    }
+
+    /** Sales Items **/
+
+    .items {
+      padding-bottom: 5px;
+    }
+    .items > div > div {
+      float: left;
+      padding: 4px;
+      border: 2px solid rgb(255,100,7);
+      margin-bottom: 4px;
+    }
+    .items > div > div:nth-child(1) {
+      margin-right: 4px;
+      width: 700px;
+    }
+    .items > div > div:nth-child(2) {
+      border-right: none;
+      width: 89px;
+    }
+    .items > div > div:nth-child(3) {
+      width: 89px;
+      text-align: right;
+    }
+
+    /** Remarks **/
+
+    .remarks {
+      padding-bottom: 5px;
+    }
+    .remarks > div {
+      margin: 0 4px 4px 0;
+      float: left;
+      width: 298px;
+      border: 2px solid rgb(255,100,7);
+    }
+    .remarks > div:nth-child(3) {
+      margin-right: 0;
+      width: 300px;
+    }
+    .remarks > div > div {
+      padding: 4px;
+    }
+    .remarks > div > div:nth-child(2) {
+      border-top: 2px solid rgb(255,100,7);
+      height: 120px;
+    }
+
+    /** Materials **/
+
+    .materials {
+      padding-bottom: 9px;
+    }
+    .materials_header {
+      border: 2px solid rgb(255,100,7);
+      padding: 4px;
+    }
+    .materials_data > div {
+      border: 2px solid rgb(255,100,7);
+      float: left;
+      font-size: 85%;
+      width: 45px;
+      border-top: none;
+      border-right: none;
+    }
+    .materials_data > div:last-child {
+      width: 301px;
+      border-right: 2px solid rgb(255,100,7);
+    }
+    .materials_data > div > div {
+      padding: 4px;
+    }
+    .materials_data > div > div:nth-child(1) {
+      border-bottom: 2px solid rgb(255,100,7);
+      height: 26px;
+    }
+
+    /** Signature **/
+
+    .signature > div {
+      float: left;
+      border: 2px solid rgb(255,100,7);
+      width: 452px;
+      height: 90px;
+    }
+    .signature_approval {
+      margin-right: 4px;
+    }
+    .signature_approval > div > div {
+      float: left;
+      width: 47%;
+      padding: 4px;
+    }
+    .signature_approval > div > div:nth-child(2) {
+      text-align: center;
+    }
+    .signature_approval > div:nth-child(2),
+    .signature_confirmation > div:nth-child(2) {
+      margin-top: 40px;
+    }
+    .signature_confirmation > div {
+      padding: 4px;
+    }
+
   </style>
 
 </head>
@@ -85,8 +354,10 @@
   <!-- Header -->
 
   <header>
+
     <div><h1>Applus RTD USA</h1></div>
     <div><h2>Work Report {project_id}</h2></div>
+
   </header>
   
   <!-- Contact Info -->
@@ -151,176 +422,208 @@
 
   <!-- Research -->
 
-  <div>
-    <div>Research</div>
-    <div>UT-91112r3</div>
-    <div>EN 1714 meth 1</div>
-  </div>
-  <div>
-    <div>Review</div>
-    <div>UT-91112r3</div>
-    <div>EN 1712 niv 2 of 3</div>
+  <div class="research">
+
+    <div class="research_section">
+      <div><h3>Research</h3></div>
+      <div><p>UT-91112r3</p></div>
+      <div><p>EN 1714 meth 1</p></div>
+    </div>
+    <div class="review_section">
+      <div><h3>Review</h3></div>
+      <div><p>UT-91112r3</p></div>
+      <div><p>EN 1712 niv 2 of 3</p></div>
+    </div>
+
   </div>
 
   <!-- Resources -->
 
-  <div>
-    <div>Name</div>
-    <div>
-      <div>Begin</div>
-      <div>Start</div>
-      <div>End</div>
-    </div>
-    <div>
-      <div>Hours Worked</div>
-      <div>Start</div>
-      <div>End</div>
-    </div>
-    <div>Rest</div>
-    <div>
-      <div>Return</div>
-      <div>Start</div>
-      <div>End</div>
-    </div>
-  </div>
+  <div class="resources">
 
-  {resources}
-  <div>
-    <div>{name}</div>
-    <div></div>
-    <div></div>
-    <div></div>
-    <div></div>
-    <div></div>
-    <div></div>
-    <div></div>
+    <div class="resources_headers">
+      <div class="resources_name"><h3>Name</h3></div>
+      <div class="resources_hours_begin">
+        <div><h3>Begin</h3></div>
+        <div><p>Start</p></div>
+        <div><p>End</p></div>
+      </div>
+      <div class="resources_hours">
+        <div><h3>Hours Worked</h3></div>
+        <div><p>Start</p></div>
+        <div><p>End</p></div>
+      </div>
+      <div class="resources_rest"><h3>Rest</h3></div>
+      <div class="resources_hours">
+        <div><h3>Return</h3></div>
+        <div><p>Start</p></div>
+        <div><p>End</p></div>
+      </div>
+    </div>
+
+    {resources}
+    <div class="resources_data">
+      <div class="resources_data_name"><p>{name}</p></div>
+      <div><p>-</p></div>
+      <div><p>-</p></div>
+      <div><p>-</p></div>
+      <div><p>-</p></div>
+      <div><p>-</p></div>
+      <div><p>-</p></div>
+      <div><p>-</p></div>
+    </div>
+    {/resources}
+
   </div>
-  {/resources}
 
   <!-- Equipment -->
 
-  <div>
-    <div>Equipment</div>
-    <div>Definition</div>
-    <div>Model Type</div>
-    <div>Activity</div>
-  </div>
+  <div class="equipment">
 
-  {equipment}
-  <div>
-    <div>EQ.002 YIW-068</div>
-    <div>Peugeot 307</div>
-    <div></div>
-    <div></div>
+    <div class="equipment_headers">
+      <div><h3>Equipment</h3></div>
+      <div><h3>Definition</h3></div>
+      <div><h3>Model Type</h3></div>
+      <div><h3>Activity</h3></div>
+    </div>
+
+    <!-- {equipment} -->
+    <div class="equipment_data">
+      <div><p>EQ.002 YIW-068</p></div>
+      <div><p>Peugeot 307</p></div>
+      <div><p>-</p></div>
+      <div><p>-</p></div>
+    </div>
+    <!-- {/equipment} -->
+
   </div>
-  {/equipment}
 
   <!-- Sales Items -->
 
-  <div>
-    <div>Item</div>
-    <div>Unit</div>
-    <div>Quantity</div>
-  </div>
+  <div class="items">
 
-  {sales_items}
-  <div>
-    <div>{item_name}</div>
-    <div>{sales_unit}</div>
-    <div></div>
+    <div class="items_headers">
+      <div><h3>Item</h3></div>
+      <div><h3>Unit</h3></div>
+      <div><h3>Quantity</h3></div>
+    </div>
+
+    {sales_items}
+    <div class="items_data">
+      <div><p>{item_name}</p></div>
+      <div><p>{sales_unit}</p></div>
+      <div><p>-</p></div>
+    </div>
+    {/sales_items}
+
   </div>
-  {/sales_items}
 
   <!-- Remarks -->
 
-  <div>
-    <div>Remark</div>
-    <div></div>
-  </div>
-  <div>
-    <div>Object Description</div>
-    <div></div>
-  </div>
-  <div>
-    <div>Order Description</div>
-    <div></div>
+  <div class="remarks">
+
+    <div>
+      <div><h3>Remark</h3></div>
+      <div><p>This is a Remark</p></div>
+    </div>
+    <div>
+      <div><h3>Object Description</h3></div>
+      <div><p>This is an Object Description</p></div>
+    </div>
+    <div>
+      <div><h3>Order Description</h3></div>
+      <div><p>This is an Order Description</p></div>
+    </div>
+
   </div>
 
   <!-- Material Consumption -->
 
-  <div>Material Consumption</div>
+  <div class="materials">
 
-  <div>
-    <div>
-      <div>Films 6"12</div>
-      <div></div>
+    <div class="materials_header"><h3>Material Consumption</h3></div>
+
+    <div class="materials_data">
+      <div>
+        <div><p>Films<br />6"12</p></div>
+        <div><p>-</p></div>
+      </div>
+      <div>
+        <div><p>Films<br />6"16</p></div>
+        <div><p>-</p></div>
+      </div>
+      <div>
+        <div><p>Films<br />6"24</p></div>
+        <div><p>-</p></div>
+      </div>
+      <div>
+        <div><p>Films<br />6"48</p></div>
+        <div><p>-</p></div>
+      </div>
+      <div>
+        <div><p>Films<br />9"12</p></div>
+        <div><p>-</p></div>
+      </div>
+      <div>
+        <div><p>Films<br />10"16</p></div>
+        <div><p>-</p></div>
+      </div>
+      <div>
+        <div><p>Films<br />10"24</p></div>
+        <div><p>-</p></div>
+      </div>
+      <div>
+        <div><p>Films<br />10"48</p></div>
+        <div><p>-</p></div>
+      </div>
+      <div>
+        <div><p>Films<br />18"24</p></div>
+        <div><p>-</p></div>
+      </div>
+      <div>
+        <div><p>Films<br />30"40</p></div>
+        <div><p>-</p></div>
+      </div>
+      <div>
+        <div><p>Films<br />&nbsp;&nbsp;&nbsp;&nbsp;"</p></div>
+        <div><p>-</p></div>
+      </div>
+      <div>
+        <div><p>Films<br />&nbsp;&nbsp;&nbsp;&nbsp;"</p></div>
+        <div><p>-</p></div>
+      </div>
+      <div>
+        <div><p>Films<br />&nbsp;&nbsp;&nbsp;&nbsp;"</p></div>
+        <div><p>-</p></div>
+      </div>
+      <div>
+        <div><p>-</p></div>
+        <div><p>-</p></div>
+      </div>
     </div>
-    <div>
-      <div>Films 6"16</div>
-      <div></div>
-    </div>
-    <div>
-      <div>Films 6"24</div>
-      <div></div>
-    </div>
-    <div>
-      <div>Films 6"48</div>
-      <div></div>
-    </div>
-    <div>
-      <div>Films 9"12</div>
-      <div></div>
-    </div>
-    <div>
-      <div>Films 10"16</div>
-      <div></div>
-    </div>
-    <div>
-      <div>Films 10"24</div>
-      <div></div>
-    </div>
-    <div>
-      <div>Films 10"48</div>
-      <div></div>
-    </div>
-    <div>
-      <div>Films 18"24</div>
-      <div></div>
-    </div>
-    <div>
-      <div>Films 30"40</div>
-      <div></div>
-    </div>
-    <div>
-      <div>Films &nbsp;&nbsp;&nbsp;&nbsp;"</div>
-      <div></div>
-    </div>
-    <div>
-      <div>Films &nbsp;&nbsp;&nbsp;&nbsp;"</div>
-      <div></div>
-    </div>
-    <div>
-      <div>Films &nbsp;&nbsp;&nbsp;&nbsp;"</div>
-      <div></div>
-    </div>
-    <div>
-      <div></div>
-      <div></div>
-    </div>
+
   </div>
 
   <!-- Signature -->
 
-  <div>
-    <div>
-      <div>Approved by Customer</div>
-      <div>Date</div>
+  <div class="signature">
+
+    <div class="signature_approval">
+      <div>
+        <div><h3>Approved by Customer</h3></div>
+        <div><h3>Date</h3></div>
+      </div>
+      <div>
+        <div><p>Company Name</p></div>
+        <div><p>Date</p></div>
+      </div>
     </div>
-    <div>Company Name</div>
-  </div>
-  <div>
-    <div>Confirmation</div>
-    <div></div>
+
+    <div class="signature_confirmation">
+      <div><h3>Confirmation</h3></div>
+      <div><p>{signature}</p></div>
+    </div>
+
   </div>
 
   {/exp:workreports:wrDetails}
