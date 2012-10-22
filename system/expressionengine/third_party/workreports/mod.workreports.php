@@ -55,7 +55,7 @@ class Workreports {
 		$pdf->setLanguageArray($l);
 
 		// set font
-		$pdf->SetFont('helvetica', '', 10);
+		// $pdf->SetFont('helvetica', '', 10);
 
 		$pdf->AddPage();
 
