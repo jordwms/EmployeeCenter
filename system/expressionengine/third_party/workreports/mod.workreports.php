@@ -6,74 +6,24 @@ class Workreports {
 	function __construct() {
 		$this->EE =& get_instance();
 		$this->EE->load->library('axapta/axapta');
-		$this->EE->load->library('tcpdf/tcpdf');
+		// $this->EE->load->library('WKPDF');
+		include_once(__DIR__.'/libraries/WKPDF.php');
 		$this->EE->load->library('mysql');
 		$this->EE->config->set_item('compress_output', FALSE); 
 	}
 
 	function wrPrint() {
-		// $this->EE->load->template('print');
-		require_once('libraries/tcpdf/config/lang/eng.php');
 
-		// create new PDF document
-		$pdf = new TCPDF('p', 'pt', 'ANSI_A', TRUE, 'UTF-8'); // North American Format
-		// $pdf = new TCPDF('p', 'pt', 'a4', TRUE, 'UTF-8');
-
-		// set document information
-		$pdf->SetCreator('Applus RTD');
-		$pdf->SetAuthor('Applus RTD');
-		$pdf->SetTitle('Test Work Report');
-		$pdf->SetSubject('Applus RTD Invoice');
-		$pdf->SetKeywords('TCPDF, PDF, test, report');
-
-		// set default header data
-		$pdf->SetHeaderData('', 0, 'Applus RTD', '');
-
-		// remove default header/footer
-		$pdf->setPrintHeader(false);
-		$pdf->setPrintFooter(false);
-
-		// // set header and footer fonts
-		// $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-		// $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
-
-		// set default monospaced font
-		$pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
-
-		//set margins
-		$pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
-		// $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
-		// $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
-
-		//set auto page breaks
-		$pdf->SetAutoPageBreak(FALSE, PDF_MARGIN_BOTTOM);
-
-		//set image scale factor
-		$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
-
-		//set some language-dependent strings
-		$pdf->setLanguageArray($l);
-
-		// set font
-		// $pdf->SetFont('helvetica', '', 10);
-
-		$pdf->AddPage();
-
+		$pdf = new WKPDF();
+		
 		// define some HTML content with style
 		$html = $this->wrDetails();
 
-		// echo $html; die;
+		// $project_id = str_replace('-', '/', $this->EE->TMPL->fetch_param('projid') );
 
-		// output the HTML content
-		$pdf->writeHTML($html);
-
-		// reset pointer to the last page
-		$pdf->lastPage();
-
-		// ---------------------------------------------------------
-
-		//Close and output PDF document
-		$pdf->Output('work_report[TEST].pdf', 'I');
+		$pdf->set_html($html);
+		$pdf->render();
+		$pdf->output(WKPDF::$PDF_EMBEDDED, 'TEST.pdf');
 	}
 	
 	/*
