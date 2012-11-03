@@ -105,6 +105,7 @@ class employee extends axapta {
 			 *	each employee can belong to multiple groups in differnt companies
 			 *	!an employee should only be granted a group's privlidges for the correct company
 			 *
+			 ---- OLD ------------------------------
 			 *	[groups] => Array(
 		     *      [company_id] => Array(
 		     *          [0] => 'GROUP ID'
@@ -113,6 +114,15 @@ class employee extends axapta {
 		     *          [0] => 'WA TECH',
 		     *          [1] => 'WA DISP',
 		     *			[2] => 'WA ADMIN'
+		     *      )
+		     *
+			 ---- NEW ---------------------------------
+		     *      [GROUP ID] => Array(
+		     *          [0] => 'company_id'
+		     *      ),
+		     *      [WA TECH] => Array(
+		     *          [0] => '102',
+		     *          [1] => '002'
 		     *      )
 			 *  )
 			 *
@@ -131,10 +141,10 @@ class employee extends axapta {
 			$employee_groups->execute();
 
 			foreach ($employee_groups->fetchALL() as $group) {
-				if( !array_key_exists($group['company_id'], $employee['groups'])){
-					$employee['groups'][$group['company_id']] = array();
+				if( !array_key_exists($group['position_id'], $employee['groups'])){
+					$employee['groups'][$group['position_id']] = array();
 				}
-				array_push($employee['groups'][$group['company_id']], $group['position_id'] );
+				array_push($employee['groups'][$group['position_id']], $group['company_id'] );
 			}
 		}
 		return $this->fix_padding($employees);

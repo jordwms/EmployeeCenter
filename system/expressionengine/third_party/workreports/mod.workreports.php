@@ -375,17 +375,15 @@ class Workreports {
 				
 				if( count($employee['groups']) > 0 ) {
 					$message = '';
-					foreach ($employee['groups'] as $companies) {
-						if( in_array('WA TECH', $companies) ){
-							$message .= 'You have '.$this->count($employee, 'WA TECH').' Work Reports assigned to you'.'<br>';
-							//$message = $this->EE->lang->line('');
-						}
-						if( in_array('WA DISP', $companies) ){
-							$message .= 'You have '.$this->count($employee, 'WA DISP').' Work Reports awaiting DISPATCHER approval'.'<br>';
-						}
-						if( in_array('WA ADMIN', $companies) ){
-							$message .= 'You have '.$this->count($employee, 'WA ADMIN').' Work Reports awaiting ADMIN approval'.'<br>';
-						}
+					if( array_key_exists('WA TECH', $employee['groups']) ){
+						$message .= 'You have '.$this->count($employee, 'WA TECH').' Work Reports assigned to you'.'<br>';
+						//$message = $this->EE->lang->line('');
+					}
+					if( array_key_exists('WA DISP', $employee['groups']) ){
+						$message .= 'You have '.$this->count($employee, 'WA DISP').' Work Reports awaiting DISPATCHER approval'.'<br>';
+					}
+					if( array_key_exists('WA ADMIN', $employee['groups']) ){
+						$message .= 'You have '.$this->count($employee, 'WA ADMIN').' Work Reports awaiting ADMIN approval'.'<br>';
 					}
 				} else {
 					//$message = 'Please Contact HRM Department for Authorization';
@@ -422,9 +420,8 @@ class Workreports {
 
 			case 'WA ADMIN':
 				$this->EE->db->where('status', 5);
-
-				$this->EE->db->where('company_id', $employee['company_id']);
-				$this->EE->db->where('department_id', $employee['department_id']);
+				$this->EE->db->or_where('company_id', $employee['groups']['WA ADMIN']);
+				//$this->EE->db->where('department_id', $employee['department_id']);
 				break;
 		}
 		
@@ -611,7 +608,8 @@ class Workreports {
 			$data[0]['actions'] = ''; // initializing 'actions' so we can have 1 concatonated string
 
 			if ($data[0]['status'] < 4){
-				if( in_array('WA DISP',$employee['groups'][$data[0]['company_id']]) || in_array('WA ADMIN',$employee['groups'][$data[0]['company_id']]) ){
+				if( (array_key_exists('WA DISP', $employee['groups']) && in_array($data[0]['company_id'], $employee['groups']['WA DISP'])) 
+					|| (array_key_exists('WA ADMIN', $employee['groups']) && in_array($data[0]['company_id'], $employee['groups']['WA ADMIN'])) ){
 					// Save button
 					$data[0]['actions'].= '<input type="submit" name="save" class="btn" value="Save">';
 					
