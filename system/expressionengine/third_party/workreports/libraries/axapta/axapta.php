@@ -45,6 +45,9 @@ class axapta {
 
 		try {
 			$ax_conn = new PDO("dblib:host=$host;Database=$db;", $user, $pass);
+
+    		//$ax_conn->exec("SET CHARACTER SET utf8");
+
 			return $ax_conn;
 		} catch(PDOException $e) {
 			//error logging/display
@@ -182,6 +185,7 @@ class axapta {
 	}
 
 	//fix axapta's penchant for padding strings
+	//also fixing character set
 	function fix_padding(&$data) {
 		if( is_array($data) ){
 			foreach ($data as $key => &$val) {
@@ -193,7 +197,8 @@ class axapta {
 			}
 		}
 		if( is_string($data) ){
-			$data = ltrim(rtrim($data));
+			//$data =  ltrim(rtrim($data));
+			$data = iconv('ISO8859-1', 'UTF-8', ltrim(rtrim($data)));
 		}
 		return $data;
 	}

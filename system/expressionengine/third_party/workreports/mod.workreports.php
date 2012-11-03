@@ -7,7 +7,6 @@ class Workreports {
 		$this->EE =& get_instance();
 		$this->EE->load->library('axapta/axapta');
 		$this->EE->load->library('mysql');
-		$this->EE->config->set_item('compress_output', FALSE); 
 	}
 	
 	/*
@@ -19,6 +18,7 @@ class Workreports {
 	 */
 	function rest() {
 		if( $this->EE->session->userdata('email') && $this->EE->session->userdata('is_banned') == 0 ) {
+			$this->EE->config->set_item('compress_output', FALSE);
 
 			$employee = $this->EE->axapta->employee->get_remote(array( 'email' => $this->EE->session->userdata('email') ));
 			//$employee = $this->EE->axapta->employee->get_remote(array( 'email' => 'jordan.williams@applusrtd.com' ));
@@ -37,6 +37,7 @@ class Workreports {
 				case 'employee':
                     $options = array_merge($options, array(
                         'email' => $this->EE->session->userdata('email')
+                        //'email' => 'bert.weber@applusrtd.com'
                     ));
 				    $return_data = $this->EE->axapta->employee->get_remote( $options );
 					break;
@@ -129,7 +130,8 @@ class Workreports {
 
 				case 'contract_items':
     				$options = array_merge($options, array(
-    					
+    					// 'contract_id' => '900.001975',
+    					// 'film_indicator' => 0
     				));
 					$return_data = $this->EE->axapta->contract_items->get_remote( $options );
 					break;
@@ -152,13 +154,13 @@ class Workreports {
 					break;
 			}
 
-			if($return_data) {
+			// if($return_data) {
 				switch ($output) {
 					default:
 					case 'json':
 						header('Cache-Control: no-cache, must-revalidate');
 						header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
-						header('Content-type: application/json; charset=utf8');
+						header('Content-type: application/json; charset=utf-8');
 						echo json_encode($return_data);
 					break;
 					
@@ -169,6 +171,7 @@ class Workreports {
 					*/
 
 					case 'debug':
+						header('Content-Type: text/html; charset=utf-8');
 						echo '<pre>';
 						print_r($return_data);
 						echo '</pre>';
