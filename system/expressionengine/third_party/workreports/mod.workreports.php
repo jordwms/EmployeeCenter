@@ -16,6 +16,7 @@ class Workreports {
 
 	function wrPrint() {
 		$pdf = new WKPDF();
+		$mime = new Mail_mime(); 
 		
 		// define some HTML content with style
 		$html = $this->wrDetails();
@@ -28,56 +29,48 @@ class Workreports {
 		$pdf->render();
 		$pdf->output(WKPDF::$PDF_SAVEFILE, 'TEST.pdf');
 
-		// Send email with PDF attachment
-		// $to = 'ProfJord@Gmail.com';
-		$to = 'Robert.McCann@applusrtd.com';
+		// Email PDF as attachment
+		// $to = 'profjord@gmail.com';
+		// $host = 'mail.vxray.local';
+		// $file = FCPATH.'tmp/TEST.pdf';
+		// $hdrs = array( 
+  //             'From'    => 'Jordan.Williams@Applusrtd.com', 
+  //             'Subject' => 'MIME message test with attached Work Report' 
+  //             );
+
+		// $mime->setTXTBody('Attached is a test work report.'); 
+		// $mime->addAttachment($file);
+
+		// $body = $mime->get(); 
+		// $hdrs = $mime->headers($hdrs); 
+
+		// $mail =& Mail::factory('smtp', array ('host' => $host, 'auth' => false)); 
+		// $mail->send($to, $hdrs, $body); 
+		$text = 'Text version of email';
+		$html = '<html><body>HTML version of email</body></html>';
 		$file = FCPATH.'tmp/TEST.pdf';
-				
-		if( $this->send_mail($to, $file) ) {
-			echo 'Message successfully sent!';
+		$crlf = "\n";
+		$hdrs = array(
+		              'From'    => 'Jordan.Williams@Applusrtd.com',
+		              'Subject' => 'Test mime message'
+		              );
+
+		$mime = new Mail_mime(array('eol' => $crlf));
+
+		$mime->setTXTBody($text);
+		$mime->setHTMLBody($html);
+		$mime->addAttachment($file, 'text/plain');
+
+		$body = $mime->get();
+		$hdrs = $mime->headers($hdrs);
+
+		$mail =& Mail::factory('mail');
+		$mail->send('postmaster@localhost', $hdrs, $body);
+		if (PEAR::isError($mail)) {
+			echo("\r\n" . $mail->getMessage() . "\r\n");
 		} else {
-			echo 'Error.';
+			echo("\r\nMessage successfully sent!\r\n");
 		}
-	}
-
-	/*
-	* Emails the customer a work report PDF
-	*/
-	function send_mail($to, $file) {
-		$mime = new Mail_mime();
-
-		// email fields: to, from, subject, and so on
-		$from = 'Robert.McCann@applusrtd.com'; // 'vxray@localhost';
-		$subject = 'Test PDF message';
-		$message = 'Attached is a test work report. Please keep this for your records.';
-		$headers = "From: $from"; // root@localhost
-
-		// boundary 
-		$semi_rand = md5(time()); 
-		$mime_boundary = "==Multipart_Boundary_x{$semi_rand}x";
-		  	
-		// headers for attachment 
-		$headers .= "\nMIME-Version: 1.0\n" . "Content-Type: multipart/mixed;\n" . " boundary=\"{$mime_boundary}\"";
-
-		// multipart boundary 
-		$message = "--{$mime_boundary}\n" . "Content-Type: text/plain; charset=\"iso-8859-1\"\n" .
-		"Content-Transfer-Encoding: 7bit\n\n" . $message . "\n\n";
-
-    	// preparing attachments
-        $message .= "--{$mime_boundary}\n";
-        $fp = 		@fopen($file,"rb");
-		$data =    	@fread($fp,filesize($file));
-                	@fclose($fp);
-        $data = chunk_split(base64_encode($data));
-        $message .= "Content-Type: application/octet-stream; name=\"".basename($file)."\"\n" . 
-	        "Content-Description: ".basename($file)."\n" .
-	        "Content-Disposition: attachment;\n" . " filename=\"".basename($file)."\"; size=".filesize($file).";\n" . 
-	        "Content-Transfer-Encoding: base64\n\n" . $data . "\n\n";
-	    $message .= "--{$mime_boundary}--";
-	    
-	    $returnpath = "-f" . $from; 
-
-		return mail($to, $subject, $message, $headers, $returnpath);
 	}
 	
 	/*
