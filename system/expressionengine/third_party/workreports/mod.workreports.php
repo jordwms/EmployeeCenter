@@ -8,22 +8,69 @@ class Workreports {
 		$this->EE->load->library('axapta/axapta');
 		// $this->EE->load->library('WKPDF');
 		include_once(__DIR__.'/libraries/WKPDF.php');
+		require('Mail.php'); 
+		require('Mail/mime.php'); 
 		$this->EE->load->library('mysql');
 		$this->EE->config->set_item('compress_output', FALSE); 
 	}
 
 	function wrPrint() {
-
 		$pdf = new WKPDF();
+		$mime = new Mail_mime(); 
 		
 		// define some HTML content with style
 		$html = $this->wrDetails();
 
 		// $project_id = str_replace('-', '/', $this->EE->TMPL->fetch_param('projid') );
 
+		// Create PDF
+		$pdf->set_title('WorkReport');
 		$pdf->set_html($html);
 		$pdf->render();
-		$pdf->output(WKPDF::$PDF_EMBEDDED, 'TEST.pdf');
+		$pdf->output(WKPDF::$PDF_SAVEFILE, 'TEST.pdf');
+
+		// Email PDF as attachment
+		// $to = 'profjord@gmail.com';
+		// $host = 'mail.vxray.local';
+		// $file = FCPATH.'tmp/TEST.pdf';
+		// $hdrs = array( 
+  //             'From'    => 'Jordan.Williams@Applusrtd.com', 
+  //             'Subject' => 'MIME message test with attached Work Report' 
+  //             );
+
+		// $mime->setTXTBody('Attached is a test work report.'); 
+		// $mime->addAttachment($file);
+
+		// $body = $mime->get(); 
+		// $hdrs = $mime->headers($hdrs); 
+
+		// $mail =& Mail::factory('smtp', array ('host' => $host, 'auth' => false)); 
+		// $mail->send($to, $hdrs, $body); 
+		$text = 'Text version of email';
+		$html = '<html><body>HTML version of email</body></html>';
+		$file = FCPATH.'tmp/TEST.pdf';
+		$crlf = "\n";
+		$hdrs = array(
+		              'From'    => 'Jordan.Williams@Applusrtd.com',
+		              'Subject' => 'Test mime message'
+		              );
+
+		$mime = new Mail_mime(array('eol' => $crlf));
+
+		$mime->setTXTBody($text);
+		$mime->setHTMLBody($html);
+		$mime->addAttachment($file, 'text/plain');
+
+		$body = $mime->get();
+		$hdrs = $mime->headers($hdrs);
+
+		$mail =& Mail::factory('mail');
+		$mail->send('postmaster@localhost', $hdrs, $body);
+		if (PEAR::isError($mail)) {
+			echo("\r\n" . $mail->getMessage() . "\r\n");
+		} else {
+			echo("\r\nMessage successfully sent!\r\n");
+		}
 	}
 	
 	/*
