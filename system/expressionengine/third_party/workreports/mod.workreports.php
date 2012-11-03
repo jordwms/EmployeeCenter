@@ -8,8 +8,6 @@ class Workreports {
 		$this->EE->load->library('axapta/axapta');
 		// $this->EE->load->library('WKPDF');
 		include_once(__DIR__.'/libraries/WKPDF.php');
-		require('Mail.php'); 
-		require('Mail/mime.php'); 
 		$this->EE->load->library('mysql');
 		$this->EE->config->set_item('compress_output', FALSE); 
 	}
@@ -28,9 +26,10 @@ class Workreports {
 		$pdf->render();
 		$pdf->output(WKPDF::$PDF_SAVEFILE, 'TEST.pdf');
 
-		// Send email with PDF attachment
-		// $to = 'ProfJord@Gmail.com';
-		$to = 'Robert.McCann@applusrtd.com';
+		// Send email with PDF attachment 
+		# TODO: $to = customer_contact_email
+		# TODO: Check if customer_contact_email is valid before sending 
+		$to = 'Robert.McCann@applusrtd.com, Bert.Weber@applusrtd.com';
 		$file = FCPATH.'tmp/TEST.pdf';
 				
 		if( $this->send_mail($to, $file) ) {
@@ -44,6 +43,8 @@ class Workreports {
 	* Emails the customer a work report PDF
 	*/
 	function send_mail($to, $file) {
+		require_once('Mail.php'); 
+		require_once('Mail/mime.php'); 
 		$mime = new Mail_mime();
 
 		// email fields: to, from, subject, and so on
@@ -768,7 +769,7 @@ class Workreports {
 				if(in_array('WA ADMIN',$employee['groups'][$this->EE->input->post('company_id')])) {
 					$status = 4;
 				}
-			} elseif ( $this->EE->input->post('reject') ) {
+			} elseif ( $this->EE->input->post('reject') ) { // if "Reject" was clicked, set status to "rejected"
 				$status = 0;
 			}
 
@@ -835,7 +836,7 @@ class Workreports {
 					}
 
 					// Make wr_items entries
-					$sales_items = $this->EE->input->post('sales_items'); # needs to be 'sales_items'
+					$sales_items = $this->EE->input->post('sales_items');
 					foreach($sales_items as $item) {
 						$data = array(
 							'report_id' 	=> $report_id,
@@ -865,7 +866,6 @@ class Workreports {
 						}
 					}
 				} else { // the entry is already uniquely in the DB
-
 					$data = array(
 						'submitter_id'			=> $employee['id'], #should be employee name
 						'execution_datetime'	=> strtotime($this->EE->input->post('execution_date')),
@@ -891,6 +891,7 @@ class Workreports {
 
 					// Update wr_resources entries
 					$resources_form = $this->EE->input->post('resources');
+					// echo '<pre>'; print_r($resources_form); die;
 
 					foreach($resources_form as $resource) {
                         $this->EE->db->select('resource_id');
@@ -926,13 +927,13 @@ class Workreports {
 						$this->EE->db->where('dimension_id', $item['dimension_id']);
 						$items_db = $this->EE->db->count_all_results();
 
-
-						if($items_db > 1) {
+						if($items_db > 0) {
 							$data = array(
 								'qty'           => $item['qty']
 							);
 							$this->EE->db->where('report_id', $report_id );
 							$this->EE->db->where('item_id', $item['item_id']);
+							$this->EE->db->where('dimension_id', $item['dimension_id']);
 							$this->EE->db->update('wr_items', $data);
 						} else {
 							$data = array(
@@ -965,6 +966,7 @@ class Workreports {
 								);
 								$this->EE->db->where('report_id', $report_id );
 								$this->EE->db->where('item_id', $item['item_id']);
+								$this->EE->db->where('dimension_id', $item['dimension_id']);
 								$this->EE->db->update('wr_materials', $data);
 							}
 						}
