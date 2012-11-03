@@ -177,13 +177,11 @@ class Workreports {
 						echo '</pre>';
 					break;
 				}
-				
-				ob_end_flush(  );
-			} else {
-				echo '<h1>error</h1></br>';
-				echo '<p>no return data</p>';
-				//return 404;
-			}
+			// } else {
+			// 	echo '<h1>error</h1></br>';
+			// 	echo '<p>no return data</p>';
+			// 	//return 404;
+			// }
 		} else {
 			echo lang('unauthorized');
 		}
@@ -199,7 +197,7 @@ class Workreports {
 
 			$templates = $this->EE->axapta->work_report->get_remote( array( 
 				'export_reason' => 'TEMPLATE'
-				,'execution_date' => '2012-01-01' 
+				,'execution_date' => '2012-01-01'
 			) );
 
 			$all_reports = array_merge($dispatch_list, $templates);
@@ -210,7 +208,9 @@ class Workreports {
 				$this->EE->db->from('wr_reports');
 				$this->EE->db->where('project_id', $dispatch_item['project_id']);
 
+				//$existing_wr = $this->EE->db->result_array();
 
+				//if($this->EE->db->count_all_results() == 0 || $existing_wr['modified_datetime'] < $dispatch_item['modified_datetime']) {
 				if($this->EE->db->count_all_results() == 0) {
 				
 					//get workreport from axapta and add to mysql
@@ -405,7 +405,7 @@ class Workreports {
 	}
 
 	function count($employee, $group_id) {
-		$this->EE->db->select('*');
+		//$this->EE->db->select('*');
 		$this->EE->db->from('wr_reports');
 
 		switch ($group_id) {

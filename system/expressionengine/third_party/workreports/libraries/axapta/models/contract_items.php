@@ -29,14 +29,6 @@ class contract_items extends axapta {
 	 *
 	 */
 	function get_remote($options = NULL) {
-		//set some defaults
-		if( !is_array($options) ){
-			//$options = array('contract_valid' => '1');
-			//$options = array('film_indicator' => '1');
-		} else {
-			//$options['contract_valid'] = '1';
-			//$options['film_indicator'] = '1';
-		}
 
 		$query = $this->build_SELECT();
 
