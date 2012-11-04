@@ -674,13 +674,13 @@ class Workreports {
 			}
 
 			if ( $this->EE->input->post('submit') || $this->EE->input->post('approve') ) {
-				if(in_array('WA TECH',$employee['groups'][$this->EE->input->post('company_id')])) {
+				if(array_key_exists('WA TECH', $employee['groups']) && in_array($this->EE->input->post('company_id'), $employee['groups']['WA TECH'])) {
 					$status = 3;
 				}
-				if(in_array('WA DISP',$employee['groups'][$this->EE->input->post('company_id')])) {
+				if(array_key_exists('WA DISP', $employee['groups']) && in_array($this->EE->input->post('company_id'), $employee['groups']['WA DISP'])) {
 					$status = 4;
 				}
-				if(in_array('WA ADMIN',$employee['groups'][$this->EE->input->post('company_id')])) {
+				if(array_key_exists('WA ADMIN', $employee['groups']) && in_array($this->EE->input->post('company_id'), $employee['groups']['WA ADMIN'])) {
 					$status = 5;
 				}
 			} elseif ( $this->EE->input->post('reject') ) {
