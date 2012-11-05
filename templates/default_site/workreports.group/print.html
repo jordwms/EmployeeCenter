@@ -11,6 +11,9 @@
     html { font-size: 100%; overflow-y: scroll; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
     body { margin: 20px auto; font-size: 100%; line-height: 1.231; font-family: sans-serif; color: rgb(0,0,0); width: 916px; }
 
+    table { border-collapse: collapse; border-spacing: 0; margin: 0; width: 100%; }
+    td { vertical-align: top; }
+
     h1, h2, h3 { margin: 0; font-size: 100%; font-weight: bold; display: block; }
     p, span { margin: 0; font-size: 80%; }
     img { width: 295px; height: 70px; margin: 9px 0; }
@@ -22,8 +25,21 @@
       width: 50%;
       margin-bottom: 4px;
     }
-    .clear {
+    header:after,
+    .contact:after,
+    .research > div:after,
+    .resources > div:after,
+    .equipment > div:after,
+    .items > div:after,
+    .remarks:after,
+    .materials_data:after,
+    .signature:after,
+    .signature_approval > div:nth-child(1):after {
       clear: both;
+      display: block;
+      height: 0;
+      content: ".";
+      visibility: hidden;
     }
     h2 {
       text-align: right;
@@ -35,8 +51,10 @@
     h3 {
       font-size: 85%;
     }
-    .contact_details,
-    .logo {
+    .contact {
+      padding-bottom: 5px;
+    }
+    .contact > div {
       float: left;
       width: 300px;
     }
@@ -47,31 +65,27 @@
     .contact_details div {
       padding: 4px;
     }
-    .employee_contact {
+    .contact_details .employee_contact {
       border-bottom: 2px solid rgb(255,100,7);
       height: 115px;
     }
-    .client_contact {
+    .contact_details .client_contact {
       height: 165px;
     }
-    .logo_image,
-    .logo_time,
-    .logo_reference,
-    .logo_box
-     {
+    .logo > div {
       padding: 4px;
     }
-    .logo_time {
+    .logo > .logo_time {
       border: 2px solid rgb(255,100,7);
       text-align: right;
       height: 19px;
     }
-    .logo_reference {
+    .logo > .logo_reference {
       border: 2px solid rgb(255,100,7);
       border-top: none;
       margin-bottom: 4px;
     }
-    .logo_box {
+    .logo > .logo_box {
       border: 2px solid rgb(255,100,7);
       margin-bottom: 4px;
       height: 82px;
@@ -79,53 +93,49 @@
 
     /** Research **/
 
-    .research_section,
-    .review_section {
+    .research > div {
       float: left;
       width: 458px;
     }
-    .research_header,
-    .research_number,
-    .research_type,
-    .review_header,
-    .review_number,
-    .review_type {
+    .research_section > div,
+    .review_section > div {
       border: 2px solid rgb(255,100,7);
       margin-bottom: 4px;
       padding: 4px;
     }
-    .research_header,
-    .research_number,
-    .research_type {
+    .research_section > div {
       margin-right: 4px;
     }
-    .research_header,
-    .review_header {
+    .research_section > .research_header,
+    .review_section > .review_header {
       text-align: center;
     }
-    .research_number,
-    .review_number {
+    .research_section > .research_number,
+    .review_section > .review_number {
       float: left;
       width: 150px;
       margin-right: 4px;
-      margin-bottom: 4px;
+      margin-bottom: 9px;
     }
-    .review_number {
+    .review_section > .review_number {
       width: 149px;
     }
-    .research_type {
+    .research_section > .research_type {
       float: left;
       width: 276px;
-      margin-bottom: 4px;
+      margin-bottom: 9px;
     }
-    .review_type {
+    .review_section > .review_type {
       float: left;
       width: 281px;
-      margin-bottom: 4px;
+      margin-bottom: 9px;
     }
 
     /** Resources **/
 
+    .resources {
+      padding-bottom: 5px;
+    }
     .resources > div {
       width: 916px;
     }
@@ -152,14 +162,14 @@
     .resources_hours_begin {
       border-right: none !important;
     }
-    .resources_hours_header,
-    .resources_hours_begin_header {
+    .resources_hours > .resources_hours_header,
+    .resources_hours_begin > .resources_hours_begin_header {
       margin-bottom: 12px;
     }
-    .resources_hours_start,
-    .resources_hours_end,
-    .resources_hours_begin_start,
-    .resources_hours_begin_end {
+    .resources_hours > .resources_hours_start,
+    .resources_hours > .resources_hours_end,
+    .resources_hours_begin > .resources_hours_begin_start,
+    .resources_hours_begin > .resources_hours_begin_end {
       float: left;
       width: 50%;
     }
@@ -179,7 +189,7 @@
       width: 89px;
       text-align: center;
     }
-    .resources_data_last {
+    .resources_data > .resources_data_last {
       border-right: 2px solid rgb(255,100,7) !important;
     }
     .resources_data_name {
@@ -191,54 +201,42 @@
     /** Equipment **/
 
     .equipment {
-      margin-bottom: 4px;
+      margin-bottom: 9px;
     }
-    .equipment_headers_equipment,
-    .equipment_headers_definition,
-    .equipment_headers_model,
-    .equipment_headers_activity,
-    .equipment_data_1,
-    .equipment_data_2,
-    .equipment_data_3,
-    .equipment_data_4 {
+    .equipment_headers > div,
+    .equipment_data > div {
       border: 2px solid rgb(255,100,7);
       float: left;
       padding: 4px;
     }
-    .equipment_headers_equipment,
-    .equipment_headers_definition,
-    .equipment_headers_model,
-    .equipment_headers_activity {
+    .equipment_headers > div {
       border-right: none;
       border-bottom: none;
     }
-    .equipment_headers_equipment,
-    .equipment_data_1 {
+    .equipment_headers > .equipment_headers_equipment,
+    .equipment_data > .equipment_data_1 {
       border-right: 2px solid rgb(255,100,7) !important;
       margin-right: 4px;
       width: 205px;
     }
-    .equipment_headers_definition,
-    .equipment_headers_model {
+    .equipment_headers > .equipment_headers_definition,
+    .equipment_headers > .equipment_headers_model {
       width: 287px;
       text-align: center;
     }
-    .equipment_headers_activity {
+    .equipment_headers > .equipment_headers_activity {
       border-right: 2px solid rgb(255,100,7) !important;
       width: 89px;
       text-align: center;
     }
-    .equipment_data_1,
-    .equipment_data_2,
-    .equipment_data_3,
-    .equipment_data_4 {
+    .equipment_data > div {
       border-right: none;
     }
-    .equipment_data_2,
-    .equipment_data_3 {
+    .equipment_data > .equipment_data_2,
+    .equipment_data > .equipment_data_3 {
       width: 287px;
     }
-    .equipment_data_4 {
+    .equipment_data > .equipment_data_4 {
       border-right: 2px solid rgb(255,100,7) !important;
       width: 89px;
       text-align: right;
@@ -246,46 +244,47 @@
 
     /** Sales Items **/
 
-    .items_1,
-    .items_2,
-    .items_3 {
+    .items {
+      padding-bottom: 5px;
+    }
+    .items > div > div {
       float: left;
       padding: 4px;
       border: 2px solid rgb(255,100,7);
       margin-bottom: 4px;
     }
-    .items_1 {
+    .items > div > .items_1 {
       margin-right: 4px;
       width: 700px;
     }
-    .items_2 {
+    .items > div > .items_2 {
       border-right: none;
       width: 89px;
     }
-    .items_3 {
+    .items > div > .items_3 {
       width: 89px;
       text-align: right;
     }
 
     /** Remarks **/
 
-    .remarks_remark,
-    .remarks_object,
-    .remarks_order {
+    .remarks {
+      padding-bottom: 5px;
+    }
+    .remarks > div {
       margin: 0 4px 4px 0;
       float: left;
       width: 298px;
       border: 2px solid rgb(255,100,7);
     }
-    .remarks_order {
+    .remarks > .remarks_order {
       margin-right: 0;
       width: 300px;
     }
-    .remarks_header,
-    .remarks_text {
+    .remarks > div > div {
       padding: 4px;
     }
-    .remarks_text {
+    .remarks > div > .remarks_text {
       border-top: 2px solid rgb(255,100,7);
       height: 120px;
     }
@@ -293,14 +292,13 @@
     /** Materials **/
 
     .materials {
-      padding-bottom: 4px;
+      padding-bottom: 9px;
     }
     .materials_header {
       border: 2px solid rgb(255,100,7);
       padding: 4px;
     }
-    .materials_data_column,
-    .materials_data_last {
+    .materials_data > div {
       border: 2px solid rgb(255,100,7);
       float: left;
       font-size: 85%;
@@ -308,23 +306,21 @@
       border-top: none;
       border-right: none;
     }
-    .materials .materials_data_last {
+    .materials_data > .materials_data_last {
       width: 301px;
       border-right: 2px solid rgb(255,100,7);
     }
-    .materials_data_films,
-    .materials_data_data {
+    .materials_data > div > div {
       padding: 4px;
     }
-    .materials_data_films {
+    .materials_data > div > .materials_data_films {
       border-bottom: 2px solid rgb(255,100,7);
       height: 26px;
     }
 
     /** Signature **/
 
-    .signature_approval,
-    .signature_confirmation {
+    .signature > div {
       float: left;
       border: 2px solid rgb(255,100,7);
       width: 452px;
@@ -333,21 +329,19 @@
     .signature_approval {
       margin-right: 4px;
     }
-    .signature_approval_header,
-    .signature_approval_date {
+    .signature_approval > div > div {
       float: left;
       width: 47%;
       padding: 4px;
     }
-    .signature_approval_date {
+    .signature_approval > div > .signature_approval_date {
       text-align: center;
     }
-    .signature_approval_company,
-    .signature_confirmation_signature {
+    .signature_approval > .signature_approval_company,
+    .signature_confirmation > .signature_confirmation_signature {
       margin-top: 40px;
     }
-    .signature_confirmation_header,
-    .signature_confirmation_signature {
+    .signature_confirmation > div {
       padding: 4px;
       text-align: center;
     }
@@ -364,10 +358,8 @@
 
     <div><h1>Applus RTD USA</h1></div>
     <div><h2>Work Report {project_id}</h2></div>
-    
 
   </header>
-  <div class="clear"></div>
   
   <!-- Contact Info -->
 
@@ -416,7 +408,7 @@
     </div>
 
     <div class="logo">
-      <div class="logo_image"><img src="images/Applus_RTD.png" /></div>
+      <div><img src="images/Applus_RTD.png" /></div>
       <div class="logo_time"><h3>{current_time format="%w"} {current_time format="%Y"}</h3></div>
       <div class="logo_reference">
         <h1>Customer Reference</h1>
@@ -428,7 +420,6 @@
     </div>
 
   </div>
-  <div class="clear"></div>
 
   <!-- Research -->
 
@@ -444,7 +435,6 @@
       <div class="review_number"><p>UT-91112r3</p></div>
       <div class="review_type"><p>EN 1712 niv 2 of 3</p></div>
     </div>
-    <div class="clear"></div>
 
   </div>
 
@@ -471,7 +461,6 @@
         <div class="resources_hours_end"><p>End</p></div>
       </div>
     </div>
-    <div class="clear"></div>
 
     {resources}
     <div class="resources_data">
@@ -485,7 +474,6 @@
       <div class="resources_data_last"><p>-</p></div>
     </div>
     {/resources}
-    <div class="clear"></div>
 
   </div>
 
@@ -499,7 +487,6 @@
       <div class="equipment_headers_model"><h3>Model Type</h3></div>
       <div class="equipment_headers_activity"><h3>Activity</h3></div>
     </div>
-    <div class="clear"></div>
 
     <!-- {equipment} -->
     <div class="equipment_data">
@@ -509,7 +496,6 @@
       <div class="equipment_data_4"><p>-</p></div>
     </div>
     <!-- {/equipment} -->
-    <div class="clear"></div>
 
   </div>
 
@@ -522,7 +508,6 @@
       <div class="items_2"><h3>Unit</h3></div>
       <div class="items_3"><h3>Quantity</h3></div>
     </div>
-    <div class="clear"></div>
 
     {sales_items}
     <div class="items_data">
@@ -531,7 +516,6 @@
       <div class="items_3"><p>-</p></div>
     </div>
     {/sales_items}
-    <div class="clear"></div>
 
   </div>
 
@@ -539,21 +523,20 @@
 
   <div class="remarks">
 
-    <div class="remarks_remark">
-      <div class="remarks_header"><h3>Remark</h3></div>
+    <div>
+      <div><h3>Remark</h3></div>
       <div class="remarks_text"><p>This is a Remark</p></div>
     </div>
-    <div class="remarks_object">
-      <div class="remarks_header"><h3>Object Description</h3></div>
+    <div>
+      <div><h3>Object Description</h3></div>
       <div class="remarks_text"><p>This is an Object Description</p></div>
     </div>
     <div class="remarks_order">
-      <div class="remarks_header"><h3>Order Description</h3></div>
+      <div><h3>Order Description</h3></div>
       <div class="remarks_text"><p>This is an Order Description</p></div>
     </div>
 
   </div>
-  <div class="clear"></div>
 
   <!-- Material Consumption -->
 
@@ -562,64 +545,63 @@
     <div class="materials_header"><h3>Material Consumption</h3></div>
 
     <div class="materials_data">
-      <div class="materials_data_column">
+      <div>
         <div class="materials_data_films"><p>Films<br />6"12</p></div>
-        <div class="materials_data_data"><p>-</p></div>
+        <div><p>-</p></div>
       </div>
-      <div class="materials_data_column">
+      <div>
         <div class="materials_data_films"><p>Films<br />6"16</p></div>
-        <div class="materials_data_data"><p>-</p></div>
+        <div><p>-</p></div>
       </div>
-      <div class="materials_data_column">
+      <div>
         <div class="materials_data_films"><p>Films<br />6"24</p></div>
-        <div class="materials_data_data"><p>-</p></div>
+        <div><p>-</p></div>
       </div>
-      <div class="materials_data_column">
+      <div>
         <div class="materials_data_films"><p>Films<br />6"48</p></div>
-        <div class="materials_data_data"><p>-</p></div>
+        <div><p>-</p></div>
       </div>
-      <div class="materials_data_column">
+      <div>
         <div class="materials_data_films"><p>Films<br />9"12</p></div>
-        <div class="materials_data_data"><p>-</p></div>
+        <div><p>-</p></div>
       </div>
-      <div class="materials_data_column">
+      <div>
         <div class="materials_data_films"><p>Films<br />10"16</p></div>
-        <div class="materials_data_data"><p>-</p></div>
+        <div><p>-</p></div>
       </div>
-      <div class="materials_data_column">
+      <div>
         <div class="materials_data_films"><p>Films<br />10"24</p></div>
-        <div class="materials_data_data"><p>-</p></div>
+        <div><p>-</p></div>
       </div>
-      <div class="materials_data_column">
+      <div>
         <div class="materials_data_films"><p>Films<br />10"48</p></div>
-        <div class="materials_data_data"><p>-</p></div>
+        <div><p>-</p></div>
       </div>
-      <div class="materials_data_column">
+      <div>
         <div class="materials_data_films"><p>Films<br />18"24</p></div>
-        <div class="materials_data_data"><p>-</p></div>
+        <div><p>-</p></div>
       </div>
-      <div class="materials_data_column">
+      <div>
         <div class="materials_data_films"><p>Films<br />30"40</p></div>
-        <div class="materials_data_data"><p>-</p></div>
+        <div><p>-</p></div>
       </div>
-      <div class="materials_data_column">
+      <div>
         <div class="materials_data_films"><p>Films<br />&nbsp;&nbsp;&nbsp;&nbsp;"</p></div>
-        <div class="materials_data_data"><p>-</p></div>
+        <div><p>-</p></div>
       </div>
-      <div class="materials_data_column">
+      <div>
         <div class="materials_data_films"><p>Films<br />&nbsp;&nbsp;&nbsp;&nbsp;"</p></div>
-        <div class="materials_data_data"><p>-</p></div>
+        <div><p>-</p></div>
       </div>
-      <div class="materials_data_column">
+      <div>
         <div class="materials_data_films"><p>Films<br />&nbsp;&nbsp;&nbsp;&nbsp;"</p></div>
-        <div class="materials_data_data"><p>-</p></div>
+        <div><p>-</p></div>
       </div>
       <div class="materials_data_last">
         <div class="materials_data_films"><p>-</p></div>
-        <div class="materials_data_data"><p>-</p></div>
+        <div><p>-</p></div>
       </div>
     </div>
-    <div class="clear"></div>
 
   </div>
 
@@ -629,23 +611,21 @@
 
     <div class="signature_approval">
       <div>
-        <div class="signature_approval_header"><h3>Approved by Customer</h3></div>
+        <div><h3>Approved by Customer</h3></div>
         <div class="signature_approval_date"><h3>Date</h3></div>
       </div>
-      <div class="clear"></div>
       <div class="signature_approval_company">
-        <div class="signature_approval_header"><p>Company Name</p></div>
+        <div><p>Company Name</p></div>
         <div class="signature_approval_date"><p>Date</p></div>
       </div>
     </div>
 
     <div class="signature_confirmation">
-      <div class="signature_confirmation_header"><h3>Confirmation</h3></div>
+      <div><h3>Confirmation</h3></div>
       <div class="signature_confirmation_signature"><p>{signature}</p></div>
     </div>
 
   </div>
-  <div class="clear"></div>
 
   {/exp:workreports:wrDetails}
 </body>
