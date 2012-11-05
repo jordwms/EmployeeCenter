@@ -35,6 +35,10 @@ class Workreports {
 		// Send email with PDF attachment 
 		# TODO: $to = customer_contact_email
 		# TODO: Check if customer_contact_email is valid before sending 
+		// if(! is_null($data[0]['customer_contact_email']) ) {
+		// 	$to = $data[0]['customer_contact_email'];
+		// }
+
 		$to = 'Robert.McCann@applusrtd.com'; // , Bert.Weber@applusrtd.com';
 		$file = FCPATH.'tmp/TEST.pdf';
 				
