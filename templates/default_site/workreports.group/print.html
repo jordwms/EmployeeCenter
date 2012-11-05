@@ -65,27 +65,27 @@
     .contact_details div {
       padding: 4px;
     }
-    .contact_details .employee_contact {
+    .contact_details div:nth-child(1) {
       border-bottom: 2px solid rgb(255,100,7);
       height: 115px;
     }
-    .contact_details .client_contact {
+    .contact_details div:nth-child(2) {
       height: 165px;
     }
     .logo > div {
       padding: 4px;
     }
-    .logo > .logo_time {
+    .logo > div:nth-child(2) {
       border: 2px solid rgb(255,100,7);
       text-align: right;
       height: 19px;
     }
-    .logo > .logo_reference {
+    .logo > div:nth-child(3) {
       border: 2px solid rgb(255,100,7);
       border-top: none;
       margin-bottom: 4px;
     }
-    .logo > .logo_box {
+    .logo > div:nth-child(4) {
       border: 2px solid rgb(255,100,7);
       margin-bottom: 4px;
       height: 82px;
@@ -106,26 +106,26 @@
     .research_section > div {
       margin-right: 4px;
     }
-    .research_section > .research_header,
-    .review_section > .review_header {
+    .research_section > div:nth-child(1),
+    .review_section > div:nth-child(1) {
       text-align: center;
     }
-    .research_section > .research_number,
-    .review_section > .review_number {
+    .research_section > div:nth-child(2),
+    .review_section > div:nth-child(2) {
       float: left;
       width: 150px;
       margin-right: 4px;
       margin-bottom: 9px;
     }
-    .review_section > .review_number {
+    .review_section > div:nth-child(2) {
       width: 149px;
     }
-    .research_section > .research_type {
+    .research_section > div:nth-child(3) {
       float: left;
       width: 276px;
       margin-bottom: 9px;
     }
-    .review_section > .review_type {
+    .review_section > div:nth-child(3) {
       float: left;
       width: 281px;
       margin-bottom: 9px;
@@ -162,14 +162,14 @@
     .resources_hours_begin {
       border-right: none !important;
     }
-    .resources_hours > .resources_hours_header,
-    .resources_hours_begin > .resources_hours_begin_header {
+    .resources_hours > div:nth-child(1),
+    .resources_hours_begin > div:nth-child(1) {
       margin-bottom: 12px;
     }
-    .resources_hours > .resources_hours_start,
-    .resources_hours > .resources_hours_end,
-    .resources_hours_begin > .resources_hours_begin_start,
-    .resources_hours_begin > .resources_hours_begin_end {
+    .resources_hours > div:nth-child(2),
+    .resources_hours > div:nth-child(3),
+    .resources_hours_begin > div:nth-child(2),
+    .resources_hours_begin > div:nth-child(3) {
       float: left;
       width: 50%;
     }
@@ -189,7 +189,7 @@
       width: 89px;
       text-align: center;
     }
-    .resources_data > .resources_data_last {
+    .resources_data > div:nth-child(8) {
       border-right: 2px solid rgb(255,100,7) !important;
     }
     .resources_data_name {
@@ -213,18 +213,18 @@
       border-right: none;
       border-bottom: none;
     }
-    .equipment_headers > .equipment_headers_equipment,
-    .equipment_data > .equipment_data_1 {
+    .equipment_headers > div:nth-child(1),
+    .equipment_data > div:nth-child(1) {
       border-right: 2px solid rgb(255,100,7) !important;
       margin-right: 4px;
       width: 205px;
     }
-    .equipment_headers > .equipment_headers_definition,
-    .equipment_headers > .equipment_headers_model {
+    .equipment_headers > div:nth-child(2),
+    .equipment_headers > div:nth-child(3) {
       width: 287px;
       text-align: center;
     }
-    .equipment_headers > .equipment_headers_activity {
+    .equipment_headers > div:nth-child(4) {
       border-right: 2px solid rgb(255,100,7) !important;
       width: 89px;
       text-align: center;
@@ -232,11 +232,11 @@
     .equipment_data > div {
       border-right: none;
     }
-    .equipment_data > .equipment_data_2,
-    .equipment_data > .equipment_data_3 {
+    .equipment_data > div:nth-child(2),
+    .equipment_data > div:nth-child(3) {
       width: 287px;
     }
-    .equipment_data > .equipment_data_4 {
+    .equipment_data > div:nth-child(4) {
       border-right: 2px solid rgb(255,100,7) !important;
       width: 89px;
       text-align: right;
@@ -253,15 +253,15 @@
       border: 2px solid rgb(255,100,7);
       margin-bottom: 4px;
     }
-    .items > div > .items_1 {
+    .items > div > div:nth-child(1) {
       margin-right: 4px;
       width: 700px;
     }
-    .items > div > .items_2 {
+    .items > div > div:nth-child(2) {
       border-right: none;
       width: 89px;
     }
-    .items > div > .items_3 {
+    .items > div > div:nth-child(3) {
       width: 89px;
       text-align: right;
     }
@@ -277,14 +277,14 @@
       width: 298px;
       border: 2px solid rgb(255,100,7);
     }
-    .remarks > .remarks_order {
+    .remarks > div:nth-child(3) {
       margin-right: 0;
       width: 300px;
     }
     .remarks > div > div {
       padding: 4px;
     }
-    .remarks > div > .remarks_text {
+    .remarks > div > div:nth-child(2) {
       border-top: 2px solid rgb(255,100,7);
       height: 120px;
     }
@@ -306,14 +306,14 @@
       border-top: none;
       border-right: none;
     }
-    .materials_data > .materials_data_last {
+    .materials_data > div:last-child {
       width: 301px;
       border-right: 2px solid rgb(255,100,7);
     }
     .materials_data > div > div {
       padding: 4px;
     }
-    .materials_data > div > .materials_data_films {
+    .materials_data > div > div:nth-child(1) {
       border-bottom: 2px solid rgb(255,100,7);
       height: 26px;
     }
@@ -334,16 +334,15 @@
       width: 47%;
       padding: 4px;
     }
-    .signature_approval > div > .signature_approval_date {
+    .signature_approval > div > div:nth-child(2) {
       text-align: center;
     }
-    .signature_approval > .signature_approval_company,
-    .signature_confirmation > .signature_confirmation_signature {
+    .signature_approval > div:nth-child(2),
+    .signature_confirmation > div:nth-child(2) {
       margin-top: 40px;
     }
     .signature_confirmation > div {
       padding: 4px;
-      text-align: center;
     }
 
   </style>
@@ -366,7 +365,7 @@
   <div class="contact">
   
     <div class="contact_details"> 
-      <div class="employee_contact">
+      <div>
         <!-- {cost_center} -->
         <p>{street}</p>
         <p>{city}, {state} {zipcode}</p>
@@ -377,7 +376,7 @@
         <p>Email: {email}</p>
         <!-- {/cost_center} -->
       </div>
-      <div class="client_contact">
+      <div>
         <h3>Client</h3>
         <p>{sales_name}</p>
         <p>{sales_address}</p>
@@ -392,7 +391,7 @@
     </div>
 
     <div class="contact_details">
-      <div class="employee_contact">
+      <div>
         <p>Team: Team Team VIXR</p>
         <p>Contact Person: {team_contact_person}</p>
         <br />
@@ -400,7 +399,7 @@
         <p>Fax: {team_contact_fax}</p>
         <p>Email: {team_contact_email}</p>
       </div>
-      <div class="client_contact">
+      <div>
         <h3>Work Location</h3>
         <p>{delivery_name}</p>
         <p>{delivery_address}</p>
@@ -408,15 +407,15 @@
     </div>
 
     <div class="logo">
-      <div><img src="images/Applus_RTD.png" /></div>
-      <div class="logo_time"><h3>{current_time format="%w"} {current_time format="%Y"}</h3></div>
-      <div class="logo_reference">
+      <div><img src="Applus_RTD.png" /></div>
+      <div><h3>{current_time format="%w"} {current_time format="%Y"}</h3></div>
+      <div>
         <h1>Customer Reference</h1>
         <span>Order 07.003325 Work Order 015</span>
         <p>Customer Reference</p>
         <span>GPS/CAD/GIS/API</span>
       </div>
-      <div class="logo_box"></div>
+      <div></div>
     </div>
 
   </div>
@@ -426,14 +425,14 @@
   <div class="research">
 
     <div class="research_section">
-      <div class="research_header"><h3>Research</h3></div>
-      <div class="research_number"><p>UT-91112r3</p></div>
-      <div class="research_type"><p>EN 1714 meth 1</p></div>
+      <div><h3>Research</h3></div>
+      <div><p>UT-91112r3</p></div>
+      <div><p>EN 1714 meth 1</p></div>
     </div>
     <div class="review_section">
-      <div class="review_header"><h3>Review</h3></div>
-      <div class="review_number"><p>UT-91112r3</p></div>
-      <div class="review_type"><p>EN 1712 niv 2 of 3</p></div>
+      <div><h3>Review</h3></div>
+      <div><p>UT-91112r3</p></div>
+      <div><p>EN 1712 niv 2 of 3</p></div>
     </div>
 
   </div>
@@ -445,20 +444,20 @@
     <div class="resources_headers">
       <div class="resources_name"><h3>Name</h3></div>
       <div class="resources_hours_begin">
-        <div class="resources_hours_begin_header"><h3>Begin</h3></div>
-        <div class="resources_hours_begin_start"><p>Start</p></div>
-        <div class="resources_hours_begin_end"><p>End</p></div>
+        <div><h3>Begin</h3></div>
+        <div><p>Start</p></div>
+        <div><p>End</p></div>
       </div>
       <div class="resources_hours">
-        <div class="resources_hours_header"><h3>Hours Worked</h3></div>
-        <div class="resources_hours_start"><p>Start</p></div>
-        <div class="resources_hours_end"><p>End</p></div>
+        <div><h3>Hours Worked</h3></div>
+        <div><p>Start</p></div>
+        <div><p>End</p></div>
       </div>
       <div class="resources_rest"><h3>Rest</h3></div>
       <div class="resources_hours">
-        <div class="resources_hours_header"><h3>Return</h3></div>
-        <div class="resources_hours_start"><p>Start</p></div>
-        <div class="resources_hours_end"><p>End</p></div>
+        <div><h3>Return</h3></div>
+        <div><p>Start</p></div>
+        <div><p>End</p></div>
       </div>
     </div>
 
@@ -471,7 +470,7 @@
       <div><p>-</p></div>
       <div><p>-</p></div>
       <div><p>-</p></div>
-      <div class="resources_data_last"><p>-</p></div>
+      <div><p>-</p></div>
     </div>
     {/resources}
 
@@ -482,18 +481,18 @@
   <div class="equipment">
 
     <div class="equipment_headers">
-      <div class="equipment_headers_equipment"><h3>Equipment</h3></div>
-      <div class="equipment_headers_definition"><h3>Definition</h3></div>
-      <div class="equipment_headers_model"><h3>Model Type</h3></div>
-      <div class="equipment_headers_activity"><h3>Activity</h3></div>
+      <div><h3>Equipment</h3></div>
+      <div><h3>Definition</h3></div>
+      <div><h3>Model Type</h3></div>
+      <div><h3>Activity</h3></div>
     </div>
 
     <!-- {equipment} -->
     <div class="equipment_data">
-      <div class="equipment_data_1"><p>EQ.002 YIW-068</p></div>
-      <div class="equipment_data_2"><p>Peugeot 307</p></div>
-      <div class="equipment_data_3"><p>-</p></div>
-      <div class="equipment_data_4"><p>-</p></div>
+      <div><p>EQ.002 YIW-068</p></div>
+      <div><p>Peugeot 307</p></div>
+      <div><p>-</p></div>
+      <div><p>-</p></div>
     </div>
     <!-- {/equipment} -->
 
@@ -504,16 +503,16 @@
   <div class="items">
 
     <div class="items_headers">
-      <div class="items_1"><h3>Item</h3></div>
-      <div class="items_2"><h3>Unit</h3></div>
-      <div class="items_3"><h3>Quantity</h3></div>
+      <div><h3>Item</h3></div>
+      <div><h3>Unit</h3></div>
+      <div><h3>Quantity</h3></div>
     </div>
 
     {sales_items}
     <div class="items_data">
-      <div class="items_1"><p>{item_name}</p></div>
-      <div class="items_2"><p>{sales_unit}</p></div>
-      <div class="items_3"><p>-</p></div>
+      <div><p>{item_name}</p></div>
+      <div><p>{sales_unit}</p></div>
+      <div><p>-</p></div>
     </div>
     {/sales_items}
 
@@ -525,15 +524,15 @@
 
     <div>
       <div><h3>Remark</h3></div>
-      <div class="remarks_text"><p>This is a Remark</p></div>
+      <div><p>This is a Remark</p></div>
     </div>
     <div>
       <div><h3>Object Description</h3></div>
-      <div class="remarks_text"><p>This is an Object Description</p></div>
+      <div><p>This is an Object Description</p></div>
     </div>
-    <div class="remarks_order">
+    <div>
       <div><h3>Order Description</h3></div>
-      <div class="remarks_text"><p>This is an Order Description</p></div>
+      <div><p>This is an Order Description</p></div>
     </div>
 
   </div>
@@ -546,59 +545,59 @@
 
     <div class="materials_data">
       <div>
-        <div class="materials_data_films"><p>Films<br />6"12</p></div>
+        <div><p>Films<br />6"12</p></div>
         <div><p>-</p></div>
       </div>
       <div>
-        <div class="materials_data_films"><p>Films<br />6"16</p></div>
+        <div><p>Films<br />6"16</p></div>
         <div><p>-</p></div>
       </div>
       <div>
-        <div class="materials_data_films"><p>Films<br />6"24</p></div>
+        <div><p>Films<br />6"24</p></div>
         <div><p>-</p></div>
       </div>
       <div>
-        <div class="materials_data_films"><p>Films<br />6"48</p></div>
+        <div><p>Films<br />6"48</p></div>
         <div><p>-</p></div>
       </div>
       <div>
-        <div class="materials_data_films"><p>Films<br />9"12</p></div>
+        <div><p>Films<br />9"12</p></div>
         <div><p>-</p></div>
       </div>
       <div>
-        <div class="materials_data_films"><p>Films<br />10"16</p></div>
+        <div><p>Films<br />10"16</p></div>
         <div><p>-</p></div>
       </div>
       <div>
-        <div class="materials_data_films"><p>Films<br />10"24</p></div>
+        <div><p>Films<br />10"24</p></div>
         <div><p>-</p></div>
       </div>
       <div>
-        <div class="materials_data_films"><p>Films<br />10"48</p></div>
+        <div><p>Films<br />10"48</p></div>
         <div><p>-</p></div>
       </div>
       <div>
-        <div class="materials_data_films"><p>Films<br />18"24</p></div>
+        <div><p>Films<br />18"24</p></div>
         <div><p>-</p></div>
       </div>
       <div>
-        <div class="materials_data_films"><p>Films<br />30"40</p></div>
+        <div><p>Films<br />30"40</p></div>
         <div><p>-</p></div>
       </div>
       <div>
-        <div class="materials_data_films"><p>Films<br />&nbsp;&nbsp;&nbsp;&nbsp;"</p></div>
+        <div><p>Films<br />&nbsp;&nbsp;&nbsp;&nbsp;"</p></div>
         <div><p>-</p></div>
       </div>
       <div>
-        <div class="materials_data_films"><p>Films<br />&nbsp;&nbsp;&nbsp;&nbsp;"</p></div>
+        <div><p>Films<br />&nbsp;&nbsp;&nbsp;&nbsp;"</p></div>
         <div><p>-</p></div>
       </div>
       <div>
-        <div class="materials_data_films"><p>Films<br />&nbsp;&nbsp;&nbsp;&nbsp;"</p></div>
+        <div><p>Films<br />&nbsp;&nbsp;&nbsp;&nbsp;"</p></div>
         <div><p>-</p></div>
       </div>
-      <div class="materials_data_last">
-        <div class="materials_data_films"><p>-</p></div>
+      <div>
+        <div><p>-</p></div>
         <div><p>-</p></div>
       </div>
     </div>
@@ -612,17 +611,17 @@
     <div class="signature_approval">
       <div>
         <div><h3>Approved by Customer</h3></div>
-        <div class="signature_approval_date"><h3>Date</h3></div>
+        <div><h3>Date</h3></div>
       </div>
-      <div class="signature_approval_company">
+      <div>
         <div><p>Company Name</p></div>
-        <div class="signature_approval_date"><p>Date</p></div>
+        <div><p>Date</p></div>
       </div>
     </div>
 
     <div class="signature_confirmation">
       <div><h3>Confirmation</h3></div>
-      <div class="signature_confirmation_signature"><p>{signature}</p></div>
+      <div><p>{signature}</p></div>
     </div>
 
   </div>
