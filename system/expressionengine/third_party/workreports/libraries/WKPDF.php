@@ -168,6 +168,14 @@ class WKPDF {
         return $tmp['stdout'];
     }
     /**
+    * Delete PDF file.
+    * @param string - file (include path/to/file).
+    * @return See _pipeExec() return value.
+    */
+    public function delete_file($file){
+        return self::_pipeExec('rm -f '.$file);
+    }
+    /**
      * Convert HTML to PDF.
      */
     public function render(){
