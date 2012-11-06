@@ -20,6 +20,8 @@ class Workreports {
 		
 		// Get work report data array, parse corresponding template, and generate HTML from template + data
 		$data = $this->wrData($project_id);
+		echo '<pre>'; print_r($data[0]); die;
+		
 		$template = $this->EE->TMPL->fetch_template('workreports', 'print', FALSE, $this->EE->config->item('site_id') ); 
 		$template = $this->EE->TMPL->parse_variables($template, $data);
 
@@ -37,11 +39,10 @@ class Workreports {
 		// if(! is_null($data[0]['customer_contact_email']) ) {
 		// 	$to = $data[0]['customer_contact_email'];
 		// }
-
 		$to = 'Robert.McCann@applusrtd.com'; // , Bert.Weber@applusrtd.com';
 		$file = FCPATH.'tmp/TEST.pdf';
 				
-		if( $this->send_mail($to, $file) ) {
+		if( $this->send_mail($to, $file, $data[0]['project_id']) ) {
 			// Message successfully sent! Delete local file from /tmp
 			$pdf->delete_file($file);
 		} else {
@@ -52,14 +53,14 @@ class Workreports {
 	/*
 	* Emails the customer a work report PDF
 	*/
-	function send_mail($to, $file) {
+	function send_mail($to, $file, $project_id ) {
 		// require_once('Mail.php'); 
 		// require_once('Mail/mime.php'); 
 		// $mime = new Mail_mime();
 
 		// email fields: to, from, subject, and so on
 		$from = 'Robert.McCann@applusrtd.com'; // 'vxray@localhost';
-		$subject = 'Test PDF message';
+		$subject = 'Applus RTD Work Report '.$project_id.' For '.date('M j, Y'); // Applus RTD Work Report ###/###/### For DATE
 		$message = 'Attached is a test work report. Please keep this for your records.';
 		$headers = "From: $from"; // root@localhost
 
