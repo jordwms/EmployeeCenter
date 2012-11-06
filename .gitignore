@@ -21,4 +21,4 @@ _thumbs/
 media/
 
 # Temp folder for PDF generation
-tmp/
+tmp/*
