@@ -88,47 +88,24 @@
     .logo > div:nth-child(4) {
       border: 2px solid rgb(255,100,7);
       margin-bottom: 4px;
-      height: 82px;
+      height: 84px;
     }
 
     /** Research **/
 
     .research > div {
+      width: 100%;
+    }
+    .research > div > div {
       float: left;
-      width: 458px;
+      width: 50%;
     }
-    .research_section > div,
-    .review_section > div {
-      border: 2px solid rgb(255,100,7);
-      margin-bottom: 4px;
-      padding: 4px;
+    .research > div > div:nth-child(1) {
+      float: none;
+      width: 100%;
     }
-    .research_section > div {
-      margin-right: 4px;
-    }
-    .research_section > div:nth-child(1),
-    .review_section > div:nth-child(1) {
-      text-align: center;
-    }
-    .research_section > div:nth-child(2),
-    .review_section > div:nth-child(2) {
-      float: left;
-      width: 150px;
-      margin-right: 4px;
-      margin-bottom: 9px;
-    }
-    .review_section > div:nth-child(2) {
-      width: 149px;
-    }
-    .research_section > div:nth-child(3) {
-      float: left;
-      width: 276px;
-      margin-bottom: 9px;
-    }
-    .review_section > div:nth-child(3) {
-      float: left;
-      width: 281px;
-      margin-bottom: 9px;
+    .review_section {
+      margin-top: 19px;
     }
 
     /** Resources **/
@@ -147,38 +124,32 @@
     }
     .resources_name {
       margin-right: 4px;
-      width: 205px;
+      width: 292px;
       height: 45px;
     }
     .resources_name h3 {
       margin-top: 29px;
     }
-    .resources_hours,
     .resources_hours_begin {
       text-align: center;
-      width: 188px;
+      width: 390px;
       height: 45px;
     }
     .resources_hours_begin {
       border-right: none !important;
     }
+    .resources_hours {
+      width: 196px;
+      text-align: center;
+    }
     .resources_hours > div:nth-child(1),
     .resources_hours_begin > div:nth-child(1) {
       margin-bottom: 12px;
     }
-    .resources_hours > div:nth-child(2),
-    .resources_hours > div:nth-child(3),
     .resources_hours_begin > div:nth-child(2),
     .resources_hours_begin > div:nth-child(3) {
       float: left;
       width: 50%;
-    }
-    .resources_rest {
-      border-right: none !important;
-      border-left: none !important;
-      margin-top: 20px;
-      width: 89px;
-      text-align: center;
     }
     .resources_data > div {
       margin-bottom: 4px;
@@ -186,60 +157,17 @@
       float: left;
       border: 2px solid rgb(255,100,7);
       border-right: none;
-      width: 89px;
+      width: 190px;
       text-align: center;
     }
-    .resources_data > div:nth-child(8) {
+    .resources_data > div:nth-child(4) {
       border-right: 2px solid rgb(255,100,7) !important;
+      width: 196px;
     }
     .resources_data_name {
       border-right: 2px solid rgb(255,100,7) !important;
       margin-right: 4px;
-      width: 205px !important;
-    }
-
-    /** Equipment **/
-
-    .equipment {
-      margin-bottom: 9px;
-    }
-    .equipment_headers > div,
-    .equipment_data > div {
-      border: 2px solid rgb(255,100,7);
-      float: left;
-      padding: 4px;
-    }
-    .equipment_headers > div {
-      border-right: none;
-      border-bottom: none;
-    }
-    .equipment_headers > div:nth-child(1),
-    .equipment_data > div:nth-child(1) {
-      border-right: 2px solid rgb(255,100,7) !important;
-      margin-right: 4px;
-      width: 205px;
-    }
-    .equipment_headers > div:nth-child(2),
-    .equipment_headers > div:nth-child(3) {
-      width: 287px;
-      text-align: center;
-    }
-    .equipment_headers > div:nth-child(4) {
-      border-right: 2px solid rgb(255,100,7) !important;
-      width: 89px;
-      text-align: center;
-    }
-    .equipment_data > div {
-      border-right: none;
-    }
-    .equipment_data > div:nth-child(2),
-    .equipment_data > div:nth-child(3) {
-      width: 287px;
-    }
-    .equipment_data > div:nth-child(4) {
-      border-right: 2px solid rgb(255,100,7) !important;
-      width: 89px;
-      text-align: right;
+      width: 292px !important;
     }
 
     /** Sales Items **/
@@ -255,14 +183,14 @@
     }
     .items > div > div:nth-child(1) {
       margin-right: 4px;
-      width: 700px;
+      width: 698px;
     }
     .items > div > div:nth-child(2) {
       border-right: none;
-      width: 89px;
+      width: 90px;
     }
     .items > div > div:nth-child(3) {
-      width: 89px;
+      width: 90px;
       text-align: right;
     }
 
@@ -367,10 +295,10 @@
     <div class="contact_details"> 
       <div>
         <!-- {cost_center} -->
+        <h3>Cost Center</h3>
         <p>{street}</p>
         <p>{city}, {state} {zipcode}</p>
         <p>{country}</p>
-        <br />
         <p>Tel: {phone}</p>
         <p>Fax: {fax}</p>
         <p>Email: {email}</p>
@@ -378,7 +306,7 @@
       </div>
       <div>
         <h3>Client</h3>
-        <p>{sales_name}</p>
+        <p>{customer_name}</p>
         <p>{sales_address}</p>
         <p>{sales_country}</p>
         <br />
@@ -392,6 +320,7 @@
 
     <div class="contact_details">
       <div>
+        <h3>Team Contact</h3>
         <p>Team: Team Team VIXR</p>
         <p>Contact Person: {team_contact_person}</p>
         <br />
@@ -408,31 +337,29 @@
 
     <div class="logo">
       <div><img src="Applus_RTD.png" /></div>
-      <div><h3>{current_time format="%w"} {current_time format="%Y"}</h3></div>
+      <div><h3>{current_time format="%F %t, %Y"}</h3></div>
       <div>
-        <h1>Customer Reference</h1>
+        <h3>Customer Reference</h3>
         <span>Order 07.003325 Work Order 015</span>
         <p>Customer Reference</p>
         <span>GPS/CAD/GIS/API</span>
       </div>
-      <div></div>
-    </div>
 
-  </div>
+      <!-- Research -->
 
-  <!-- Research -->
+      <div class="research">
+        <div class="research_section">
+          <div><h3>Research</h3></div>
+          <div><p>UT-91112r3</p></div>
+          <div><p>EN 1714 meth 1</p></div>
+        </div>
+        <div class="review_section">
+          <div><h3>Review</h3></div>
+          <div><p>UT-91112r3</p></div>
+          <div><p>EN 1712 niv 2 of 3</p></div>
+        </div>
+      </div>
 
-  <div class="research">
-
-    <div class="research_section">
-      <div><h3>Research</h3></div>
-      <div><p>UT-91112r3</p></div>
-      <div><p>EN 1714 meth 1</p></div>
-    </div>
-    <div class="review_section">
-      <div><h3>Review</h3></div>
-      <div><p>UT-91112r3</p></div>
-      <div><p>EN 1712 niv 2 of 3</p></div>
     </div>
 
   </div>
@@ -450,14 +377,7 @@
       </div>
       <div class="resources_hours">
         <div><h3>Hours Worked</h3></div>
-        <div><p>Start</p></div>
-        <div><p>End</p></div>
-      </div>
-      <div class="resources_rest"><h3>Rest</h3></div>
-      <div class="resources_hours">
-        <div><h3>Return</h3></div>
-        <div><p>Start</p></div>
-        <div><p>End</p></div>
+        <div><p>Total</p></div>
       </div>
     </div>
 
@@ -467,34 +387,8 @@
       <div><p>-</p></div>
       <div><p>-</p></div>
       <div><p>-</p></div>
-      <div><p>-</p></div>
-      <div><p>-</p></div>
-      <div><p>-</p></div>
-      <div><p>-</p></div>
     </div>
     {/resources}
-
-  </div>
-
-  <!-- Equipment -->
-
-  <div class="equipment">
-
-    <div class="equipment_headers">
-      <div><h3>Equipment</h3></div>
-      <div><h3>Definition</h3></div>
-      <div><h3>Model Type</h3></div>
-      <div><h3>Activity</h3></div>
-    </div>
-
-    <!-- {equipment} -->
-    <div class="equipment_data">
-      <div><p>EQ.002 YIW-068</p></div>
-      <div><p>Peugeot 307</p></div>
-      <div><p>-</p></div>
-      <div><p>-</p></div>
-    </div>
-    <!-- {/equipment} -->
 
   </div>
 
