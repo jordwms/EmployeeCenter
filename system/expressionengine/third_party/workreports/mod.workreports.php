@@ -8,6 +8,88 @@ class Workreports {
 		$this->EE->load->library('axapta/axapta');
 		$this->EE->load->library('mysql');
 	}
+
+	/*
+	* Creates a PDF document an either prints it to the screen or emails it to the customer, depending on how it was called.
+	* @param $how - How the function was called.
+	*/
+	function wrPDF($project_id=NULL) {
+		$this->EE->load->library('Template', NULL, 'TMPL');
+		include_once(__DIR__.'/libraries/WKPDF.php');
+		$pdf = new WKPDF();
+		
+		// Get work report data array, parse corresponding template, and generate HTML from template + data
+		$data = $this->wrData($project_id);
+		$template = $this->EE->TMPL->fetch_template('workreports', 'print', FALSE, $this->EE->config->item('site_id') ); 
+		$template = $this->EE->TMPL->parse_variables($template, $data);
+
+		$this->EE->TMPL->parse($template, FALSE, $this->EE->config->item('site_id'));
+
+		// Create PDF
+		$pdf->set_title('WorkReport');
+		$pdf->set_html($this->EE->TMPL->final_template);
+		$pdf->render();
+		$pdf->output(WKPDF::$PDF_SAVEFILE, 'TEST.pdf');
+
+		// Send email with PDF attachment 
+		# TODO: $to = customer_contact_email
+		# TODO: Check if customer_contact_email is valid before sending 
+		// if(! is_null($data[0]['customer_contact_email']) ) {
+		// 	$to = $data[0]['customer_contact_email'];
+		// }
+
+		$to = 'Robert.McCann@applusrtd.com'; // , Bert.Weber@applusrtd.com';
+		$file = FCPATH.'tmp/TEST.pdf';
+				
+		if( $this->send_mail($to, $file) ) {
+			// Message successfully sent! Delete local file from /tmp
+			$pdf->delete_file($file);
+		} else {
+			echo 'Error sending email.';
+		}
+	}
+
+	/*
+	* Emails the customer a work report PDF
+	*/
+	function send_mail($to, $file) {
+		// require_once('Mail.php'); 
+		// require_once('Mail/mime.php'); 
+		// $mime = new Mail_mime();
+
+		// email fields: to, from, subject, and so on
+		$from = 'Robert.McCann@applusrtd.com'; // 'vxray@localhost';
+		$subject = 'Test PDF message';
+		$message = 'Attached is a test work report. Please keep this for your records.';
+		$headers = "From: $from"; // root@localhost
+
+		// boundary 
+		$semi_rand = md5(time()); 
+		$mime_boundary = "==Multipart_Boundary_x{$semi_rand}x";
+		  	
+		// headers for attachment 
+		$headers .= "\nMIME-Version: 1.0\n" . "Content-Type: multipart/mixed;\n" . " boundary=\"{$mime_boundary}\"";
+
+		// multipart boundary 
+		$message = "--{$mime_boundary}\n" . "Content-Type: text/plain; charset=\"iso-8859-1\"\n" .
+		"Content-Transfer-Encoding: 7bit\n\n" . $message . "\n\n";
+
+    	// preparing attachments
+        $message .= "--{$mime_boundary}\n";
+        $fp = 		@fopen($file,"rb");
+		$data =    	@fread($fp,filesize($file));
+                	@fclose($fp);
+        $data = chunk_split(base64_encode($data));
+        $message .= "Content-Type: application/octet-stream; name=\"".basename($file)."\"\n" . 
+	        "Content-Description: ".basename($file)."\n" .
+	        "Content-Disposition: attachment;\n" . " filename=\"".basename($file)."\"; size=".filesize($file).";\n" . 
+	        "Content-Transfer-Encoding: base64\n\n" . $data . "\n\n";
+	    $message .= "--{$mime_boundary}--";
+	    
+	    $returnpath = "-f" . $from; 
+
+		return mail($to, $subject, $message, $headers, $returnpath);
+	}
 	
 	/*
 	 *	This is a simple router designed as a REST like API
@@ -454,6 +536,7 @@ class Workreports {
 		if ( $employee = $this->EE->axapta->employee->get_remote( array('email' => $this->EE->session->userdata('email')) ) ){
 			$tagdata = $this->EE->TMPL->tagdata;
 
+
 			$this->EE->db->select('
 						project_id,
 						sales_id,
@@ -503,144 +586,159 @@ class Workreports {
 		}
 	}
 
+	/*
+	* Fetches data for a single work report. 
+	* Used in wrDetails() and wrPDF()
+	*/
+	function wrData($project_id=NULL) {
+		$this->EE->db->select('
+					id,
+					project_id,
+					contract_id,
+					sales_id,
+					crew_leader_id,
+					sales_responsible,
 
-	// Remake of wrDetails(), but it comes from MySQL instead of Axapta
+					execution_datetime,
+
+					company_id,
+					rtd_reference,
+					object_description,
+					order_description,
+
+					work_location_id,
+					work_location_name,
+					work_location_address,
+
+					team_contact_id,
+					team_contact_name,
+					team_contact_address,
+					team_contact_phone,
+					team_contact_fax,
+					team_contact_email,
+
+					customer_id,
+					customer_name,
+					customer_address,
+					customer_phone,
+					customer_fax,
+					customer_email,
+					customer_reference,
+
+					customer_contact_id,
+					customer_contact_name,
+					customer_contact_email,
+					customer_contact_phone,
+					customer_contact_mobile,
+
+					export_reason,
+					status
+		');
+
+		$this->EE->db->from('wr_reports');
+		$this->EE->db->where('project_id', $project_id);
+
+		// $this->EE->db->where('crew_leader_id', $employee);
+
+		$data[0] = $this->EE->db->get()->row_array();
+
+		$data[0]['materials'] = $this->EE->db->get_where('wr_materials', array('report_id' => $data[0]['id']) )->result_array();
+		$data[0]['sales_items'] = $this->EE->db->get_where('wr_items', array('report_id' => $data[0]['id']) )->result_array();
+
+		if ( $data[0]['export_reason'] == 'TEMPLATE' ){
+			$data[0]['resources'][0]['resource_id'] = $employee['id'];
+			$data[0]['resources'][0]['name'] = $employee['name'];
+		}else {
+			$data[0]['resources'] = $this->EE->db->get_where('wr_resources', array('report_id' => $data[0]['id']) )->result_array();
+		}
+		return $data;
+	}
+
 	function wrDetails() {
-		// if ( ($employee = $this->EE->axapta->employee()) ) {
-			$employee = $this->EE->axapta->employee->get_remote( array('email' => $this->EE->session->userdata('email')) );
-			$employee = $employee[0];
-			$project_id = str_replace('-', '/', $this->EE->TMPL->fetch_param('projid') );
+		$employee = $this->EE->axapta->employee->get_remote( array('email' => $this->EE->session->userdata('email')) );
+		$employee = $employee[0];
 
-			$submit_uri = $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$this->EE->functions->fetch_action_id('Workreports', 'submit_for_approval');
-			// $employee = $this->EE->axapta->employee->get_remote(array( 'email' => $this->EE->session->userdata('email') ));
+		$project_id = str_replace('-', '/', $this->EE->TMPL->fetch_param('projid') );
 
-			$this->EE->db->select('
-						id,
-						project_id,
-						contract_id,
-						sales_id,
-						crew_leader_id,
-						sales_responsible,
+		$submit_uri = $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$this->EE->functions->fetch_action_id('Workreports', 'submit_for_approval');
 
-						execution_datetime,
+		$data = $this->wrData($project_id);
+		
+		$form_open = array(
+			'action'		=> $submit_uri,
+			'name'          => 'workReport',
+			'id'            => $this->EE->TMPL->form_id,
+			'class'         => $this->EE->TMPL->form_class,
+			'hidden_fields' => array(
+									'project_id'			=> $data[0]['project_id'],
+									'id' 					=> $data[0]['crew_leader_id'],
+									'execution_datetime'	=> $data[0]['execution_datetime'],
+									'contract_id'      	    => $data[0]['contract_id'],
+									'company_id'			=> $data[0]['company_id'],
+									'customer_id'			=> $data[0]['customer_id'],
+									'customer_contract_id'	=> $data[0]['customer_id'],
+									'rtd_reference'			=> $data[0]['rtd_reference'],
+									'work_location_name'	=> $data[0]['work_location_name'],
+									'work_location_address' => $data[0]['work_location_address']
+								),
+			'secure'        => TRUE,
+			'onsubmit'      => ''
+		);
+		$data[0]['form_open'] = $this->EE->functions->form_declaration($form_open);
+		$data[0]['form_close'] = '</form>';
 
-						company_id,
-						rtd_reference,
-						object_description,
-						order_description,
+		$data[0]['actions'] = ''; // initializing 'actions' so we can have 1 concatonated string
 
-						research_procedure_id,
-						review_procedure_id,
-
-						work_location_id,
-						work_location_name,
-						work_location_address,
-
-						team_contact_id,
-						team_contact_name,
-						team_contact_address,
-						team_contact_phone,
-						team_contact_fax,
-						team_contact_email,
-
-						customer_id,
-						customer_name,
-						customer_address,
-						customer_phone,
-						customer_fax,
-						customer_email,
-						customer_reference,
-
-						customer_contact_id,
-						customer_contact_name,
-						customer_contact_email,
-						customer_contact_phone,
-						customer_contact_mobile,
-
-						export_reason,
-						status
-			');
-
-			$this->EE->db->from('wr_reports');
-			$this->EE->db->where('project_id', $project_id);
-
-			// $this->EE->db->where('crew_leader_id', $employee);
-
-			$data[0] = $this->EE->db->get()->row_array();
-			// echo "<pre>"; print_r($data[0]); die;
-
-
-			$data[0]['materials'] = $this->EE->db->get_where('wr_materials', array('report_id' => $data[0]['id']) )->result_array();
-
-			$data[0]['sales_items'] = $this->EE->db->get_where('wr_items', array('report_id' => $data[0]['id']) )->result_array();
-
-			if ( $data[0]['export_reason'] == 'TEMPLATE' ){
-				$data[0]['resources'][0]['resource_id'] = $employee['id'];
-				$data[0]['resources'][0]['name'] = $employee['name'];
-			}else {
-				$data[0]['resources'] = $this->EE->db->get_where('wr_resources', array('report_id' => $data[0]['id']) )->result_array();
-			}
-
-
-			$form_open = array(
-				'action'		=> $submit_uri,
-				'name'          => 'workReport',
-				'id'            => $this->EE->TMPL->form_id,
-				'class'         => $this->EE->TMPL->form_class,
-				'hidden_fields' => array(
-										'project_id'			=> $data[0]['project_id'],
-										'id' 					=> $data[0]['crew_leader_id'],
-										'execution_datetime'	=> $data[0]['execution_datetime'],
-										'contract_id'      	    => $data[0]['contract_id'],
-										'company_id'			=> $data[0]['company_id'],
-										'customer_id'			=> $data[0]['customer_id'],
-										'customer_contract_id'	=> $data[0]['customer_id'],
-										'rtd_reference'			=> $data[0]['rtd_reference'],
-										'work_location_name'	=> $data[0]['work_location_name'],
-										'work_location_address' => $data[0]['work_location_address']
-									),
-				'secure'        => TRUE,
-				'onsubmit'      => ''
-			);
-			$data[0]['form_open'] = $this->EE->functions->form_declaration($form_open);
-			$data[0]['form_close'] = '</form>';
-
-			$data[0]['actions'] = ''; // initializing 'actions' so we can have 1 concatonated string
-
-			if ($data[0]['status'] < 4){
-				if( (array_key_exists('WA DISP', $employee['groups']) && in_array($data[0]['company_id'], $employee['groups']['WA DISP'])) 
-					|| (array_key_exists('WA ADMIN', $employee['groups']) && in_array($data[0]['company_id'], $employee['groups']['WA ADMIN'])) ){
-					// Save button
-					$data[0]['actions'].= '<input type="submit" name="save" class="btn" value="Save">';
-					
-					if($data[0]['status'] < 3){
-						// Submit + Approve button
-						$data[0]['actions'].= '<input type="submit" name="submit" class="btn" value="Submit and Approve">';
-					}
-					
-					if($data[0]['status'] > 2 && $data[0]['status'] < 5 ){
-						// Approve button, Reject button
-						$data[0]['actions'].= '<input type="submit" name="approve" class="btn" value="Approve">';
-						$data[0]['actions'].= '<input type="submit" name="reject" class="btn" value="Reject">';
-					}
-
-				} else { // NOT DISP/ADMIN
-					if($data[0]['status'] < 3){
-						// Submit button, Save button
-						$data[0]['actions'].= '<input type="submit" name="submit" class="btn" value="Submit">';
-						$data[0]['actions'].= '<input type="submit" name="save" class="btn" value="Save">';
-					}
-					if($data[0]['status'] > 2) {
-						// No buttons!
-					}
-
+		if ($data[0]['status'] < 4){
+			if( in_array('WA DISP',$employee['groups'][$data[0]['company_id']]) || in_array('WA ADMIN',$employee['groups'][$data[0]['company_id']]) ){
+				// Save button
+				$data[0]['actions'].= '<input type="submit" name="save" class="btn" value="Save">';
+				
+				if($data[0]['status'] < 3){
+					// Submit + Approve button
+					$data[0]['actions'].= '<input type="submit" name="submit" class="btn" value="Submit and Approve">';
 				}
-			}
+				
+				if($data[0]['status'] > 2 && $data[0]['status'] < 5 ){
+					// Approve button, Reject button
+					$data[0]['actions'].= '<input type="submit" name="approve" class="btn" value="Approve">';
+					$data[0]['actions'].= '<input type="submit" name="reject" class="btn" value="Reject">';
+				}
+			} else { // NOT DISP/ADMIN
+				if($data[0]['status'] < 3){
+					// Submit button, Save button
+					$data[0]['actions'].= '<input type="submit" name="submit" class="btn" value="Submit">';
+					$data[0]['actions'].= '<input type="submit" name="save" class="btn" value="Save">';
+				}
+				if($data[0]['status'] > 2) {
+					// No buttons!
+				}
 
-			$tagdata = $this->EE->TMPL->tagdata;
-			$this->return_data = $this->EE->TMPL->parse_variables( $tagdata,  $data );
-			return $this->return_data;
-		// }
+			}
+		}
+
+		$tagdata = $this->EE->TMPL->tagdata;
+
+		$this->return_data = $this->EE->TMPL->parse_variables( $tagdata,  $data );
+		return $this->return_data;
+	}
+
+	function contract_items() {
+		if( $contract_id = $this->EE->TMPL->fetch_param('contract_id') ){
+			$options = array('contract_id' => $contract_id);
+		} else {
+			return FALSE;
+		}
+
+		if( $film_indicator = $this->EE->TMPL->fetch_param('film_indicator') ){
+			$options['film_indicator'] = $film_indicator;
+		}
+
+		$return_data = $this->EE->axapta->contract_items->get_remote( $options );
+
+		$tagdata = $this->EE->TMPL->tagdata;
+
+		return $this->EE->TMPL->parse_variables( $tagdata, $return_data );
 	}
 
 	/*
@@ -683,7 +781,7 @@ class Workreports {
 				if(array_key_exists('WA ADMIN', $employee['groups']) && in_array($this->EE->input->post('company_id'), $employee['groups']['WA ADMIN'])) {
 					$status = 5;
 				}
-			} elseif ( $this->EE->input->post('reject') ) {
+			} elseif ( $this->EE->input->post('reject') ) { // if "Reject" was clicked
 				$status = 0;
 			}
 
@@ -859,7 +957,6 @@ class Workreports {
 				}
 			}
 
-
 			/*** Sales Items ***************************************************************
 			 *
 			 *	Basically same process as resources
@@ -915,7 +1012,6 @@ class Workreports {
 					if( $material['qty'] ){
 
 						//echo '<pre>MATERIAL QTY CHANGED:<br>'; print_r($material); echo '</pre>';
-
 						$this->EE->db->select('item_id, dimension_id');
 						$this->EE->db->from('wr_materials');
 						$this->EE->db->where('report_id', $report_id);
@@ -954,7 +1050,6 @@ class Workreports {
 					}
 				}
 			}
-
 			/*
 			 *  We're almost done.
 			 *  First, check if the work report has admin approval status
@@ -968,6 +1063,10 @@ class Workreports {
 				    'employee_id' => $employee['id'],
 				    'company_id' => $existing_wr['company_id']
 				));
+			}
+			// If WA DISP approved, send an email 
+			if($status >= 2) {	
+				$this->wrPDF( $this->EE->input->post('project_id') );
 			}
 			$this->EE->output->show_message(array(
 				'title'   => 'Information Accepted',

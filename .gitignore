@@ -16,4 +16,9 @@ sized/
 thumbs/
 _thumbs/
 */expressionengine/cache/*
+
+# Media
 media/
+
+# Temp folder for PDF generation
+tmp/
