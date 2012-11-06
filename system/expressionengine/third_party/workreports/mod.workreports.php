@@ -690,8 +690,8 @@ class Workreports {
 		$data[0]['actions'] = ''; // initializing 'actions' so we can have 1 concatonated string
 
 		if ($data[0]['status'] < 4){
-			if( in_array('WA DISP',$employee['groups'][$data[0]['company_id']]) || in_array('WA ADMIN',$employee['groups'][$data[0]['company_id']]) ){
-				// Save button
+				if( (array_key_exists('WA DISP', $employee['groups']) && in_array($data[0]['company_id'], $employee['groups']['WA DISP'])) 
+					|| (array_key_exists('WA ADMIN', $employee['groups']) && in_array($data[0]['company_id'], $employee['groups']['WA ADMIN'])) ){				// Save button
 				$data[0]['actions'].= '<input type="submit" name="save" class="btn" value="Save">';
 				
 				if($data[0]['status'] < 3){
@@ -1050,6 +1050,7 @@ class Workreports {
 					}
 				}
 			}
+
 			/*
 			 *  We're almost done.
 			 *  First, check if the work report has admin approval status
@@ -1064,16 +1065,19 @@ class Workreports {
 				    'company_id' => $existing_wr['company_id']
 				));
 			}
+
 			// If WA DISP approved, send an email 
 			if($status >= 2) {	
 				$this->wrPDF( $this->EE->input->post('project_id') );
 			}
+
 			$this->EE->output->show_message(array(
 				'title'   => 'Information Accepted',
 				'heading' => 'Thank you',
 				'content' => 'Sucessfully submitted work report.',
 				'link'    => array($this->EE->functions->form_backtrack('0'), 'Return to Work Reports')
 			));
+
 			return TRUE;
 		}
 	}
