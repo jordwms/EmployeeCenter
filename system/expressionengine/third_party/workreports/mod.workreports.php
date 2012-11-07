@@ -578,6 +578,7 @@ class Workreports {
 
 			foreach ($dispatch_list as &$wr) {
 				$wr['project_link'] = str_replace('/', '-', $wr['project_id'] );
+				$wr['execution_datetime'] = $this->EE->localize->set_human_time( $wr['execution_datetime'] ); // Later this should be 'DD MONTH YYYY HH:MM'
 			}
 
 			$this->return_data = $this->EE->TMPL->parse_variables( $tagdata,  $dispatch_list);
