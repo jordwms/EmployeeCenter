@@ -20,7 +20,6 @@ class Workreports {
 		
 		// Get work report data array, parse corresponding template, and generate HTML from template + data
 		$data = $this->wrData($project_id);
-		echo '<pre>'; print_r($data[0]); die;
 		
 		$template = $this->EE->TMPL->fetch_template('workreports', 'print', FALSE, $this->EE->config->item('site_id') ); 
 		$template = $this->EE->TMPL->parse_variables($template, $data);
