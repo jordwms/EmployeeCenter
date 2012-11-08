@@ -321,6 +321,13 @@ class Workreports_upd {
 			$this->EE->dbforge->modify_column('wr_reports', $fields);
 		}
 
+		if($current < '1.3.4') {
+			$fields = array( 
+				'review_norm_id'		=> array('type' => 'varchar',   'constraint' => '50')
+				);
+			$this->EE->dbforge->add_column('wr_reports', $fields);
+		}
+
 		return TRUE;
 	}
 
