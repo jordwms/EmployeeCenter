@@ -633,7 +633,10 @@ class Workreports {
 					customer_contact_mobile,
 
 					research_procedure_id,
+					research_procedure_description,
+					
 					review_procedure_id,
+					review_procedure_description,
 
 					export_reason,
 					status
