@@ -306,11 +306,10 @@
       <div>
         <h3>Client</h3>
         <p>{customer_name}</p>
-        <p>{sales_address}</p>
-        <p>{sales_country}</p>
+        <p>{customer_address}</p>
         <br />
-        <p>Client Number: {customer_account}</p>
-        <p>Contract: {customer_contract}</p>
+        <p>Client Number: {customer_contact_id}</p>
+        <p>Contract: {contract_id}</p>
         <p>Tel: {customer_phone}</p>
         <p>Fax: {customer_fax}</p>
         <p>Email: {customer_email}</p>
@@ -321,7 +320,7 @@
       <div>
         <h3>Team Contact</h3>
         <p>Team: Team Team VIXR</p>
-        <p>Contact Person: {team_contact_person}</p>
+        <p>Contact Person: {team_contact_name}</p>
         <br />
         <p>Tel: {team_contact_phone}</p>
         <p>Fax: {team_contact_fax}</p>
@@ -329,32 +328,32 @@
       </div>
       <div>
         <h3>Work Location</h3>
-        <p>{delivery_name}</p>
-        <p>{delivery_address}</p>
+        <p>{work_location_name}</p>
+        <p>{work_location_address}</p>
       </div>
     </div>
 
     <div class="logo">
-      <div><img src="Applus_RTD.png" /></div>
-      <div><h3>{current_time format="%F %t, %Y"}</h3></div>
+      <div><img src="{path="images/Applus_RTD.png"}" /></div>
+      <div><h3>{execution_datetime format="%F %j, %Y"}</h3></div>
       <div>
         <h3>Customer Reference</h3>
-        <span>Order 07.003325 Work Order 015</span>
-        <p>Customer Reference</p>
-        <span>GPS/CAD/GIS/API</span>
+        <span>{customer_reference}</span>
+        <h3>RTD Reference</h3>
+        <span>{rtd_reference}</span>
       </div>
       <!-- Research -->
 
       <div class="research">
         <div class="research_section">
           <div><h3>Research</h3></div>
-          <div><p>UT-91112r3</p></div>
-          <div><p>EN 1714 meth 1</p></div>
+          <div><p>{research_procedure_id}</p></div>
+          <div><p>{research_procedure_name}</p></div>
         </div>
         <div class="review_section">
           <div><h3>Review</h3></div>
-          <div><p>UT-91112r3</p></div>
-          <div><p>EN 1712 niv 2 of 3</p></div>
+          <div><p>{review_procedure_id}</p></div>
+          <div><p>{review_procedure_name}</p></div>
         </div>
       </div>
 
@@ -365,11 +364,10 @@
   <!-- Resources -->
 
   <div class="resources">
-
     <div class="resources_headers">
       <div class="resources_name"><h3>Name</h3></div>
       <div class="resources_hours_begin">
-        <div><h3>Begin</h3></div>
+        <div><h3>Time</h3></div>
         <div><p>Start</p></div>
         <div><p>End</p></div>
       </div>
@@ -384,7 +382,7 @@
       <div class="resources_data_name"><p>{name}</p></div>
       <div><p>-</p></div>
       <div><p>-</p></div>
-      <div><p>-</p></div>
+      <div><p>{qty}</p></div>
     </div>
     {/resources}
   </div>
@@ -401,9 +399,9 @@
 
     {sales_items}
     <div class="items_data">
-      <div><p>{item_name}</p></div>
-      <div><p>{sales_unit}</p></div>
-      <div><p>-</p></div>
+      <div><p>{name}</p></div>
+      <div><p>{unit}</p></div>
+      <div><p>{qty}</p></div>
     </div>
     {/sales_items}
 
@@ -435,62 +433,12 @@
     <div class="materials_header"><h3>Material Consumption</h3></div>
 
     <div class="materials_data">
+      {materials}
       <div>
-        <div><p>Films<br />6"12</p></div>
-        <div><p>-</p></div>
-      </div>
-      <div>
-        <div><p>Films<br />6"16</p></div>
-        <div><p>-</p></div>
-      </div>
-      <div>
-        <div><p>Films<br />6"24</p></div>
-        <div><p>-</p></div>
-      </div>
-      <div>
-        <div><p>Films<br />6"48</p></div>
-        <div><p>-</p></div>
-      </div>
-      <div>
-        <div><p>Films<br />9"12</p></div>
-        <div><p>-</p></div>
-      </div>
-      <div>
-        <div><p>Films<br />10"16</p></div>
-        <div><p>-</p></div>
-      </div>
-      <div>
-        <div><p>Films<br />10"24</p></div>
-        <div><p>-</p></div>
-      </div>
-      <div>
-        <div><p>Films<br />10"48</p></div>
-        <div><p>-</p></div>
-      </div>
-      <div>
-        <div><p>Films<br />18"24</p></div>
-        <div><p>-</p></div>
-      </div>
-      <div>
-        <div><p>Films<br />30"40</p></div>
-        <div><p>-</p></div>
-      </div>
-      <div>
-        <div><p>Films<br />&nbsp;&nbsp;&nbsp;&nbsp;"</p></div>
-        <div><p>-</p></div>
-      </div>
-      <div>
-        <div><p>Films<br />&nbsp;&nbsp;&nbsp;&nbsp;"</p></div>
-        <div><p>-</p></div>
-      </div>
-      <div>
-        <div><p>Films<br />&nbsp;&nbsp;&nbsp;&nbsp;"</p></div>
-        <div><p>-</p></div>
-      </div>
-      <div>
-        <div><p>-</p></div>
-        <div><p>-</p></div>
-      </div>
+        <div><p>{name}<br />{unit}</p></div>
+        <div><p>{qty}</p></div>
+      </div> 
+      {/materials}
     </div>
 
   </div>
@@ -504,15 +452,10 @@
         <div><h3>Approved by Customer</h3></div>
         <div><h3>Date</h3></div>
       </div>
-      <div>
-        <div><p>Company Name</p></div>
-        <div><p>Date</p></div>
-      </div>
     </div>
 
     <div class="signature_confirmation">
       <div><h3>Confirmation</h3></div>
-      <div><p>{signature}</p></div>
     </div>
 
   </div>

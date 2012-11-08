@@ -632,6 +632,9 @@ class Workreports {
 					customer_contact_phone,
 					customer_contact_mobile,
 
+					research_procedure_id,
+					review_procedure_id,
+
 					export_reason,
 					status
 		');
@@ -721,6 +724,7 @@ class Workreports {
 		$tagdata = $this->EE->TMPL->tagdata;
 
 		$this->return_data = $this->EE->TMPL->parse_variables( $tagdata,  $data );
+
 		return $this->return_data;
 	}
 
