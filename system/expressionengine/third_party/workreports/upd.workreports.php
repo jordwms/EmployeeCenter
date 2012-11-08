@@ -1,6 +1,6 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 class Workreports_upd {
-	var $version = '1.3.3';
+	var $version = '1.3.4';
 
 	function __construct() {
 		$this->EE =& get_instance();
