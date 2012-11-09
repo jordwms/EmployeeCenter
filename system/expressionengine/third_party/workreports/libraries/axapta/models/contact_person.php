@@ -1,17 +1,17 @@
 <?php
 class contact_person extends axapta {
-	protected $id            = 'LTRIM(CONTACTPERSON.CONTACTPERSONID)';
-	protected $name          = 'CONTACTPERSON.NAME';
-	protected $email         = 'CONTACTPERSON.EMAIL';
-	protected $phone         = 'CONTACTPERSON.PHONE';
-	protected $cell_phone    = 'CONTACTPERSON.CELLULARPHONE';
+	protected $id            = 'LTRIM(CONTACTPERSON.CONTACTPERSONID)';  //varchar(20)
+	protected $name          = 'CONTACTPERSON.NAME';                    //varchar(60)
+	protected $email         = 'CONTACTPERSON.EMAIL';                   //varchar(80)
+	protected $phone         = 'CONTACTPERSON.PHONE';                   //varchar(20)
+	protected $cell_phone    = 'CONTACTPERSON.CELLULARPHONE';           //varchar(20)
 
-	protected $company_id    = 'CONTACTPERSON.DATAAREAID';
-	protected $department_id = 'CUSTTABLE.DIMENSION';
-	protected $cost_center   = 'CUSTTABLE.DIMENSION2_';
+	protected $company_id    = 'CONTACTPERSON.DATAAREAID';              //varchar(3)
+	protected $department_id = 'CUSTTABLE.DIMENSION';                   //varchar(10)
+	protected $cost_center   = 'CUSTTABLE.DIMENSION2_';                 //varchar(10)
 
-	protected $customer_id   = 'LTRIM(CUSTTABLE.ACCOUNTNUM)';
-	protected $customer_name = 'CUSTTABLE.NAME';
+	protected $customer_id   = 'LTRIM(CUSTTABLE.ACCOUNTNUM)';           //varchar(20)
+	protected $customer_name = 'CUSTTABLE.NAME';                        //varchar(60)
 
 
 	function __construct($conn){
