@@ -1,6 +1,6 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 class Workreports_upd {
-	var $version = '1.3.5';
+	var $version = '1.3.6';
 
 	function __construct() {
 		$this->EE =& get_instance();
@@ -332,6 +332,17 @@ class Workreports_upd {
 			$fields = array( 
 				'research_procedure_description'		=> array('type' => 'varchar',   'constraint' => '100'),
 				'review_procedure_description'			=> array('type' => 'varchar',   'constraint' => '100')
+				);
+			$this->EE->dbforge->add_column('wr_reports', $fields);
+		}
+
+		if($current < '1.3.6') {
+			$fields = array( 
+				'cost_center_name'		=> array('type' => 'varchar',   'constraint' => '60'),
+				'cost_center_address'	=> array('type' => 'varchar',   'constraint' => '250'),
+				'cost_center_phone'		=> array('type' => 'varchar',   'constraint' => '20'),
+				'cost_center_fax'		=> array('type' => 'varchar',   'constraint' => '20'),
+				'cost_center_email'		=> array('type' => 'varchar',   'constraint' => '80')
 				);
 			$this->EE->dbforge->add_column('wr_reports', $fields);
 		}
