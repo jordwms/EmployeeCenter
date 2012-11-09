@@ -602,6 +602,12 @@ class Workreports {
 
 					execution_datetime,
 
+					cost_center_name,
+					cost_center_address,
+					cost_center_phone,
+					cost_center_fax,
+					cost_center_email,
+
 					company_id,
 					rtd_reference,
 					object_description,
