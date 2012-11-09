@@ -308,7 +308,7 @@
         <p>{customer_name}</p>
         <p>{customer_address}</p>
         <br />
-        <p>Client Number: {customer_contact_id}</p>
+        <p>Client Number: {customer_id}</p>
         <p>Contract: {contract_id}</p>
         <p>Tel: {customer_phone}</p>
         <p>Fax: {customer_fax}</p>
@@ -329,6 +329,11 @@
         <h3>Work Location</h3>
         <p>{work_location_name}</p>
         <p>{work_location_address}</p>
+        <br />
+        <h3>Customer Contact</h3>
+        <p>Name: {customer_contact_name}</p>
+        <p>Tel: {customer_contact_phone}</p>
+        <p>Email: {customer_contact_email}</p>
       </div>
     </div>
 
@@ -345,11 +350,12 @@
 
       <div class="research">
         <div class="research_section">
+          <div><h3>Research Procedure</h3></div>
           <div><p>{research_procedure_id}</p></div>
           <div><p>{research_procedure_description}</p></div>
         </div>
         <div class="review_section">
-          <div><h3>Review</h3></div>
+          <div><h3>Review Procedure</h3></div>
           <div><p>{review_procedure_id}</p></div>
           <div><p>{review_procedure_description}</p></div>
         </div>
