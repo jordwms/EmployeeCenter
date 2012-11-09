@@ -225,6 +225,20 @@ class Workreports {
 					$return_data = $this->EE->axapta->dispatch_list->get_remote( $options );
 					break;
 
+				case 'research_procedure':
+                    $options = array_merge($options, array(
+                        'id' => 'RT-95105r14'
+                    ));
+					$return_data = $this->EE->axapta->research_procedure->get_remote( $options );
+					break;
+
+				case 'review_procedure':
+                    $options = array_merge($options, array(
+                        'id' => 'RT-95105r14'
+                    ));
+					$return_data = $this->EE->axapta->review_procedure->get_remote( $options );
+					break;
+
 				case 'sync':
 					echo '<h2>Sync Started</h2>';
 					$this->sync($employee['id']);
@@ -305,7 +319,6 @@ class Workreports {
 			            //'submitter_id' 			=> $employee_id,
 
 			            'customer_id' 				=> $work_report[0]['customer_id'],
-			            //'customer_name' 			=> $work_report[0]['customer_name'],
 			            'customer_reference' 		=> $work_report[0]['customer_reference'],
 
 			            'customer_contact_id'	 	=> $work_report[0]['customer_contact_person_id'],
@@ -335,7 +348,7 @@ class Workreports {
 			            'research_procedure_id' 	=> $work_report[0]['research_procedure_id'],
 			            'research_spec_id' 			=> $work_report[0]['research_spec_id'],
 
-			            //'review_norm_id' 			=> $work_report[0]['review_norm_id'],  //missing from mysql :(
+			            'review_norm_id' 			=> $work_report[0]['review_norm_id'],
 			           	'review_procedure_id' 		=> $work_report[0]['review_procedure_id'],
 			            'review_spec_id' 			=> $work_report[0]['review_spec_id'],
 
@@ -365,6 +378,18 @@ class Workreports {
 				            'customer_contact_email' 	=> $customer_contact[0]['email'],
 				            'customer_contact_phone' 	=> $customer_contact[0]['phone'],
 				            'customer_contact_mobile' 	=> $customer_contact[0]['cell_phone']
+			            ));
+					}
+
+					if( $research_procedure = $this->EE->axapta->research_procedure->get_remote(array( 'id' => $work_report[0]['research_procedure_id'] ) )){
+						$data = array_merge($data, array(
+							'research_procedure_description' => $research_procedure[0]['description']
+			            ));
+					}
+
+					if( $review_procedure = $this->EE->axapta->review_procedure->get_remote(array( 'id' => $work_report[0]['review_procedure_id'] ) )){
+						$data = array_merge($data, array(
+							'review_procedure_description' => $review_procedure[0]['description']
 			            ));
 					}
 					
@@ -578,6 +603,7 @@ class Workreports {
 
 			foreach ($dispatch_list as &$wr) {
 				$wr['project_link'] = str_replace('/', '-', $wr['project_id'] );
+				$wr['execution_datetime'] = $this->EE->localize->set_human_time( $wr['execution_datetime'] ); // Later this should be 'DD MONTH YYYY HH:MM'
 			}
 
 			$this->return_data = $this->EE->TMPL->parse_variables( $tagdata,  $dispatch_list);
@@ -630,6 +656,9 @@ class Workreports {
 					customer_contact_email,
 					customer_contact_phone,
 					customer_contact_mobile,
+
+					research_procedure_id,
+					review_procedure_id,
 
 					export_reason,
 					status
@@ -720,6 +749,7 @@ class Workreports {
 		$tagdata = $this->EE->TMPL->tagdata;
 
 		$this->return_data = $this->EE->TMPL->parse_variables( $tagdata,  $data );
+
 		return $this->return_data;
 	}
 
