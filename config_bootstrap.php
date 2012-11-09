@@ -239,10 +239,10 @@ if(isset($config)) {
         'site_404' => 'assets/404',
 
         // Localization preferences
-        'server_timezone' => 'UP10',
-        'server_offset' => FALSE,
-        'time_format' => 'eu',
-        'daylight_savings' => 'n',
+        'server_timezone' => 'UP1',
+        'server_offset' => TRUE,
+        'time_format' => 'us',
+        'daylight_savings' => 'y',
         'honor_entry_dst' => 'y',
 
         // Channel preferences
