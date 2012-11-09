@@ -361,6 +361,16 @@ class Workreports {
 			            'created_datetime' 			=> $work_report[0]['created_datetime'],
 			            'execution_datetime' 		=> $work_report[0]['execution_datetime']
 						);
+						
+					if( $cost_center = $this->EE->axapta->cost_center->get_remote( array( 'id' => $work_report[0]['cost_center_id'] ) )){
+						array_merge($data, array(
+							'cost_center_name' 			=> $cost_center[0]['name'],
+							'cost_center_address' 		=> $cost_center[0]['address'],
+							'cost_center_email' 		=> $cost_center[0]['email'],
+							'cost_center_phone' 		=> $cost_center[0]['phone'],
+							'cost_center_mobile' 		=> $cost_center[0]['cell_phone']
+						));
+					}
 
 					if( $customer = $this->EE->axapta->customer->get_remote(array( 'id' => $work_report[0]['customer_id'] ) )){
 						$data = array_merge($data, array(
