@@ -1,19 +1,19 @@
 <?php
 class cost_center extends axapta {
-	protected $id             = 'DIMENSIONS.NUM';
-	protected $company_id     = 'DIMENSIONS.DATAAREAID';
-	protected $company_group  = 'DIMENSIONS.COMPANYGROUP';
-	protected $name           = 'ADDRESS.NAME';
-	protected $address        = 'ADDRESS.ADDRESS';
-	protected $phone          = 'ADDRESS.PHONE';
-	protected $fax            = 'ADDRESS.TELEFAX';
-	protected $email          = 'ADDRESS.EMAIL';
-	protected $street         = 'ADDRESS.STREET';
-	protected $city           = 'ADDRESS.CITY';
-	protected $state          = 'ADDRESS.STATE';
-	protected $zipcode        = 'ADDRESS.ZIPCODE';
-	protected $country        = 'ADDRESS.COUNTRY';
-	protected $dimension_code = 'DIMENSIONS.DIMENSIONCODE';
+	protected $id             = 'DIMENSIONS.NUM';           //varchar(10)
+	protected $company_id     = 'DIMENSIONS.DATAAREAID';    //varchar(3)
+	protected $company_group  = 'DIMENSIONS.COMPANYGROUP';  //varchar(10)
+	protected $name           = 'ADDRESS.NAME';             //varchar(60)
+	protected $address        = 'ADDRESS.ADDRESS';          //varchar(250)
+	protected $phone          = 'ADDRESS.PHONE';            //varchar(20)
+	protected $fax            = 'ADDRESS.TELEFAX';          //varchar(20)
+	protected $email          = 'ADDRESS.EMAIL';            //varchar(80)
+	protected $street         = 'ADDRESS.STREET';           //varchar(250)
+	protected $city           = 'ADDRESS.CITY';             //varchar(60)
+	protected $state          = 'ADDRESS.STATE';            //varchar(10)
+	protected $zipcode        = 'ADDRESS.ZIPCODE';          //varchar(10)
+	protected $country        = 'ADDRESS.COUNTRY';          //varchar(60)
+	protected $dimension_code = 'DIMENSIONS.DIMENSIONCODE'; //int(10)
 
 	function __construct($conn){
 		$this->conn =& $conn;
