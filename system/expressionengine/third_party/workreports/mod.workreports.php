@@ -800,6 +800,7 @@ class Workreports {
 		 */
 		if ( $employee = $this->EE->axapta->employee->get_remote(array( 'email' => $this->EE->session->userdata('email') )) ) {
 			$employee = $employee[0];
+			$send_mail = FALSE; // Flag indicating whether the PDF should be emailed.
 			//$success = array();
 
 			// Get the work report already in the cache (MySQL)
@@ -821,15 +822,15 @@ class Workreports {
 			}
 
 			if ( $this->EE->input->post('submit') || $this->EE->input->post('approve') ) {
-				if(array_key_exists('WA TECH', $employee['groups']) && in_array($this->EE->input->post('company_id'), $employee['groups']['WA TECH'])) {
-					$status = 3;
-				}
-				if(array_key_exists('WA DISP', $employee['groups']) && in_array($this->EE->input->post('company_id'), $employee['groups']['WA DISP'])) {
-					$status = 4;
-				}
-				if(array_key_exists('WA ADMIN', $employee['groups']) && in_array($this->EE->input->post('company_id'), $employee['groups']['WA ADMIN'])) {
-					$status = 5;
-				}
+				if(array_key_exists('WA TECH', $employee['groups']) && in_array($this->EE->input->post('company_id'), $employee['groups']['WA TECH']) && $existing_wr['status'] < 3) {
+                    $status = 3;
+                }
+                if(array_key_exists('WA DISP', $employee['groups']) && in_array($this->EE->input->post('company_id'), $employee['groups']['WA DISP']) && $existing_wr['status'] < 4) {
+                    $status = 4;
+                }
+                if(array_key_exists('WA ADMIN', $employee['groups']) && in_array($this->EE->input->post('company_id'), $employee['groups']['WA ADMIN']) && $existing_wr['status'] < 5) {
+                    $status = 5;
+                }
 			} elseif ( $this->EE->input->post('reject') ) { // if "Reject" was clicked
 				$status = 0;
 			}
@@ -1115,10 +1116,8 @@ class Workreports {
 				));
 			}
 
-			// If WA DISP approved, send an email 
-			if($status >= 2) {	
-				$this->wrPDF( $this->EE->input->post('project_id') );
-			}
+			// If WA DISP approved and has not been approved before, send email 
+			if($send_mail) { $this->wrPDF( $this->EE->input->post('project_id') ); }
 
 			$this->EE->output->show_message(array(
 				'title'   => 'Information Accepted',
