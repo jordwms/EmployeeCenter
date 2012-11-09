@@ -133,8 +133,9 @@ class Workreports {
 
 				case 'cost_center':
                     $options = array_merge($options, array(
-                        'id' => $employee['cost_center_id'], 
-                        'company_id' => $employee['company_id']
+                        // 'id' => $employee['cost_center_id'], 
+                        //'company_id' => '002',
+                        //'id' => '1312'
                     ));
 					$return_data = $this->EE->axapta->cost_center->get_remote( $options );
 					break;
@@ -151,15 +152,15 @@ class Workreports {
 
 				case 'work_location':
 					$options = array_merge($options, array(
-						'company_id' => $employee['company_id']
+						//'company_id' => $employee['company_id']
 					));
 					$return_data = $this->EE->axapta->work_location->get_remote( $options );
 					break;
 
 				case 'contact_person':
 					$options = array_merge($options, array(
-						'company_id' => $employee['company_id']
-						//, 'id' => '107..SYB2001377'
+						//'company_id' => $employee['company_id']
+						//'id' => '107..SYB2001383'
 					));
 					$return_data = $this->EE->axapta->contact_person->get_remote( $options );
 					break;
@@ -362,13 +363,13 @@ class Workreports {
 			            'execution_datetime' 		=> $work_report[0]['execution_datetime']
 						);
 						
-					if( $cost_center = $this->EE->axapta->cost_center->get_remote( array( 'id' => $work_report[0]['cost_center_id'] ) )){
-						array_merge($data, array(
+					if( $cost_center = $this->EE->axapta->cost_center->get_remote( array( 'id' => $work_report[0]['cost_center_id'], 'company_id' => $work_report[0]['company_id'] ) )){
+						$data = array_merge($data, array(
 							'cost_center_name' 			=> $cost_center[0]['name'],
 							'cost_center_address' 		=> $cost_center[0]['address'],
 							'cost_center_email' 		=> $cost_center[0]['email'],
 							'cost_center_phone' 		=> $cost_center[0]['phone'],
-							'cost_center_mobile' 		=> $cost_center[0]['cell_phone']
+							'cost_center_fax' 			=> $cost_center[0]['fax']
 						));
 					}
 
@@ -391,12 +392,14 @@ class Workreports {
 			            ));
 					}
 					
-					if( $team_contact = $this->EE->axapta->contact_person->get_remote( array( 'id' => $work_report[0]['team_contact_person_id'] ) )){
-						array_merge($data, array(
+					if( $team_contact = $this->EE->axapta->employee->get_remote( array( 'id' => $work_report[0]['sales_responsible'] ) )){
+						$data = array_merge($data, array(
 							'team_contact_name' 		=> $team_contact[0]['name'],
+							//'team_contact_address' 		=> $team_contact[0]['address'],
 							'team_contact_email' 		=> $team_contact[0]['email'],
 							'team_contact_phone' 		=> $team_contact[0]['phone'],
-							'team_contact_mobile' 		=> $team_contact[0]['cell_phone']
+							'team_contact_fax' 			=> $team_contact[0]['fax'],
+							//'team_contact_mobile' 		=> $team_contact[0]['cell_phone']
 						));
 					}
 
@@ -555,11 +558,14 @@ class Workreports {
 			'execution_date' => '2012-01-01'
 		);
 
-		$template_list = $this->EE->axapta->work_report->get_remote( $options );
+		$this->EE->db->from('wr_reports');
+		$this->EE->db->where('export_reason', 'TEMPLATE');
+		$this->EE->db->order_by('customer_name', 'asc');
+
+		$template_list = $this->EE->db->get()->result_array();
 
 		foreach ($template_list as &$wr) {
 			$wr['project_link'] = str_replace('/', '-', $wr['project_id'] );
-			// $wr['project_link'] = $employee_id[2].'-'.$day['yday'].'-'.$sequence_id;
 		}
 
 		$this->return_data = $this->EE->TMPL->parse_variables( $tagdata,  $template_list);
@@ -688,6 +694,9 @@ class Workreports {
 		$data[0]['sales_items'] = $this->EE->db->get_where('wr_items', array('report_id' => $data[0]['id']) )->result_array();
 
 		if ( $data[0]['export_reason'] == 'TEMPLATE' ){
+			$employee = $this->EE->axapta->employee->get_remote( array('email' => $this->EE->session->userdata('email')) );
+			$employee = $employee[0];
+
 			$data[0]['resources'][0]['resource_id'] = $employee['id'];
 			$data[0]['resources'][0]['name'] = $employee['name'];
 		}else {
