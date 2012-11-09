@@ -227,14 +227,14 @@ class Workreports {
 
 				case 'research_procedure':
                     $options = array_merge($options, array(
-                        'id' => 'RT-95105r14'
+                        //'id' => 'RT-95105r14'
                     ));
 					$return_data = $this->EE->axapta->research_procedure->get_remote( $options );
 					break;
 
 				case 'review_procedure':
                     $options = array_merge($options, array(
-                        'id' => 'RT-95105r14'
+                        //'id' => 'RT-95105r14'
                     ));
 					$return_data = $this->EE->axapta->review_procedure->get_remote( $options );
 					break;
@@ -380,6 +380,15 @@ class Workreports {
 				            'customer_contact_mobile' 	=> $customer_contact[0]['cell_phone']
 			            ));
 					}
+					
+					if( $team_contact = $this->EE->axapta->contact_person->get_remote( array( 'id' => $work_report[0]['team_contact_person_id'] ) )){
+						array_merge($data, array(
+							'team_contact_name' 		=> $team_contact[0]['name'],
+							'team_contact_email' 		=> $team_contact[0]['email'],
+							'team_contact_phone' 		=> $team_contact[0]['phone'],
+							'team_contact_mobile' 		=> $team_contact[0]['cell_phone']
+						));
+					}
 
 					if( $research_procedure = $this->EE->axapta->research_procedure->get_remote(array( 'id' => $work_report[0]['research_procedure_id'] ) )){
 						$data = array_merge($data, array(
@@ -392,15 +401,6 @@ class Workreports {
 							'review_procedure_description' => $review_procedure[0]['description']
 			            ));
 					}
-					
-					// if( $team_contact = $this->EE->axapta->contact_person->get_remote( array( 'id' => $work_report[0]['team_contact_person_id'] ) )){
-					// 	array_merge($data, array(
-					// 		'team_contact_name' 		=> $team_contact[0]['name'],
-					// 		'team_contact_email' 		=> $team_contact[0]['email'],
-					// 		'team_contact_phone' 		=> $team_contact[0]['phone'],
-					// 		'team_contact_mobile' 		=> $team_contact[0]['cell_phone']
-					// 	));
-					// }
 
 					$this->EE->db->insert('wr_reports', $data);
 					$report_id = $this->EE->db->insert_id();
