@@ -93,7 +93,7 @@
     /** Research **/
 
     .research {
-      height: 121px !important;
+      height: 93px !important;
     }
     .research > div {
       width: 100%;
@@ -158,7 +158,7 @@
       border: 2px solid rgb(255,100,7);
       border-right: none;
       width: 190px;
-      text-align: center;
+      text-align: left;
     }
     .resources_data > div:nth-child(4) {
       border-right: 2px solid rgb(255,100,7) !important;
@@ -295,6 +295,7 @@
         <h3>Cost Center</h3>
         <p>{cost_center_name}</p>
         <p>{cost_center_address}</p>
+        <br />
         <p>Tel: {cost_center_phone}</p>
         <p>Fax: {cost_center_fax}</p>
         <p>Email: {cost_center_email}</p>
@@ -305,7 +306,7 @@
         <p>{customer_name}</p>
         <p>{customer_address}</p>
         <br />
-        <p>Client Number: {customer_id}</p>
+        <p>Customer #: {customer_id}</p>
         <p>Contract: {contract_id}</p>
         <p>Tel: {customer_phone}</p>
         <p>Fax: {customer_fax}</p>
@@ -316,7 +317,7 @@
     <div class="contact_details">
       <div>
         <h3>Team Contact</h3>
-        <p>Name: {team_contact_name}</p>
+        <p>{team_contact_name}</p>
         <br />
         <p>Tel: {team_contact_phone}</p>
         <p>Fax: {team_contact_fax}</p>
