@@ -6,13 +6,13 @@
 
   <style type="text/css">
 
-    html { font-size: 100%; overflow-y: scroll; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
-    body { margin: 20px auto; font-size: 100%; line-height: 1.231; font-family: sans-serif; color: rgb(0,0,0); width: 916px; }
+    html { font-size: 90%; overflow-y: scroll; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+    body { margin: 20px auto; line-height: 1.231; font-family: sans-serif; color: rgb(0,0,0); width: 916px; }
 
-    table { border-collapse: collapse; border-spacing: 0; margin: 0; width: 100%; }
-    td { vertical-align: top; }
+    table { border-collapse: collapse; border-spacing: 0; margin: 0; font-size: 100%; }
+    td { vertical-align: middle; }
 
-    h1, h2, h3 { margin: 0; font-size: 100%; font-weight: bold; display: block; }
+    h1, h2, h3 { margin: 0; font-weight: bold; display: block; }
     p, span { margin: 0; font-size: 80%; }
     img { width: 295px; height: 70px; margin: 9px 0; }
 
@@ -92,6 +92,9 @@
 
     /** Research **/
 
+    .research {
+      height: 121px !important;
+    }
     .research > div {
       width: 100%;
     }
@@ -124,15 +127,13 @@
     .resources_name {
       margin-right: 4px;
       width: 292px;
-      height: 45px;
     }
     .resources_name h3 {
-      margin-top: 29px;
+      margin-top: 26px;
     }
     .resources_hours_begin {
       text-align: center;
       width: 390px;
-      height: 45px;
     }
     .resources_hours_begin {
       border-right: none !important;
@@ -193,27 +194,34 @@
       text-align: right;
     }
 
+    .items_data > table {
+      border-collapse: collapse;
+      float: left;
+      width: 202px;
+    }
+    .items_data td {
+      border: 2px solid rgb(255,100,7);
+      padding: 3px 4px 4px 4px;
+      width: 50%;
+    }
+
     /** Remarks **/
 
     .remarks {
-      padding-bottom: 5px;
+      margin-bottom: 9px;
     }
-    .remarks > div {
-      margin: 0 4px 4px 0;
-      float: left;
-      width: 298px;
+    .remarks table {
+      width: 100%;
+    }
+    .remarks td {
       border: 2px solid rgb(255,100,7);
-    }
-    .remarks > div:nth-child(3) {
-      margin-right: 0;
-      width: 300px;
-    }
-    .remarks > div > div {
+      width: 250px;
       padding: 4px;
     }
-    .remarks > div > div:nth-child(2) {
-      border-top: 2px solid rgb(255,100,7);
-      height: 120px;
+    .no_border {
+      border: none !important;
+      width: 4px !important;
+      padding: 0 !important;
     }
 
     /** Materials **/
@@ -225,24 +233,14 @@
       border: 2px solid rgb(255,100,7);
       padding: 4px;
     }
-    .materials_data > div {
-      border: 2px solid rgb(255,100,7);
+    .materials_data table {
       float: left;
-      font-size: 85%;
-      width: 45px;
-      border-top: none;
-      border-right: none;
+      width: 75px;
+      margin: 4px 4px 0 0;
     }
-    .materials_data > div:last-child {
-      width: 301px;
-      border-right: 2px solid rgb(255,100,7);
-    }
-    .materials_data > div > div {
-      padding: 4px;
-    }
-    .materials_data > div > div:nth-child(1) {
-      border-bottom: 2px solid rgb(255,100,7);
-      height: 26px;
+    .materials_table td{
+      border: 2px solid rgb(255,100,7) !important;
+      padding: 4px !important;
     }
 
     /** Signature **/
@@ -297,14 +295,13 @@
         <h3>Cost Center</h3>
         <p>{cost_center_name}</p>
         <p>{cost_center_address}</p>
-        <br />
         <p>Tel: {cost_center_phone}</p>
         <p>Fax: {cost_center_fax}</p>
         <p>Email: {cost_center_email}</p>
         <!-- {/cost_center} -->
       </div>
       <div>
-        <h3>Client</h3>
+        <h3>Customer</h3>
         <p>{customer_name}</p>
         <p>{customer_address}</p>
         <br />
@@ -404,8 +401,12 @@
     {sales_items}
     <div class="items_data">
       <div><p>{name}</p></div>
-      <div><p>{unit}</p></div>
-      <div><p>{qty}</p></div>
+      <table>
+        <tr>
+          <td><p>{unit}</p></td>
+          <td><p>{qty}</p></td>
+        </tr>
+      </table>
     </div>
     {/sales_items}
 
@@ -415,18 +416,20 @@
 
   <div class="remarks">
 
-    <div>
-      <div><h3>Remark</h3></div>
-      <div><p>This is a Remark</p></div>
-    </div>
-    <div>
-      <div><h3>Object Description</h3></div>
-      <div><p>This is an Object Description</p></div>
-    </div>
-    <div>
-      <div><h3>Order Description</h3></div>
-      <div><p>This is an Order Description</p></div>
-    </div>
+    <table>
+      <tr>
+        <td><h3>Remark</h3></td>
+        <td class="no_border" rowspan="3"></td>
+        <td><h3>Object Description</h3></td>
+        <td class="no_border" rowspan="3"></td>
+        <td><h3>Order Description</h3></td>
+      </tr>
+      <tr>
+        <td><p>This is a Remark</p></td>
+        <td><p>This is an Object Description</p></td>
+        <td><p>This is an Order Description</p></td>
+      </tr>
+    </table>
 
   </div>
 
@@ -438,10 +441,14 @@
 
     <div class="materials_data">
       {materials}
-      <div>
-        <div><p>{name}<br />{unit}</p></div>
-        <div><p>{qty}</p></div>
-      </div> 
+      <table class="materials_table">
+        <tr>
+          <td><p>{name}<br />{unit}</p></td>
+        </tr>
+        <tr>
+          <td><p>{qty}</p></td>
+        </tr>
+      </table>
       {/materials}
     </div>
 
