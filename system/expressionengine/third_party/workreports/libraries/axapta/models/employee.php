@@ -105,18 +105,7 @@ class employee extends axapta {
 			 *	each employee can belong to multiple groups in differnt companies
 			 *	!an employee should only be granted a group's privlidges for the correct company
 			 *
-			 ---- OLD ------------------------------
 			 *	[groups] => Array(
-		     *      [company_id] => Array(
-		     *          [0] => 'GROUP ID'
-		     *      ),
-		     *      [107] => Array(
-		     *          [0] => 'WA TECH',
-		     *          [1] => 'WA DISP',
-		     *			[2] => 'WA ADMIN'
-		     *      )
-		     *
-			 ---- NEW ---------------------------------
 		     *      [GROUP ID] => Array(
 		     *          [0] => 'company_id'
 		     *      ),

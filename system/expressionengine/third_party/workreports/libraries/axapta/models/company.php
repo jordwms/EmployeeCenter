@@ -29,13 +29,13 @@ class company extends axapta {
 	 */
 	function get_remote($options = NULL) {
 		$this->explode_datetime($options);
-		
+
 		//select all properties defined at top of class
 		$query = $this->build_SELECT();
 
 		//from statement
 		$query .= 'FROM COMPANYINFO'.NL;
-		
+
 		//build WHERE statements from passed options
 		$query .= $this->build_WHERE($options);
 
