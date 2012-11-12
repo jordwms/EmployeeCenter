@@ -58,8 +58,8 @@ class Workreports {
 
         // email fields: to, from, subject, and so on
         $from = 'Robert.McCann@applusrtd.com'; // 'vxray@localhost';
-        $subject = 'Applus RTD Work Report '.$project_id.' For '.date('M j, Y'); // Applus RTD Work Report ###/###/### For DATE
-        $message = 'Attached is a test work report. Please keep this for your records.';
+        $subject = 'Applus RTD Work Report '.$project_id;
+        $message = 'Attached is a work report from ApplusRTD. Please keep this for your records.';
         $headers = "From: $from"; // root@localhost
 
         // boundary
@@ -67,27 +67,36 @@ class Workreports {
         $mime_boundary = "==Multipart_Boundary_x{$semi_rand}x";
 
         // headers for attachment
-        $headers .= "\nMIME-Version: 1.0\n" . "Content-Type: multipart/mixed;\n" . " boundary=\"{$mime_boundary}\"";
+        $headers .= "\nMIME-Version: 1.0";
+        $headers .= "\nContent-Type: multipart/mixed;";
+        $headers .= "\nboundary=\"{$mime_boundary}\"";
 
         // multipart boundary
-        $message = "--{$mime_boundary}\n" . "Content-Type: text/plain; charset=\"iso-8859-1\"\n" .
-        "Content-Transfer-Encoding: 7bit\n\n" . $message . "\n\n";
+        $body = "\n--{$mime_boundary}";
+        $body .= "\nContent-Type: text/plain; charset=\"UTF-8\"";
+        $body .= "\nContent-Transfer-Encoding: 7bit\n\n";
+        $body .= $message;
+        $body .= "\n\n";
 
         // preparing attachments
-        $message .= "--{$mime_boundary}\n";
+        $body .= "--{$mime_boundary}\n";
         $fp =       @fopen($file,"rb");
         $data =     @fread($fp,filesize($file));
                     @fclose($fp);
+
         $data = chunk_split(base64_encode($data));
-        $message .= "Content-Type: application/octet-stream; name=\"".basename($file)."\"\n" .
-            "Content-Description: ".basename($file)."\n" .
-            "Content-Disposition: attachment;\n" . " filename=\"".basename($file)."\"; size=".filesize($file).";\n" .
-            "Content-Transfer-Encoding: base64\n\n" . $data . "\n\n";
-        $message .= "--{$mime_boundary}--";
+
+        $body .= "Content-Type: application/octet-stream; name=\"".basename($file)."\"\n";
+        $body .= "Content-Description: ".basename($file)."\n";
+        $body .= "Content-Disposition: attachment;\n" . " filename=\"".basename($file)."\"; size=".filesize($file).";\n" .
+        $body .= "Content-Transfer-Encoding: base64\n\n";
+        $body .= $data;
+        $body .= "\n\n";
+        $body .= "--{$mime_boundary}--";
 
         $returnpath = "-f" . $from;
 
-        return mail($to, $subject, $message, $headers, $returnpath);
+        return mail($to, $subject, $body, $headers, $returnpath);
     }
 
     /*
