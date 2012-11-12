@@ -1,20 +1,20 @@
 <?php
 class contract_items extends axapta {
-	protected $id                  = 'LTRIM(PRICEDISCTABLE.INVENTDIMID)';
-	protected $item_id             = 'LTRIM(INVENTTABLE.ITEMID)';
-	protected $name                = 'PRICEDISCTABLE.RTDITEMNAME';
-	protected $config_name         = 'CONFIGTABLE.NAME';
-	protected $unit                = 'PRICEDISCTABLE.UNITID';
-	protected $price_type          = 'PRICEDISCTABLE.RTDPRICETYPE';
-	protected $price               = 'PRICEDISCTABLE.AMOUNT';
-	protected $currency            = 'PRICEDISCTABLE.CURRENCY';
+	protected $id                  = 'LTRIM(PRICEDISCTABLE.INVENTDIMID)';  //varchar(20)
+	protected $item_id             = 'LTRIM(INVENTTABLE.ITEMID)';          //varchar(10)
+	protected $name                = 'PRICEDISCTABLE.RTDITEMNAME';         //varchar(165)
+	protected $config_name         = 'CONFIGTABLE.NAME';                   //varchar(60)
+	protected $unit                = 'PRICEDISCTABLE.UNITID';              //varchar(10)
+	protected $price_type          = 'PRICEDISCTABLE.RTDPRICETYPE';        //int(10)
+	protected $price               = 'PRICEDISCTABLE.AMOUNT';              //numeric(28,12)
+	protected $currency            = 'PRICEDISCTABLE.CURRENCY';            //varchar(3)
 
-	protected $contract_id         = 'RTDCONTRACT.CONTRACTID';
+	protected $contract_id         = 'RTDCONTRACT.CONTRACTID';             //varchar(15)
 	//protected $contract_valid      = 'RTDCONTRACT.VALID';
 	//protected $contract_valid_from = 'RTDCONTRACT.VALIDFROM';
 	//protected $contract_valit_to   = 'RTDCONTRACT.VALIDTO';
 
-	protected $film_indicator      = 'INVENTTABLE.RTDFILMIND';
+	protected $film_indicator      = 'INVENTTABLE.RTDFILMIND';             //int(1)
 
 	function __construct($conn){
 		$this->conn =& $conn;

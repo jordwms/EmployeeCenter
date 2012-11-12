@@ -1,14 +1,14 @@
 <?php
 class consumables extends Axapta {
-	protected $id             = 'INVENTTABLE.ITEMID';
-	protected $type           = 'MODELGROUPID';
-	protected $company_id     = 'INVENTTABLE.DATAAREAID';
-	protected $dimension_id   = 'LTRIM(PRICEDISCTABLE.INVENTDIMID)';
-	protected $name           = 'INVENTTABLE.ITEMNAME';
-	protected $unit           = 'PRICEDISCTABLE.UNITID';
-	protected $price_type     = 'PRICEDISCTABLE.RTDPRICETYPE';
-	protected $price          = 'PRICEDISCTABLE.AMOUNT';
-	protected $film_indicator = 'INVENTTABLE.RTDFILMIND';
+	protected $id             = 'INVENTTABLE.ITEMID';                 //varchar(10)
+	protected $type           = 'INVENTTABLE.MODELGROUPID';           //varchar(10)
+	protected $company_id     = 'INVENTTABLE.DATAAREAID';             //varchar(3)
+	protected $dimension_id   = 'LTRIM(PRICEDISCTABLE.INVENTDIMID)';  //varchar(20)
+	protected $name           = 'INVENTTABLE.ITEMNAME';               //varchar(60)
+	protected $unit           = 'PRICEDISCTABLE.UNITID';              //varchar(10)
+	protected $price_type     = 'PRICEDISCTABLE.RTDPRICETYPE';        //int(10)
+	protected $price          = 'PRICEDISCTABLE.AMOUNT';              //numeric(28,12)
+	protected $film_indicator = 'INVENTTABLE.RTDFILMIND';             //int(1)
 
 	function __construct($conn){
 		$this->conn =& $conn;

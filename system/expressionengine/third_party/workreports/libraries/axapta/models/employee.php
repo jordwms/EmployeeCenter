@@ -4,44 +4,44 @@ class employee extends axapta {
 	 *	these are the model properties
 	 *	they are defined as: $property_name = AXAPTAFIELD with any SQL operators (ie date formating)
 	 */
-	protected $id                 = 'EMPLID';
-	protected $name               = 'NAME';
-	protected $title              = 'TITLE';
-	protected $axapta_id          = 'USERID';
+	protected $id                 = 'EMPLID';                     //varchar(20)
+	protected $name               = 'NAME';                       //varchar(60)
+	protected $title              = 'TITLE';                      //varchar(30)
+	protected $axapta_id          = 'USERID';                     //varchar(5)
 
-	protected $status             = 'STATUS';
-	protected $internal_external  = 'INTERNALEXTERNAL';
-	protected $hrm_active_flag    = 'HRMACTIVEINACTIVE';
+	protected $status             = 'STATUS';                     //int(10)
+	protected $internal_external  = 'INTERNALEXTERNAL';           //int(10)
+	protected $hrm_active_flag    = 'HRMACTIVEINACTIVE';          //int(10)
 
-	protected $company_id         = 'DATAAREAID';
-	protected $department_id      = 'DIMENSION';
-	protected $cost_center_id     = 'DIMENSION2_';
+	protected $company_id         = 'DATAAREAID';                 //varchar(3)
+	protected $department_id      = 'DIMENSION';                  //varchar(10)
+	protected $cost_center_id     = 'DIMENSION2_';                //varchar(10)
 
-	protected $email              = 'EMAIL';
-	protected $phone              = 'PHONE';
-	protected $cell_phone         = 'CELLULARPHONE';
-	protected $personal_phone     = 'RTDPRIVATEPHONE';
-	protected $fax                = 'TELEFAX';
+	protected $email              = 'EMAIL';                      //varchar(80)
+	protected $phone              = 'PHONE';                      //varchar(20)
+	protected $cell_phone         = 'CELLULARPHONE';              //varchar(20)
+	protected $personal_phone     = 'RTDPRIVATEPHONE';            //varchar(20)
+	protected $fax                = 'TELEFAX';                    //varchar(20)
 
-	protected $address            = 'ADDRESS';
-	protected $street             = 'STREET';
-	protected $city               = 'CITY';
-	protected $county             = 'COUNTYID';
-	protected $state              = 'STATEID';
-	protected $zip_code           = 'ZIPCODEID';
-	protected $country            = 'COUNTRYID';
+	protected $address            = 'ADDRESS';                    //varchar(250)
+	protected $street             = 'STREET';                     //varchar(250)
+	protected $city               = 'CITY';                       //varchar(60)
+	protected $county             = 'COUNTYID';                   //varchar()
+	protected $state              = 'STATEID';                    //varchar()
+	protected $zip_code           = 'ZIPCODEID';                  //varchar(10)
+	protected $country            = 'COUNTRYID';                  //varchar(10)
 
-	protected $currency           = 'CURRENCY';
+	protected $currency           = 'CURRENCY';                   //varchar(3)
 
-	protected $birth_date         = 'CONVERT(DATE,BIRTHDATE)';
+	protected $birth_date         = 'CONVERT(DATE,BIRTHDATE)';    //datetime()
 
-	protected $modified_date      = 'CONVERT(DATE,MODIFIEDDATE)';
-	protected $modified_time      = 'MODIFIEDTIME';
-	protected $modified_by        = 'MODIFIEDBY';
+	protected $modified_date      = 'CONVERT(DATE,MODIFIEDDATE)'; //date()
+	protected $modified_time      = 'MODIFIEDTIME';               //int(10)
+	protected $modified_by        = 'MODIFIEDBY';                 //varchar(5)
 
-	protected $created_date       = 'CONVERT(DATE,CREATEDDATE)';
-	protected $created_time       = 'CREATEDTIME';
-	protected $created_by         = 'CREATEDBY';
+	protected $created_date       = 'CONVERT(DATE,CREATEDDATE)';  //date()
+	protected $created_time       = 'CREATEDTIME';                //int(10)
+	protected $created_by         = 'CREATEDBY';                  //varchar(5)
 
 
 	function __construct($conn, $test = NULL){
@@ -105,18 +105,7 @@ class employee extends axapta {
 			 *	each employee can belong to multiple groups in differnt companies
 			 *	!an employee should only be granted a group's privlidges for the correct company
 			 *
-			 ---- OLD ------------------------------
 			 *	[groups] => Array(
-		     *      [company_id] => Array(
-		     *          [0] => 'GROUP ID'
-		     *      ),
-		     *      [107] => Array(
-		     *          [0] => 'WA TECH',
-		     *          [1] => 'WA DISP',
-		     *			[2] => 'WA ADMIN'
-		     *      )
-		     *
-			 ---- NEW ---------------------------------
 		     *      [GROUP ID] => Array(
 		     *          [0] => 'company_id'
 		     *      ),
