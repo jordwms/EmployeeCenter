@@ -710,7 +710,6 @@ class Workreports {
 
         $project_id = str_replace('-', '/', $this->EE->TMPL->fetch_param('projid') );
 
-        $submit_uri = $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$this->EE->functions->fetch_action_id('Workreports', 'submit_for_approval');
 
         $data = $this->wrData($project_id);
 
@@ -737,28 +736,22 @@ class Workreports {
         $data[0]['form_open'] = $this->EE->functions->form_declaration($form_open);
         $data[0]['form_close'] = '</form>';
 
-        $data[0]['actions'] = ''; // initializing 'actions' so we can have 1 concatonated string
+        $data[0]['actions'] = '<input type="submit" name="print" class="btn" value="Print">'; // 1 concatonated string for all submit buttons
 
         if ($data[0]['status'] < 4){
                 if( (array_key_exists('WA DISP', $employee['groups']) && in_array($data[0]['company_id'], $employee['groups']['WA DISP']))
                     || (array_key_exists('WA ADMIN', $employee['groups']) && in_array($data[0]['company_id'], $employee['groups']['WA ADMIN'])) ){              // Save button
-                $data[0]['actions'].= '<input type="submit" name="save" class="btn" value="Save">';
 
                 if($data[0]['status'] < 3){
                     // Submit + Approve button
-                    $data[0]['actions'].= '<input type="submit" name="submit" class="btn" value="Submit and Approve">';
                 }
 
                 if($data[0]['status'] > 2 && $data[0]['status'] < 5 ){
                     // Approve button, Reject button
-                    $data[0]['actions'].= '<input type="submit" name="approve" class="btn" value="Approve">';
-                    $data[0]['actions'].= '<input type="submit" name="reject" class="btn" value="Reject">';
                 }
             } else { // NOT DISP/ADMIN
                 if($data[0]['status'] < 3){
                     // Submit button, Save button
-                    $data[0]['actions'].= '<input type="submit" name="submit" class="btn" value="Submit">';
-                    $data[0]['actions'].= '<input type="submit" name="save" class="btn" value="Save">';
                 }
                 if($data[0]['status'] > 2) {
                     // No buttons!
@@ -1085,6 +1078,11 @@ class Workreports {
                 }
             }
 
+            // If submit() was called by the "print" button redirect to print.html (changes are saved)
+            if( $this->EE->input->post('print') ){
+                $this->EE->load->helper('url');
+                redirect('/workreports/print/'.str_replace('/','-',$existing_wr['project_id']));
+            }
             /*
              *  We're almost done.
              *  First, check if the work report has admin approval status
