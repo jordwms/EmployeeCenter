@@ -35,30 +35,6 @@
                 </table>
             </div>
         </div>
-        
-        <h3>Procedures</h3>
-        <div class="row-fluid">
-            <div class="span12">
-                <table>
-                    <tbody>
-                    <tr>
-                        <td><input disabled="disabled" type="text" name="research_procedure_id" value="{research_procedure_id}" /></td>
-                        <td class="omit_label"></td>
-                        <td>Research Procedure</td>
-                    </tr>
-                    <tr>
-                        <td><input disabled="disabled" type="text" name="review_procedure_id" value="{review_procedure_id}" /></td>
-                        <td class="omit_label"></td>
-                        <td>Review Procedure</td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <footer>
-
-        </footer>
     </fieldset>
 
     <fieldset id="customer">
@@ -135,10 +111,26 @@
                 </table>
             </div>
         </div>
-        
-        <footer>
 
-        </footer>
+        <h3>Procedures</h3>
+        <div class="row-fluid">
+            <div class="span12">
+                <table>
+                    <tbody>
+                    <tr>
+                        <td><input disabled="disabled" type="text" name="research_procedure_id" value="{research_procedure_id}" /></td>
+                        <td class="omit_label"></td>
+                        <td>Research Procedure</td>
+                    </tr>
+                    <tr>
+                        <td><input disabled="disabled" type="text" name="review_procedure_id" value="{review_procedure_id}" /></td>
+                        <td class="omit_label"></td>
+                        <td>Review Procedure</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </fieldset>
 
     <fieldset id="resources" class="single-numeric">
@@ -360,7 +352,7 @@
 
     //Work Location TypeAhead
     function work_locations(){
-         $.post( 
+         $.post(
             '?ACT=43&output=json&method=work_location',
             {
                 options: {
@@ -394,13 +386,13 @@
                 }
             },
             function (data) {
-                
+
                 $('input[name="new_resource"]').typeahead({
                     source: data,
                     onselect: function(selection){
                         var new_row = $(this.$element).parents('tr').clone()
                         new_row.removeAttr('id')
-                        
+
                         new_row.find(':input[name="qty"]').removeAttr('disabled')
                         new_row.find(':input[name="qty"]').attr('name', 'resources[' + selection.id + '][qty]')
 
@@ -434,13 +426,13 @@
                 }
             },
             function (data) {
-                
+
                 $('input[name="new_sales_item"]').typeahead({
                     source: data,
                     onselect: function(selection){
                         var new_row = $(this.$element).parents('tr').clone()
                         new_row.removeAttr('id')
-                        
+
                         new_row.find(':input[name="qty"]').removeAttr('disabled')
                         new_row.find(':input[name="qty"]').attr('name', 'sales_items[' + selection.id + '][qty]')
 
@@ -468,21 +460,21 @@
     //New Materials TypeAhead
     function new_materials(){
          $.post(
-            '?ACT=43&output=json&method=contract_items', 
-            { 
+            '?ACT=43&output=json&method=contract_items',
+            {
                 options: {
                     contract_id: $('input[name=contract_id]').val()
                   , film_indicator: 1
-                } 
+                }
             },
                 function (data) {
-                
+
                 $('input[name="new_material"]').typeahead({
                     source: data,
                     onselect: function(selection){
                         var new_row = $(this.$element).parents('tr').clone()
                         new_row.removeAttr('id')
-                        
+
                         new_row.find(':input[name="qty"]').removeAttr('disabled')
                         new_row.find(':input[name="qty"]').attr('name', 'materials[' + selection.id + '][qty]')
 
@@ -528,7 +520,7 @@
         new_materials(  );
 
         // var signature_box = new CanvasDrawr({
-        //     id:"signature", 
+        //     id:"signature",
         //     size: 5
         // });
     });
