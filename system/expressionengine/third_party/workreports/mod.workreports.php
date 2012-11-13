@@ -229,7 +229,8 @@ class Workreports {
 
                 case 'dispatch_list':
                     $options = array_merge($options, array(
-                        'employee_id' => $employee['id']
+                        'employee_id' => $employee['id'],
+                        'invoiced_status' => 0
                     ));
                     $return_data = $this->EE->axapta->dispatch_list->get_remote( $options );
                     break;
