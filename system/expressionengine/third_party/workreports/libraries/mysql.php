@@ -223,14 +223,6 @@ class mysql {
 					$data = array( 'status'	=> 5 );
 					$this->EE->db->where('id', $id);
 					$this->EE->db->update('wr_reports', $data);
-
-					// Notify Axapta that this report has been exported to XML
-					$ar = array(
-						$report_query['project_id'],
-						$report_query['submitter_id'],
-						$report_query['company_id']
-						);
-					$this->EE->axapta->work_report->set_ax_status($ar);
 				} else {
 					// Send an error
 					show_error( lang('xml_error'). " dir = $dir" );
