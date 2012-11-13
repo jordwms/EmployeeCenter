@@ -719,7 +719,7 @@ class Workreports {
 
         $project_id = str_replace('-', '/', $this->EE->TMPL->fetch_param('projid') );
 
-        $submit_uri = $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$this->EE->functions->fetch_action_id('Workreports', 'submit_for_approval');
+        $submit_uri = $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$this->EE->functions->fetch_action_id('Workreports', 'submit');
 
         $data = $this->wrData($project_id);
 
