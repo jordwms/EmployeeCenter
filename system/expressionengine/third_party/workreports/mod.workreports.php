@@ -1015,6 +1015,7 @@ class Workreports {
                         );
                         $this->EE->db->where('report_id', $report_id );
                         $this->EE->db->where('item_id', $item['item_id']);
+                        $this->EE->db->where('dimension_id', $item['dimension_id']);
                         $this->EE->db->update('wr_items', $data);
                     } elseif( $count == 0 ) {
                         //INSERT
