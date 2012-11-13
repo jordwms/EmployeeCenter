@@ -153,6 +153,8 @@
                             <input type="hidden" name="resources[{resource_id}][resource_id]" value="{resource_id}">
                             <input type="hidden" name="resources[{resource_id}][name]" value="{name}">
                             <input type="number" name="resources[{resource_id}][qty]" min="0" step=".1" size="5" placeholder="Hours" value="{if qty}{qty}{/if}">
+                            <input type="button" class="btn fun" value="Begin Time"></input>
+                            <input hidden="hidden" type="button" class="btn fun" value="End Time"></input>
                         </td>
                         <td class="unit">Total Hours</td>
                         <td>{name}</td>
@@ -302,7 +304,6 @@
 
     <div class="details_submit">
         {actions}
-        <a href="{path='workreports/print/{segment_3}}"><input type="button" class="btn" value="Print"></input></a>
     </div>
 
     <nav id="form_nav">
@@ -515,6 +516,12 @@
 
         $('#topOfTicket tr,#customer tr,.single-numeric tr,.textarea tr').click(function() {
             $(this).find("input,textarea").focus().select();
+        });
+
+        $('input.fun').click(function() {
+            var fun_button = this;
+            console.log(fun_button);
+            $(fun_button).parent().find('.fun').toggle();
         });
 
         work_locations(  );
