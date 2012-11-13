@@ -297,7 +297,8 @@ class Workreports {
         if( !is_null($employee_id) ){
             // Get List of dispatched work reports
             $dispatch_list = $this->EE->axapta->dispatch_list->get_remote(array(
-                'employee_id' => $employee_id
+                'employee_id' => $employee_id,
+                'invoiced_status' => 0
             ));
 
             $templates = $this->EE->axapta->work_report->get_remote( array(
