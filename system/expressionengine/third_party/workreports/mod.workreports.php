@@ -1107,7 +1107,7 @@ class Workreports {
                 $this->EE->mysql->create_xml($report_id);
                 $this->EE->axapta->work_report->set_approval(array(
                     'status' => 1,
-                    'project_id' => $existing_wr['project_id'],
+                    'project_id' => (isset($project_id)) ? $project_id : $existing_wr['project_id'],
                     'employee_id' => $employee['id'],
                     'company_id' => $existing_wr['company_id']
                 ));
