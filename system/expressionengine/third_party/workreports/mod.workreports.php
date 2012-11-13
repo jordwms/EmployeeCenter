@@ -175,7 +175,9 @@ class Workreports {
 
                 case 'work_report':
                     $options = array_merge($options, array(
-                        'project_id' => '07.005541/001/121013'
+                        //'project_id' => '07.005541/001/121013'
+                        'export_reason' => 'TEMPLATE'
+                        ,'execution_date' => '2012-01-01'
                     ));
                     $return_data = $this->EE->axapta->work_report->get_remote( $options );
                     break;
@@ -565,7 +567,7 @@ class Workreports {
 
         $this->EE->db->from('wr_reports');
         $this->EE->db->where('export_reason', 'TEMPLATE');
-        $this->EE->db->where('execution_datetime', strtotime('01-01-2012'));
+        //$this->EE->db->where('execution_datetime', strtotime('01-01-2012'));
         $this->EE->db->order_by('customer_name', 'asc');
 
         $template_list = $this->EE->db->get()->result_array();
@@ -1105,7 +1107,7 @@ class Workreports {
                 $this->EE->mysql->create_xml($report_id);
                 $this->EE->axapta->work_report->set_approval(array(
                     'status' => 1,
-                    'project_id' => ($project_id) ? $project_id : $existing_wr['project_id'],
+                    'project_id' => $existing_wr['project_id'],
                     'employee_id' => $employee['id'],
                     'company_id' => $existing_wr['company_id']
                 ));
