@@ -239,7 +239,7 @@ if(isset($config)) {
         'site_404' => 'assets/404',
 
         // Localization preferences
-        'server_timezone' => 'UP1',
+        'server_timezone' => 'UTC',
         'server_offset' => TRUE,
         'time_format' => 'us',
         'daylight_savings' => 'y',

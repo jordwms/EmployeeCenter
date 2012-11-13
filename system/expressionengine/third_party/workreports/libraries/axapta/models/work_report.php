@@ -22,7 +22,7 @@ class work_report extends axapta {
 
 	protected $deadline_date               = 'CONVERT(DATE, SALESTABLE.DEADLINE)';
 	protected $execution_date              = 'CONVERT(DATE, SALESTABLE.DELIVERYDATE)';
-	protected $execution_time              = 'SALESTABLE.RTDSTARTTIME';
+	protected $execution_time              = 'SALESTABLE.RTDSTARTTIME - datepart(TZOFFSET, SYSDATETIMEOFFSET())*60';
 
 	protected $rtd_reference               = 'SALESTABLE.RTDPROJORDERREFERENCE';
 
@@ -50,11 +50,11 @@ class work_report extends axapta {
 	protected $invoiced_status             = 'SALESTABLE.RTDINVOICED';
 
 	protected $created_date                = 'CONVERT(DATE, SALESTABLE.CREATEDDATE)';
-	protected $created_time                = 'SALESTABLE.CREATEDTIME';
+	protected $created_time                = 'SALESTABLE.CREATEDTIME - datepart(TZOFFSET, SYSDATETIMEOFFSET())*60';
 	protected $created_by                  = 'SALESTABLE.CREATEDBY';
 
 	protected $modified_date               = 'CONVERT(DATE, SALESTABLE.MODIFIEDDATE)';
-	protected $modified_time               = 'SALESTABLE.MODIFIEDTIME';
+	protected $modified_time               = 'SALESTABLE.MODIFIEDTIME - datepart(TZOFFSET, SYSDATETIMEOFFSET())*60';
 	protected $modified_by                 = 'SALESTABLE.MODIFIEDBY';
 
 

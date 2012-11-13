@@ -12,14 +12,14 @@ class dispatch_list extends axapta {
 	protected $customer_blocked           = 'CUSTTABLE.BLOCKED';
 
 	protected $execution_date             = 'CONVERT(DATE, SALESTABLE.DELIVERYDATE)';
-	protected $execution_time             = 'SALESTABLE.RTDSTARTTIME';
+	protected $execution_time             = 'SALESTABLE.RTDSTARTTIME - datepart(TZOFFSET, SYSDATETIMEOFFSET())*60';
 
 	protected $created_date                = 'CONVERT(DATE, SALESTABLE.CREATEDDATE)';
-	protected $created_time                = 'SALESTABLE.CREATEDTIME';
+	protected $created_time                = 'SALESTABLE.CREATEDTIME - datepart(TZOFFSET, SYSDATETIMEOFFSET())*60';
 	protected $created_by                  = 'SALESTABLE.CREATEDBY';
 
 	protected $modified_date               = 'CONVERT(DATE, SALESTABLE.MODIFIEDDATE)';
-	protected $modified_time               = 'SALESTABLE.MODIFIEDTIME';
+	protected $modified_time               = 'SALESTABLE.MODIFIEDTIME - datepart(TZOFFSET, SYSDATETIMEOFFSET())*60';
 	protected $modified_by                 = 'SALESTABLE.MODIFIEDBY';
 
 
@@ -67,10 +67,10 @@ class dispatch_list extends axapta {
 
 		foreach ($return_data as &$data_row) {
 			//create unix timestamps from date and time fields
-			$data_row['modified_datetime'] = strtotime($data_row['modified_date']) + $data_row['modified_time'];
-			$data_row['created_datetime']  = strtotime($data_row['created_date']) + $data_row['created_time'];
+			$data_row['modified_datetime'] = (strtotime($data_row['modified_date']) + $data_row['modified_time']);
+			$data_row['created_datetime']  = (strtotime($data_row['created_date']) + $data_row['created_time']);
 
-			$data_row['execution_datetime']  = strtotime($data_row['execution_date']) + $data_row['execution_time'];
+			$data_row['execution_datetime']  = (strtotime($data_row['execution_date']) + $data_row['execution_time']);
 		}
 
 		return $this->fix_padding( $return_data );

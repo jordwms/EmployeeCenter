@@ -8,9 +8,7 @@ class axapta {
 		if( !$this->conn = $this->axapta_connection() ){
 			exit();
 		} else {
-			$this->server_tzoffset = 7200;
-			//$this->server_tzoffset = $this->get_server_tzoffset();
-
+			date_default_timezone_set('UTC');
 			$this->init();
 		}
 	}
