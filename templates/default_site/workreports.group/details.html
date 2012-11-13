@@ -200,7 +200,7 @@
                             <input type="hidden" name="unit" value="" />
                             <input type="number" disabled="disabled" name="qty" min="0" step=".1" size="5" placeholder="Qty" />
                         </td>
-                        <td>Unit</td>
+                        <td class="unit">Unit</td>
                         <td><input type="text" autocomplete="off" autocorrect="off" autocapitalize="off" name="new_sales_item" ></td>
                     </tr>
                     </tbody>
@@ -291,7 +291,7 @@
                 <table>
                     <tr>
                         <td>
-                            <canvas id="signature" style="height: 250px; width: 100%; border: 1px solid black;"></canvas>
+                            <textarea name="customer_approval"></textarea>
                         </td>
                         <td>Customer Approval</td>
                     </tr>
@@ -322,7 +322,6 @@
 
 <script type="text/javascript" src="{path="assets/bootstrap-typeahead"}"></script>
 <script type="text/javascript" src="{path="assets/bootstrap-scrollspy"}"></script>
-<script type="text/javascript" src="{path="assets/canvas-drawr"}"></script>
 <script type="text/javascript" src="{path="assets/jQueryFormValidator"}"></script>
 
 <script type="text/javascript">
@@ -354,7 +353,8 @@
                     property: 'name',
                     items: 6
                 })
-            }
+            },
+            'json'
         )
     }
 
@@ -371,7 +371,6 @@
                 $('input[name="work_location_name"]').typeahead({
                     source: data,
                     onselect: function(selection){
-                        console.log($(this.$element).parents('tr').find('pre.address'))
                         $(this.$element).parents('tr').find('pre.address')
                             .html('<a href="//maps.google.com/maps?q='+selection.address+'">'+selection.address+'</a>')
                             .before('<input type="hidden" name="work_location_address" value="'+selection.address+'" />')
@@ -380,7 +379,8 @@
                     property: 'name',
                     items: 6
                 })
-            }
+            },
+            'json'
         )
     }
 
@@ -407,7 +407,7 @@
                         new_row.find(':input[name="resource_id"]').attr('name', 'resources[' + selection.id + '][resource_id]').val(selection.id)
                         new_row.find(':input[name="name"]').attr('name', 'resources[' + selection.id + '][name]').val(selection.name)
 
-                        new_row.find('.unit').html(selection.unit)
+                        //new_row.find('.unit').html(selection.unit)
 
                         new_row.find(':input[name="new_resource"]').replaceWith(this.$element.val())
 
@@ -418,7 +418,8 @@
                     property: 'name',
                     items: 6
                 });
-            }
+            },
+            'json'
         );
     }
 
@@ -459,7 +460,8 @@
                     property: 'name',
                     items: 6
                 });
-            }
+            },
+            'json'
         );
     }
 
@@ -491,7 +493,7 @@
 
                         new_row.find('.unit').html(selection.unit)
 
-                        new_row.find(':input[name="new_resource"]').replaceWith(this.$element.val())
+                        new_row.find(':input[name="new_material"]').replaceWith(this.$element.val())
 
                         new_row.insertBefore($(this.$element).parents('tr'))
 
@@ -500,7 +502,8 @@
                     property: 'config_name',
                     items: 6
                 });
-            }
+            },
+            'json'
         );
     }
 
@@ -524,10 +527,10 @@
         new_sales_items(  );
         new_materials(  );
 
-        var signature_box = new CanvasDrawr({
-            id:"signature", 
-            size: 5
-        });
+        // var signature_box = new CanvasDrawr({
+        //     id:"signature", 
+        //     size: 5
+        // });
     });
 
 </script>
