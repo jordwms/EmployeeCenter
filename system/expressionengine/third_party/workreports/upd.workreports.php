@@ -1,6 +1,6 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 class Workreports_upd {
-    var $version = '1.3.8';
+    var $version = '1.3.9';
     function __construct() {
         $this->EE =& get_instance();
     }
@@ -146,6 +146,7 @@ class Workreports_upd {
         if( $current == $this->version ){
             return FALSE;
         }
+
         if( $current < '1.2'){
             /*
             * Update field names for wr_* tables and
@@ -188,6 +189,7 @@ class Workreports_upd {
             );
             $this->EE->dbforge->add_column('wr_reports', $fields);
         }
+
         if ($current < '1.3' ) {
             // Adding fields to wr_reports for synching axapta and MySQL
             $fields = array(
@@ -215,6 +217,7 @@ class Workreports_upd {
             );
             $this->EE->dbforge->add_column('wr_reports', $fields);
         }
+
         if( $current < '1.3.1') {
             // Remove unnecessary fields:
             $this->EE->dbforge->drop_column('wr_reports', 'project_order_id');
@@ -237,6 +240,7 @@ class Workreports_upd {
             );
             $this->EE->dbforge->modify_column('wr_reports', $fields);
         }
+
         if( $current < '1.3.2') {
             $fields = array(
                 'work_location_address' => array('name' => 'work_location_address', 'type' => 'varchar', 'constraint' => '60'),
@@ -281,6 +285,7 @@ class Workreports_upd {
             );
             $this->EE->db->insert_batch('wr_status', $data);
         }
+
         if($current < '1.3.3') {
             $fields = array(
                 'work_location_address' => array('name' => 'work_location_address', 'type' => 'varchar', 'constraint' => '255'),
@@ -289,12 +294,14 @@ class Workreports_upd {
                 );
             $this->EE->dbforge->modify_column('wr_reports', $fields);
         }
+
         if($current < '1.3.4') {
             $fields = array(
                 'review_norm_id'        => array('type' => 'varchar',   'constraint' => '50')
                 );
             $this->EE->dbforge->add_column('wr_reports', $fields);
         }
+
         if($current < '1.3.5') {
             $fields = array(
                 'research_procedure_description'        => array('type' => 'varchar',   'constraint' => '100'),
@@ -302,6 +309,7 @@ class Workreports_upd {
                 );
             $this->EE->dbforge->add_column('wr_reports', $fields);
         }
+
         if($current < '1.3.6') {
             $fields = array(
                 'cost_center_name'      => array('type' => 'varchar',   'constraint' => '60'),
@@ -312,6 +320,7 @@ class Workreports_upd {
                 );
             $this->EE->dbforge->add_column('wr_reports', $fields);
         }
+
         if($current < '1.3.7') {
             $data = array(
                 'class'     => 'Workreports' ,
@@ -335,15 +344,22 @@ class Workreports_upd {
 
         if($current < '1.3.8') {
             $this->EE->dbforge->add_field(array(
-            'id'                                => array('type' => 'int', 'constraint' => '10', 'unsigned' => TRUE, 'auto_increment' => TRUE),
-            'resource_id'                       => array('type' => 'int', 'constraint' => '10', 'unsigned' => TRUE),
-            'start_datetime'                    => array('type' => 'int', 'constraint' =>'10'),
-            'end_datetime'                      => array('type' => 'int', 'constraint' =>'10')
-            ) );     
+                'id'                    => array('type' => 'int', 'constraint' => '10', 'unsigned' => TRUE, 'auto_increment' => TRUE),
+                'resource_id'           => array('type' => 'int', 'constraint' => '10', 'unsigned' => TRUE),
+                'start_datetime'        => array('type' => 'int', 'constraint' =>'10'),
+                'end_datetime'          => array('type' => 'int', 'constraint' =>'10')
+            ));     
 	        $this->EE->dbforge->add_key('id', TRUE);
 	        $this->EE->dbforge->create_table('wr_resource_time_log');
-
         }
+        
+        if($current < '1.3.9') {
+            $fields = array(
+                'customer_approval'     => array('type' => 'text')
+            );
+            $this->EE->dbforge->add_column('wr_reports', $fields);
+        }
+
         return TRUE;
     }
 
