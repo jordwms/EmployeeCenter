@@ -700,6 +700,7 @@ class Workreports {
 
             export_reason,
             remarks,
+            customer_approval,
             status'
         );
 
@@ -857,6 +858,7 @@ class Workreports {
                 'object_description'    => $this->EE->input->post('object_description'),
                 'order_description'     => $this->EE->input->post('order_description'),
                 'remarks'               => $this->EE->input->post('remarks'),
+                'customer_approval'     => $this->EE->input->post('customer_approval')
             );
 
             /*
