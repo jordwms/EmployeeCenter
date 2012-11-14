@@ -964,8 +964,10 @@ class Workreports {
             foreach($this->EE->input->post('resources') as $resource) {
                 /*
                  *  First check if the quantity was actually updated to save some processing
+                 *  Disabled this due to it preventing 0 or null from properly updating to the database
+                 *  Example: setting a resource's total quantity to 0 or empty
                  */
-                if( $resource['qty'] ){
+                //if( !is_null($resource['qty']) ){
 
                     //echo '<pre>RESOURCE QTY CHANGED:<br>'; print_r($resource); echo '</pre>';
 
@@ -1008,7 +1010,7 @@ class Workreports {
                          @TODO Error trap this
                          */
                     }
-                }
+                //}
             }
 
             /*** Sales Items ***************************************************************
@@ -1016,7 +1018,7 @@ class Workreports {
              *  Basically same process as resources
              */
             foreach($this->EE->input->post('sales_items') as $item) {
-                if( $item['qty'] ) {
+                //if( $item['qty'] ) {
 
                     //echo '<pre>SALES ITEM QTY CHANGED:<br>'; print_r($item); echo '</pre>';
 
@@ -1055,7 +1057,7 @@ class Workreports {
                          @TODO Error trap this
                          */
                     }
-                }
+                //}
             }
 
             /*** Materials/Consumables ********************************************************
@@ -1064,7 +1066,7 @@ class Workreports {
              */
             if( is_array($this->EE->input->post('materials')) ) {
                 foreach($this->EE->input->post('materials') as $material) {
-                    if( $material['qty'] ){
+                    //if( $material['qty'] ){
 
                         //echo '<pre>MATERIAL QTY CHANGED:<br>'; print_r($material); echo '</pre>';
                         $this->EE->db->select('item_id, dimension_id');
@@ -1102,7 +1104,7 @@ class Workreports {
                              @TODO Error trap this
                              */
                         }
-                    }
+                    //}
                 }
             }
 
