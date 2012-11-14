@@ -252,7 +252,7 @@ class Workreports {
                     break;
 
                 case 'sync':
-                    echo '<h2>Sync Started</h2>';
+                    $return_data = array('message' => 'sync started');
                     $this->sync($employee['id']);
                     break;
 
@@ -260,12 +260,11 @@ class Workreports {
                                         // insert NOW() to wr_resource_time entry 
                                         // and make cumulative hours work to wr_resources.qty
 
-                    $return_data = array('success' =>TRUE);
+                    $return_data = array('success' => TRUE);
                     break;
 
                 default:
-                    echo 'no method found';
-                    $return_data = FALSE;
+                    $return_data = array('error' => 'no method found');
                     break;
             }
 
