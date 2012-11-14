@@ -244,6 +244,13 @@ class Workreports {
                     $this->sync($employee['id']);
                     break;
 
+                case 'resource_time':   // Take whether time is "start" or "end" from AJAX, 
+                                        // insert NOW() to wr_resource_time entry 
+                                        // and make cumulative hours work to wr_resources.qty
+
+                    $return_data = array('success' =>TRUE);
+                    break;
+
                 default:
                     echo 'no method found';
                     $return_data = FALSE;
