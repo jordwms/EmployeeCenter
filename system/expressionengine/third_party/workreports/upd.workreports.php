@@ -1,6 +1,6 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 class Workreports_upd {
-    var $version = '1.3.6';
+    var $version = '1.3.8';
     function __construct() {
         $this->EE =& get_instance();
     }
@@ -330,6 +330,18 @@ class Workreports_upd {
             $this->EE->db->where('class', 'Workreports');
             $this->EE->db->where('method', 'get');
             $this->EE->db->update('actions', $data);
+
+        }
+
+        if($current < '1.3.8') {
+            $this->EE->dbforge->add_field(array(
+            'id'                                => array('type' => 'int', 'constraint' => '10', 'unsigned' => TRUE, 'auto_increment' => TRUE),
+            'resource_id'                       => array('type' => 'int', 'constraint' => '10', 'unsigned' => TRUE),
+            'start_datetime'                    => array('type' => 'int', 'constraint' =>'10'),
+            'end_datetime'                      => array('type' => 'int', 'constraint' =>'10')
+            ) );     
+	        $this->EE->dbforge->add_key('id', TRUE);
+	        $this->EE->dbforge->create_table('wr_resource_time_log');
 
         }
         return TRUE;
