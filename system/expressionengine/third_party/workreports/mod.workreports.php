@@ -699,6 +699,7 @@ class Workreports {
             review_procedure_description,
 
             export_reason,
+            remarks,
             status'
         );
 
@@ -855,7 +856,7 @@ class Workreports {
 
                 'object_description'    => $this->EE->input->post('object_description'),
                 'order_description'     => $this->EE->input->post('order_description'),
-                'remarks'               => $this->EE->input->post('remarks')
+                'remarks'               => $this->EE->input->post('remarks'),
             );
 
             /*
