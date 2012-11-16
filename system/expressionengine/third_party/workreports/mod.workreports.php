@@ -49,54 +49,64 @@ class Workreports {
     }
 
     /*
-     * Emails the customer a work report PDF
+     *  Sends an email with attachment(s)
+     *  Returns TRUE if sending was sucessful, FALSE if not
+     *
+     *  $from = senders email address
+     *  $to   = recipients email address
+     *  $file = path to attachment @TODO accept array for multiple attachments
+     *  $project_id = project id @TODO replace with "body" message
+     *  @TODO add $subject input
      */
-    function send_mail($to, $file, $project_id ) {
-        // require_once('Mail.php');
-        // require_once('Mail/mime.php');
-        // $mime = new Mail_mime();
-
+    function send_mail($from=NULL, $to=NULL, $file=NULL, $project_id=NULL ) {
         // email fields: to, from, subject, and so on
         $from = 'Robert.McCann@applusrtd.com'; // 'vxray@localhost';
         $subject = 'Applus RTD Work Report '.$project_id;
-        $message = 'Attached is a work report from ApplusRTD. Please keep this for your records.';
-        $headers = "From: $from"; // root@localhost
-
-        // boundary
-        $semi_rand = md5(time());
-        $mime_boundary = "==Multipart_Boundary_x{$semi_rand}x";
-
-        // headers for attachment
-        $headers .= "\nMIME-Version: 1.0";
-        $headers .= "\nContent-Type: multipart/mixed;";
-        $headers .= "\nboundary=\"{$mime_boundary}\"";
+        $body = 'Attached is a work report from ApplusRTD. Please keep this for your records.';
 
         // multipart boundary
-        $body = "\n--{$mime_boundary}";
-        $body .= "\nContent-Type: text/plain; charset=\"UTF-8\"";
-        $body .= "\nContent-Transfer-Encoding: 7bit\n\n";
-        $body .= $message;
-        $body .= "\n\n";
+        $mime_boundary = '==Multipart_Boundary_x{'.md5(time()).'}x';
+
+        // headers with multipart boundary definition
+        $headers = "From: $from".NL; // root@localhost
+        $headers .= 'MIME-Version: 1.0'.NL;
+        $headers .= 'Content-Type: multipart/mixed; boundary="'.$mime_boundary.'"';
+
+        // Main Body Boundary
+        $message = "--$mime_boundary".NL;
+        $message .= 'Content-Type: text/plain; charset="iso-8859-1"'.NL;
+        $message .= 'Content-Transfer-Encoding: 7bit'.NL.NL;
+        // Actual Message Body
+        $message .= $body;
+        $message .= NL.NL;
 
         // preparing attachments
-        $body .= "--{$mime_boundary}\n";
-        $fp =       @fopen($file,"rb");
-        $data =     @fread($fp,filesize($file));
-                    @fclose($fp);
+        $fp =         @fopen($file,"rb");
+        $attachment = @fread($fp,filesize($file));
+                      @fclose($fp);
+        // encode attachment
+        $attachment = chunk_split(base64_encode($attachment));
 
-        $data = chunk_split(base64_encode($data));
+        // Attachment Boundary
+        /*** Repeat this section for multiple attachments ***/
+        $message .= "--$mime_boundary".NL;
+        $message .= 'Content-Type: application/octet-stream; name="'.basename($file).'"'.NL;
+        $message .= 'Content-Description: '.basename($file).NL;
+        $message .= 'Content-Disposition: attachment;'.NL;
+        $message .= 'filename="'.basename($file).'";'.NL;
+        $message .= 'size="'.filesize($file).'";'.NL;
+        $message .= 'Content-Transfer-Encoding: base64'.NL;
+        // encoded attachment
+        $message .= $attachment;
+        $message .= NL;
+        /*** End attachment section  ***/
 
-        $body .= "Content-Type: application/octet-stream; name=\"".basename($file)."\"\n";
-        $body .= "Content-Description: ".basename($file)."\n";
-        $body .= "Content-Disposition: attachment;\n" . " filename=\"".basename($file)."\"; size=".filesize($file).";\n" .
-        $body .= "Content-Transfer-Encoding: base64\n\n";
-        $body .= $data;
-        $body .= "\n\n";
-        $body .= "--{$mime_boundary}--";
+        // End Boundary
+        $message .= "--$mime_boundary--";
 
         $returnpath = "-f" . $from;
 
-        return mail($to, $subject, $body, $headers, $returnpath);
+        return mail($to, $subject, $message, $headers, $returnpath);
     }
 
     /*
