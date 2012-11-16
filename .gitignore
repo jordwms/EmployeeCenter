@@ -1,4 +1,8 @@
 .DS_Store
+.htaccess
+
+#temp folder
+tmp/*
 
 # Images
 images/avatars/
