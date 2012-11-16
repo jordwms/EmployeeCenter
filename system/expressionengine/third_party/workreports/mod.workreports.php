@@ -47,7 +47,6 @@ class Workreports {
      */
     function send_mail($from=NULL, $to=NULL, $file=NULL, $project_id=NULL ) {
         // email fields: to, from, subject, and so on
-        $from = 'Robert.McCann@applusrtd.com'; // 'vxray@localhost';
         $subject = 'Applus RTD Work Report '.$project_id;
         $body = 'Attached is a work report from ApplusRTD. Please keep this for your records.';
 
