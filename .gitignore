@@ -1,8 +1,13 @@
+#hidden system files
 .DS_Store
+.fuse*
+
+#htaccess
 .htaccess
 
 #temp folder
 tmp/*
+
 
 # Images
 images/avatars/
@@ -17,3 +22,9 @@ sized/
 thumbs/
 _thumbs/
 */expressionengine/cache/*
+
+# Media
+media/
+
+# Temp folder for PDF generation
+tmp/*

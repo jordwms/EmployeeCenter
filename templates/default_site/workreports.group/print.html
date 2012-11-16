@@ -6,142 +6,268 @@
 
   <style type="text/css">
 
-    html { font-size: 100%; overflow-y: scroll; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
-    body { margin: 20px auto; font-size: 100%; line-height: 1.231; font-family: sans-serif; color: rgb(0,0,0); width: 940px; }
+    html { font-size: 90%; overflow-y: scroll; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+    body { margin: 20px auto; line-height: 1.231; font-family: sans-serif; color: rgb(0,0,0); width: 916px; }
 
-    table { border-collapse: collapse; border-spacing: 0; margin: 0; width: 100%; }
-    td { vertical-align: top; }
+    table { border-collapse: collapse; border-spacing: 0; margin: 0; font-size: 100%; }
+    td { vertical-align: middle; }
 
-    h1, span { margin: 0; font-size: 100%; font-weight: bold; display: block; }
-    p { margin: 0; }
-    img { margin: 5px 0; }
+    h1, h2, h3 { margin: 0; font-weight: bold; display: block; }
+    p, span { margin: 0; font-size: 80%; }
+    img { width: 295px; height: 70px; margin: 9px 0; }
 
-    table#header th {
-      text-align: left;
-      padding: 5px;
+    /** Header **/
+
+    header div {
+      float: left;
+      width: 50%;
+      margin-bottom: 4px;
     }
-    table#header th.report_number {
+    header:after,
+    .contact:after,
+    .research > div:after,
+    .resources > div:after,
+    .equipment > div:after,
+    .items > div:after,
+    .remarks:after,
+    .materials_data:after,
+    .signature:after,
+    .signature_approval > div:nth-child(1):after {
+      clear: both;
+      display: block;
+      height: 0;
+      content: ".";
+      visibility: hidden;
+    }
+    h2 {
+      text-align: right;
       text-decoration: underline;
-      text-align: right;
     }
 
-    table#contact {
-      width: 939px;
+    /** Contact Info **/
+
+    h3 {
+      font-size: 85%;
     }
-    table#contact,
-    table#spreadsheet,
-    table#resources,
-    table#remark,
-    table#consumption {
-      margin: 1px auto 4px auto;
+    .contact {
+      padding-bottom: 5px;
     }
-    table#contact td,
-    table#remark td,
-    table#remark th,
-    table#consumption td,
-    table#consumption th,
-    table#approval td,
-    table#approval th {
+    .contact > div {
+      float: left;
+      width: 300px;
+    }
+    .contact_details {
       border: 2px solid rgb(255,100,7);
-      padding: 5px;
-      font-size: 80%;
+      margin: 0 4px 4px 0;
+    }
+    .contact_details div {
+      padding: 4px;
+    }
+
+    .contact_details div:nth-child(1) {
+      border-bottom: 2px solid rgb(255,100,7);
+      height: 115px;
+    }
+    .contact_details div:nth-child(2) {
+      height: 165px;
+    }
+    .logo > div {
+      padding: 4px;
+    }
+    .logo > div:nth-child(2) {
+      border: 2px solid rgb(255,100,7);
+      text-align: right;
+      height: 19px;
+    }
+    .logo > div:nth-child(3) {
+      border: 2px solid rgb(255,100,7);
+      border-top: none;
+      margin-bottom: 4px;
+    }
+    .logo > div:nth-child(4) {
+      border: 2px solid rgb(255,100,7);
+      margin-bottom: 4px;
+      height: 84px;
+    }
+
+    /** Research **/
+
+    .research {
+      height: 93px !important;
+    }
+    .research > div {
+      width: 100%;
+    }
+    .research > div > div {
+      float: left;
+      width: 50%;
+    }
+    .research > div > div:nth-child(1) {
+      float: none;
+      width: 100%;
+    }
+    .review_section {
+      margin-top: 19px;
+    }
+
+    /** Resources **/
+
+    .resources {
+      padding-bottom: 5px;
+    }
+    .resources > div {
+      width: 916px;
+    }
+    .resources_headers > div {
+      border: 2px solid rgb(255,100,7);
+      float: left;
+      margin-bottom: 4px;
+      padding: 4px;
+    }
+    .resources_name {
+      margin-right: 4px;
+      width: 292px;
+    }
+    .resources_name h3 {
+      margin-top: 26px;
+    }
+    .resources_hours_begin {
+      text-align: center;
+      width: 390px;
+    }
+    .resources_hours_begin {
+      border-right: none !important;
+    }
+    .resources_hours {
+      width: 196px;
+      text-align: center;
+    }
+    .resources_hours > div:nth-child(1),
+    .resources_hours_begin > div:nth-child(1) {
+      margin-bottom: 12px;
+    }
+    .resources_hours_begin > div:nth-child(2),
+    .resources_hours_begin > div:nth-child(3) {
+      float: left;
+      width: 50%;
+    }
+    .resources_data > div {
+      margin-bottom: 4px;
+      padding: 4px;
+      float: left;
+      border: 2px solid rgb(255,100,7);
+      border-right: none;
+      width: 190px;
       text-align: left;
     }
-    table#contact td,
-    table#remark td,
-    table#approval td{
-      width: 296px;
+    .resources_data > div:nth-child(4) {
+      border-right: 2px solid rgb(255,100,7) !important;
+      width: 196px;
     }
-    table#contact td.no_border,
-    table#contact td.no_border_contact,
-    table#remark th.no_border,
-    table#approval td.no_border {
-      border: 0;
-      width: 4px;
-      padding: 0;
+    .resources_data_name {
+      border-right: 2px solid rgb(255,100,7) !important;
+      margin-right: 4px;
+      width: 292px !important;
     }
-    table#contact td.no_border_contact {
-      width: 5px;
+
+    /** Sales Items **/
+
+    .items {
+      padding-bottom: 5px;
     }
-    table#contact td.logo {
-      text-align: center;
-      border: 0;
+    .items > div > div {
+      float: left;
+      padding: 4px;
+      border: 2px solid rgb(255,100,7);
+      margin-bottom: 4px;
     }
-    table#contact td.week_number {
+    .items > div > div:nth-child(1) {
+      margin-right: 4px;
+      width: 698px;
+    }
+    .items > div > div:nth-child(2) {
+      border-right: none;
+      width: 90px;
+    }
+    .items > div > div:nth-child(3) {
+      width: 90px;
       text-align: right;
     }
-    table#contact td.reference {
-      border: 0;
-      padding-bottom: 10px;
+
+    .items_data > table {
+      border-collapse: collapse;
+      float: left;
+      width: 202px;
+    }
+    .items_data td {
+      border: 2px solid rgb(255,100,7);
+      padding: 3px 4px 4px 4px;
+      width: 50%;
     }
 
-    table#spreadsheet td,
-    table#spreadsheet th,
-    table#resources td,
-    table#resources th {
-      border: 2px solid rgb(255,100,7);
-      padding: 5px;
-      font-size: 70%;
+    /** Remarks **/
+
+    .remarks {
+      margin-bottom: 9px;
     }
-    table#spreadsheet tr.begin_duration td,
-    table#resources tr.begin_duration td {
-      width: 6%;
+    .remarks table {
+      width: 100%;
+    }
+    .remarks td {
+      border: 2px solid rgb(255,100,7);
+      width: 250px;
+      padding: 4px;
+    }
+    .no_border {
+      border: none !important;
+      width: 4px !important;
+      padding: 0 !important;
+    }
+
+    /** Materials **/
+
+    .materials {
+      padding-bottom: 9px;
+    }
+    .materials_header {
+      border: 2px solid rgb(255,100,7);
+      padding: 4px;
+    }
+    .materials_data table {
+      float: left;
+      width: 75px;
+      margin: 4px 4px 0 0;
+    }
+    .materials_table td{
+      border: 2px solid rgb(255,100,7) !important;
+      padding: 4px !important;
+    }
+
+    /** Signature **/
+
+    .signature > div {
+      float: left;
+      border: 2px solid rgb(255,100,7);
+      width: 452px;
+      height: 90px;
+    }
+    .signature_approval {
+      margin-right: 4px;
+    }
+    .signature_approval > div > div {
+      float: left;
+      width: 47%;
+      padding: 4px;
+    }
+    .signature_approval > div > div:nth-child(2) {
       text-align: center;
     }
-    table#resources tbody td {
-      width: 20%;
+    .signature_approval > div:nth-child(2),
+    .signature_confirmation > div:nth-child(2) {
+      margin-top: 40px;
     }
-    table#resources tbody td:nth-child(1) {
-      width: 40%;
-    }
-    table#spreadsheet td.no_border,
-    table#resources td.no_border {
-      border: 0;
-      padding: 0;
-      height: 6px;
-    }
-    table#spreadsheet td.no_bottom_border,
-    table#resources td.no_bottom_border {
-      border-bottom: 0;
-    }
-    table#spreadsheet td.no_top_border,
-    table#resources td.no_top_border {
-      border-top: 0;
-    }
-
-    table#consumption td {
-      width: 5%;
-    }
-    table#consumption td.consumption_last {
-      width: 35%;
-    }
-
-    table#approval {
-      margin: 1px auto 0 auto;
-    }
-    table#approval td {
-      border-top: 0;
-    }
-    table#approval th {
-      border-bottom: 0;
-    }
-    table#approval th.confirmation {
-      width: 500px;
-      border-bottom: 0;
-    }
-    table#approval .no_right {
-      border-right: 0;
-    }
-    table#approval .no_left {
-      border-left: 0;
-    }
-
-    @media print {
-      
-      table#remark th {
-        padding-top: 4px;
-      }
-      
+    .signature_confirmation > div {
+      padding: 4px;
     }
 
   </style>
@@ -150,218 +276,200 @@
 
 <body>
 
-  {exp:workreports:wrDetails projid="{segment_3}"}
-  <!-- Header Table -->
+  <!-- Header -->
+  <header>
 
-  <table id="header">
-    <tr>
-      <th>Applus RTD USA</th>
-      <th class="report_number">Work Report {ProjectID}</th>
-    </tr>
-  </table>
+    <div><h1>Applus RTD USA</h1></div>
+    <div><h2>Work Report {project_id}</h2></div>
+
+  </header>
   
-  <!-- Contact Information Tables -->
+  <!-- Contact Info -->
 
-  <table id="contact">
-    <tr>
-      <td rowspan="2">
-        {costCenter}
-        <p>{street}</p>
-        <p>{city}, {state} {zipcode}</p>
-        <p>{country}</p>
+  <div class="contact">
+  
+    <div class="contact_details"> 
+      <div>
+        <!-- {cost_center} -->
+        <h3>Cost Center</h3>
+        <p>{cost_center_name}</p>
+        <p>{cost_center_address}</p>
         <br />
-        <p>Tel: {phone}</p>
-        <p>Fax: {fax}</p>
-        <p>Email: {email}</p>
-        {/costCenter}
-      </td>
-      <td rowspan="2" class="no_border"></td>
-      <td rowspan="2">
-        <p>Team: Team Team VIXR</p>
-        <p>Contact Person: {teamContactPerson}</p>
+        <p>Tel: {cost_center_phone}</p>
+        <p>Fax: {cost_center_fax}</p>
+        <p>Email: {cost_center_email}</p>
+        <!-- {/cost_center} -->
+      </div>
+      <div>
+        <h3>Customer</h3>
+        <p>{customer_name}</p>
+        <p>{customer_address}</p>
         <br />
-        <p>Tel: {teamContactPhone}</p>
-        <p>Fax: {teamContactFax}</p>
-        <p>Email: {teamContactEmail}</p>
-      </td>
-      <td rowspan="2" class="no_border_contact"></td>
-      <td class="logo"><img src="Applus_RTD.png" /></td>
-    </tr>
-    <tr>
-      <td class="week_number">
-        <h1>{current_time format="%w"} {current_time format="%Y"}</h1>
-      </td>
-    </tr>
-  </table>
+        <p>Customer #: {customer_id}</p>
+        <p>Contract: {contract_id}</p>
+        <p>Tel: {customer_phone}</p>
+        <p>Fax: {customer_fax}</p>
+        <p>Email: {customer_email}</p>
+      </div>
+    </div>
 
-  <table id="contact">
-    <tr>
-      <td rowspan="2">
-        <h1>Client</h1>
-        <p>{SalesName}</p>
-        <p>{SalesAddress}</p>
-        <p>{SalesCountry}</p>
+    <div class="contact_details">
+      <div>
+        <h3>Team Contact</h3>
+        <p>{team_contact_name}</p>
         <br />
-        <p>Client Number: {CustomerAccount}</p>
-        <p>Contract: {CustomerContract}</p>
-        <p>Tel: {CustomerPhone}</p>
-        <p>Fax: {CustomerFax}</p>
-        <p>Email: {CustomerEmail}</p>
-      </td>
-      <td rowspan="2" class="no_border"></td>
-      <td rowspan="2">
-        <h1>Work Location</h1>
-        <p>{DeliveryName}</p>
-        <p>{DeliveryAddress}</p>
-      </td>
-      <td rowspan="2" class="no_border_contact"></td>
-      <td class="reference">
-        <h1>Customer Reference</h1>
-        <span>Order 07.003325 Work Order 015</span>
-        <p>Customer Reference</p>
-        <span>GPS/CAD/GIS/API</span>
-      </td>
-    </tr>
-    <tr>
-      <td>&nbsp;</td>
-    </tr>
-  </table>
+        <p>Tel: {team_contact_phone}</p>
+        <p>Fax: {team_contact_fax}</p>
+        <p>Email: {team_contact_email}</p>
+      </div>
+      <div>
+        <h3>Work Location</h3>
+        <p>{work_location_name}</p>
+        <p>{work_location_address}</p>
+        <br />
+        <h3>Customer Contact</h3>
+        <p>Name: {customer_contact_name}</p>
+        <p>Tel: {customer_contact_phone}</p>
+        <p>Email: {customer_contact_email}</p>
+      </div>
+    </div>
 
-  <!-- Spreadsheet Data Table -->
+    <div class="logo">
+      <div><img src="images/Applus_RTD.png" /></div>
+      <div><h3>{execution_datetime format="%F %j, %Y"}</h3></div>
+      <div>
+        <h3>Customer Reference</h3>
+        <span>{customer_reference}</span>
+        <h3>RTD Reference</h3>
+        <span>{rtd_reference}</span>
+      </div>
+      <!-- Research -->
 
-  <table id="resources">
-    <thead>
+      <div class="research">
+        <div class="research_section">
+          <div><h3>Research Procedure</h3></div>
+          <div><p>{research_procedure_id}</p></div>
+          <div><p>{research_procedure_description}</p></div>
+        </div>
+        <div class="review_section">
+          <div><h3>Review Procedure</h3></div>
+          <div><p>{review_procedure_id}</p></div>
+          <div><p>{review_procedure_description}</p></div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Resources -->
+
+  <div class="resources">
+    <div class="resources_headers">
+      <div class="resources_name"><h3>Name</h3></div>
+      <div class="resources_hours_begin">
+        <div><h3>Time</h3></div>
+        <div><p>Start</p></div>
+        <div><p>End</p></div>
+      </div>
+      <div class="resources_hours">
+        <div><h3>Hours Worked</h3></div>
+        <div><p>Total</p></div>
+      </div>
+    </div>
+
+    {resources}
+    <div class="resources_data">
+      <div class="resources_data_name"><p>{name}</p></div>
+      <div><p>-</p></div>
+      <div><p>-</p></div>
+      <div><p>{qty}</p></div>
+    </div>
+    {/resources}
+  </div>
+
+  <!-- Sales Items -->
+
+  <div class="items">
+
+    <div class="items_headers">
+      <div><h3>Item</h3></div>
+      <div><h3>Unit</h3></div>
+      <div><h3>Quantity</h3></div>
+    </div>
+
+    {sales_items}
+    <div class="items_data">
+      <div><p>{name}</p></div>
+      <table>
+        <tr>
+          <td><p>{unit}</p></td>
+          <td><p>{qty}</p></td>
+        </tr>
+      </table>
+    </div>
+    {/sales_items}
+
+  </div>
+
+  <!-- Remarks -->
+
+  <div class="remarks">
+
+    <table>
       <tr>
-        <th>Resource Name</th>
-        <th>Total</th>
-        <th>Begin</th>
-        <th>Duration</th>
-      </tr>
-    </thead>
-    <tbody>
-      {resources}
-      <tr>
-        <td class="name">{name}</td>
-        <td class="total"></td>
-        <td></td>
-        <td></td>
-      </tr>
-      {/resources}
-    </tbody>
-    <tfoot>
-      <tr>
-        <td colspan="16" class="no_border"></td>
-      </tr>
-    </tfoot>
-  </table>
-
-  <table id="spreadsheet">
-    <thead>
-      <tr>
-        <th>Item</th>
-        <th>Unit</th>
-        <th colspan="2">Quantity</th>
-        <th colspan="2">Quantity</th>
-        <th colspan="2">Quantity</th>
-        <th colspan="2">Quantity</th>
-        <th colspan="2">Quantity</th>
-        <th colspan="2">Quantity</th>
-        <th colspan="2">Quantity</th>
-      </tr>
-    </thead>
-    <tbody>
-      {salesItems}
-      <tr>
-        <td colspan="16" id="title" class="no_bottom_border">{itemName}</td>
+        <td><h3>Remark</h3></td>
+        <td class="no_border" rowspan="3"></td>
+        <td><h3>Object Description</h3></td>
+        <td class="no_border" rowspan="3"></td>
+        <td><h3>Order Description</h3></td>
       </tr>
       <tr>
-        <td class="no_top_border"></td>
-        <th>{salesUnit}</th>
-        <td colspan="2"></td>
-        <td colspan="2"></td>
-        <td colspan="2"></td>
-        <td colspan="2"></td>
-        <td colspan="2"></td>
-        <td colspan="2"></td>
-        <td colspan="2"></td>
+        <td><p>This is a Remark</p></td>
+        <td><p>This is an Object Description</p></td>
+        <td><p>This is an Order Description</p></td>
       </tr>
-      {/salesItems}
-    </tbody>
-  </table>
+    </table>
 
-  <!-- Remarks & Descriptions Table -->
+  </div>
 
-  <table id="remark">
-    <tr>
-      <th>Remark</th>
-      <th rowspan="2" class="no_border"></th>
-      <th>Object Description</th>
-      <th rowspan="2" class="no_border"></th>
-      <th>Order Description</th>
-    </tr>
-    <tr>
-      <td>&nbsp;<br />&nbsp;<br />&nbsp;<br />&nbsp;<br />&nbsp;</td>
-      <td></td>
-      <td></td>
-    </tr>
-  </table>
+  <!-- Material Consumption -->
 
-  <!-- Material Consumption Table -->
+  <div class="materials">
 
-  <table id="consumption">
-    <tr>
-      <th colspan="14">Material Consumption</th>
-    </tr>
-    <tr>
-      <td>Weld</td>
-      <td>Weld</td>
-      <td>Weld</td>
-      <td>Weld</td>
-      <td>Weld</td>
-      <td>GD</td>
-      <td>7HF</td>
-      <td>WCP</td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td class="consumption_last"></td>
-    </tr>
-    <tr>
-      <td>&nbsp;</td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td class="consumption_last"></td>
-    </tr>
-  </table>
+    <div class="materials_header"><h3>Material Consumption</h3></div>
 
-  <!-- Customer Approval Table -->
+    <div class="materials_data">
+      {materials}
+      <table class="materials_table">
+        <tr>
+          <td><p>{name}<br />{unit}</p></td>
+        </tr>
+        <tr>
+          <td><p>{qty}</p></td>
+        </tr>
+      </table>
+      {/materials}
+    </div>
 
-  <table id="approval">
-    <tr>
-      <th class="no_right">Approved By Customer</th>
-      <th class="no_left">Date</th>
-      <td rowspan="2" class="no_border"></td>
-      <th class="confirmation">Confirmation</th>
-    </tr>
-    <tr>
-      <td class="no_right">&nbsp;<br />&nbsp;<br />&nbsp;</td>
-      <td class="no_left"></td>
-      <td></td>
-    </tr>
-  </table>
-  {/exp:workreports:wrDetails}
+  </div>
+
+  <!-- Signature -->
+
+  <div class="signature">
+
+    <div class="signature_approval">
+      <div>
+        <div><h3>Approved by Customer</h3></div>
+        <div><h3>Date</h3></div>
+      </div>
+    </div>
+
+    <div class="signature_confirmation">
+      <div><h3>Confirmation</h3></div>
+    </div>
+
+  </div>
 </body>
 
 </html>

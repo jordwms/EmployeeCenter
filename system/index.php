@@ -40,7 +40,7 @@
  * Example:  $system_path = './mysecretfolder';
  * 
  */
-	$system_path = "";
+	$system_path = '';
 /*
  * --------------------------------------------------------------------
  *  ERROR REPORTING OVERRIDE

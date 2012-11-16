@@ -15,7 +15,7 @@ $config['app_version'] = "240";
 $config['install_lock'] = "";
 $config['license_number'] = "69508-74962-03122-47529";
 $config['debug'] = "1";
-$config['cp_url'] = 'https://ec.vxray.com/admin.php';
+$config['cp_url'] = 'https://ec.applusrtd.com/admin.php';
 $config['doc_url'] = "http://expressionengine.com/user_guide/";
 $config['is_system_on'] = "y";
 $config['allow_extensions'] = 'y';
@@ -43,7 +43,7 @@ $config['comment_edit_time_limit'] = "";
 |	http://example.com/
 |
 */
-$config['base_url']	= 'https://ec.vxray.com/';
+$config['base_url']	= 'https://ec.applusrtd.com/';
 
 /*
 |--------------------------------------------------------------------------
@@ -330,7 +330,6 @@ $config['rewrite_short_tags'] = FALSE;
 |
 */
 $config['proxy_ips'] = "172.19.0.3";
-
-
+require(realpath(dirname(__FILE__) . '/../../../config_bootstrap.php'));
 /* End of file config.php */
 /* Location: ./system/expressionengine/config/config.php */

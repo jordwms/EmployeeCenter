@@ -36,7 +36,7 @@
 //----------------------------------------
 // Table field headers
 //----------------------------------------
-		'company'							=> 'Company',
+		'company_id'						=> 'Company',
 		'contact_person'					=> 'Contact Person',
 		'customer_account'					=> 'Customer Account',
 		'customer_name'						=> 'Customer Name',
@@ -45,19 +45,19 @@
 		'dimension_id'						=> 'Dimension ID',
 		'execution_date'					=> 'Execution Date',
 		'submission_date'					=> 'Date Submitted',
-		'submitter_name'					=> 'Submitted By',
-		'name'								=> 'Name',
 		'item_dimensions'					=> 'Item Dimensions',
 		'item_id'							=> 'Item ID',
 		'item_name'							=> 'Item Name',
+		'name'								=> 'Name',
 		'object_description'				=> 'Object Description',
-		'order'								=> 'Project ID',
-		'order_description'					=> 'Order Description',	
+		'order_description'					=> 'Order Description',
+		'project_id'						=> 'Project ID',
 		'qty'								=> 'Qty',
 		'remarks'							=> 'Remarks',
 		'resource_id'						=> 'Resource ID',
 		'rtd_reference'						=> 'RTD Reference',
 		'status'							=> 'Status',
+		'submitter_name'					=> 'Submitted By',
 		'unit'								=> 'Unit',
 		'work_location_name'				=> 'Work Location Name',
 		'work_order'						=> 'Work Order',
@@ -86,10 +86,14 @@
 //----------------------------------------
 // Dashboard
 //----------------------------------------
-		'no_connection'						=> 'No Connection to Axapta',
-		'invalid_employee'					=> 'Invalid Employee Information Returned',
-		'unauthorized'						=> 'Please contact the HR Department for Authorization'
+		'no_connection'						=> 'No Connection to Axapta. ',
+		'invalid_employee'					=> 'Invalid Employee Information Returned. ',
+		'unauthorized'						=> 'Please contact the HR Department for Authorization. ',
+//----------------------------------------
+// Error messages
+//----------------------------------------
+		'xml_error'							=> 'An error occured. Please notify your system administrator. ',
+		'dir_error'							=> 'Directory was not created properly. ',
 
-// END
-);
-?>
+
+); // END

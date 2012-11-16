@@ -3,33 +3,50 @@
 	<header>
 		<h2>Work Reports</h2>
 	</header>
+	<table>
 	{exp:workreports:wrList}
-		<a href="{path='workreports/details/{ProjectLink}'}" class="work_reports">
-			<div>
-				<p><h3>Work Report ID</h3> <span>{ProjectID}</span></p>
-				<p><h3>Scheduled Date</h3> {start_datetime format="%m/%d/%Y %H:%i"}</p>
-			</div>
-			<div>	
-				<p><h3>Customer Name</h3> {CustomerName}</p>
-				<p><h3>Work Location</h3> {DeliveryName}</p>
-			</div>
-			<div>	
-				<p><h3>Customer Ref</h3> {CustomerRef}</p>
-				<p><h3>RTD Ref</h3> {RTDRef}</p>
-			</div>
-			<div>
-				<p><h3>Contact Person</h3> {CustomerContactPersonName}</p>
-			</div>
-		</a>
+		<tr>
+			<td class="{status}"></td>
+			<td>
+				<a href="{path='workreports/details/{project_link}'}" class="work_reports">
+					<div>
+						<p><h3>Work Report ID</h3> <span>{project_id}</span></p>
+						<p><h3>Scheduled Date</h3> {execution_datetime}</p>
+					</div>
+					<div>	
+						<p><h3>Customer Name</h3> {customer_name}</p>
+						<p><h3>Work Location</h3> {work_location_name}</p>
+					</div>
+					<div>	
+						<p><h3>Customer Ref</h3> {customer_reference}</p>
+						<p><h3>RTD Ref</h3> {rtd_reference}</p>
+					</div>
+					<div>
+						<p><h3>Contact Person</h3> {customer_contact_name}</p>
+					</div>
+				</a>
+			</td>
+		</tr>
 	{/exp:workreports:wrList}
+	</table>
+	<div class="btn-group dropup">
+		<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+		New
+		<span class="caret"></span>
+		</a>
+		<ul class="dropdown-menu">
+		{exp:workreports:templates}
+			<li><a href="{path='workreports/details/{project_link}}">{customer_name}</a></li>
+		{/exp:workreports:templates}
+		</ul>
+	</div>
 </div>
-{embed="assets/footer-page"}
 {embed="assets/scripts"}  
+
+<script type="text/javascript" src="{path="assets/bootstrap-dropdown"}"></script>
 
 <script>
 
-	$('#work_reports_index').parent().parent().addClass('details_background');
+	//$('#work_reports_index').parent().parent().addClass('details_background');
 
 </script>
-	
-{embed="assets/footer-html"}

@@ -113,7 +113,7 @@ h1 { /* Page Title */
 	float: left;
 	font-size: 22px;
 	line-height: 26px;
-	color: rgb(129,101,92);
+	color: rgb(255,255,255);
 	font-weight: 550;
 }
 h1::first-letter {
@@ -204,13 +204,14 @@ nav a {
 	padding: 1em;
 	text-decoration: none;
 	vertical-align: middle;
-	color: rgb(129,101,92);
+	color: rgb(255,255,255);
 }
 nav a:hover {
-	text-shadow: rgb(129,101,92) 0 0 1px;
+	color: rgb(227,238,255);
+	text-shadow: rgb(68,64,61) 0 0 1px;
 }
 nav a:visited {
-	color: rgb(129,101,92);
+	color: rgb(255,255,255);
 }
 nav select {
 	display: inline-block;
@@ -321,19 +322,19 @@ nav.dashboard a {
 	margin-bottom: .6em;
 	text-decoration: none;
 	color: rgb(0,0,0);
+	height: auto;
 }
-nav.dashboard div#scores,
-nav.dashboard div#asset_manager {
+nav.dashboard div {
 	margin-bottom: 20px;
 }
-div#work_reports button {
+nav.dashboard button {
 	margin-bottom: 1em;
 }
+
 div#work_reports a,
 div#scores a {
-	height: 30px;
+	height: auto;
 }
-
 
 /*****************************
 *  Equipment Manager
@@ -421,6 +422,35 @@ table .dark {
 *  Work Reports
 *****************************/
 
+#work_reports_index table {
+	width: 100%;
+	margin-bottom: 1em;
+}
+#work_reports_index .rejected {
+	background-color: red;
+}
+#work_reports_index .dispatched {
+	background-color: green;
+}
+#work_reports_index .in_progress {
+	background-color: orange;
+}
+#work_reports_index .completed {
+	background-color: royalblue;
+}
+#work_reports_index .supervisor_approved,
+#work_reports_index .admin_approved {
+	background-color: blueviolet;
+}
+#work_reports_index .xml_accepted {
+	background-color: gray;
+}
+#work_reports_index td:nth-child(1) {
+	width: 5px;
+}
+#work_reports_index td:nth-child(2) {
+	padding: 0;
+}
 #work_reports_index h3 {
 	font-size: 100%;
 	margin: 0;
@@ -434,8 +464,7 @@ table .dark {
 }
 a.work_reports:link,
 a.work_reports:visited,
-a.work_reports:active,
-a.work_reports:hover {
+a.work_reports:active {
 	color: rgb(51,51,51);
 	text-decoration: none;
 }
@@ -446,23 +475,10 @@ a.work_reports {
 	position: relative;
 	height: auto;
 	border-bottom: 1px solid rgb(207,207,207);
-
-	background-image: linear-gradient(bottom, rgb(227,227,227) 24%, rgb(240,240,240) 50%);
-	background-image: -o-linear-gradient(bottom, rgb(227,227,227) 24%, rgb(240,240,240) 50%);
-	background-image: -moz-linear-gradient(bottom, rgb(227,227,227) 24%, rgb(240,240,240) 50%);
-	background-image: -webkit-linear-gradient(bottom, rgb(227,227,227) 24%, rgb(240,240,240) 50%);
-	background-image: -ms-linear-gradient(bottom, rgb(227,227,227) 24%, rgb(240,240,240) 50%);
-
-	background-image: -webkit-gradient(
-		linear,
-		left bottom,
-		left top,
-		color-stop(0.24, rgb(227,227,227)),
-		color-stop(0.5, rgb(240,240,240))
-	);
+	background-color: rgb(240,240,240);
 }
 a.work_reports:hover {
-	background: rgb(227,238,255) !important;
+	background: rgb(242,247,255) !important;
 }
 a.work_reports:after {
 	clear: both;
@@ -477,88 +493,146 @@ a.work_reports span {
 	text-decoration: underline;
 }
 
+.btn-group {
+	margin-left: 1em;
+}
+.dropdown-toggle {
+	margin-bottom: 2em;
+}
+
 /*** Details ***/
 
 #work_reports_details {
 	margin: 0 5px;
 }
+#work_reports_details fieldset {
+	padding: 1.3em 0;
+}
 #work_reports_details input,
 #work_reports_details textarea {
 	border-color: rgb(132,132,132);
 }
-.details_background {
-	background-color: rgb(240,240,240);
+#work_reports_details pre {
+	margin: 0;
+	font-family: sans-serif;
+	line-height: 1.2em;
+	font-size: 0.9em;
 }
+
+/*
+ *	Bottom hovering form nav for use with scroll spy
+ */
+form nav {
+	position: fixed;
+	bottom: 0;
+	z-index: 1000;
+	margin: 5px auto;
+
+}
+form nav span {
+	display: none;
+}
+form nav .nav {
+	margin: 0;
+}
+form nav .nav > li {
+	background-color: rgb(107,101,96);
+	margin-top: 3px;
+	text-align: center;
+	width: 48px;
+}
+form nav .nav > li > a {
+	border: 1px solid rgb(207,207,207);
+}
+form nav .nav > li > a:hover {
+  text-decoration: none;
+  background-color: rgb(242,247,255);
+  color: rgb(0,0,0);
+}
+
+.active {
+	background: rgb(227,238,255) !important;
+}
+.active a {
+	background: rgb(227,238,255) !important;
+	color: rgb(0,0,0) !important;
+}
+
 #work_reports_details h3 {
 	border-bottom-color: rgb(177,177,177);
 }
 
-fieldset#topOfTicket .row-fluid {
-	margin: 1em 0;
+#topOfTicket {
+	padding-top: 0.5em !important;
 }
-fieldset#topOfTicket td {
-	width: 60%;
-	text-align: left;
-	padding-left: 0.5em;
-}
-fieldset#topOfTicket th {
-	width: 40%;
-	text-align: right;
-	font-weight: normal;
-}
-fieldset#topOfTicket thead th {
+#topOfTicket h3:nth-child(1) {
 	text-align: center;
-	font-weight: bold;
-	padding-bottom: 0.8em;
-	font-size: 110%;
 }
-fieldset#topOfTicket input {
+#topOfTicket input,
+#customer input {
 	width: 150px;
-	height: 2em;
-	margin: 0.4em 0;
-}
-fieldset#topOfTicket table {
-	width: 100%;
-}
-#topOfTicket .span4 {
-	float: none;
-	padding-top: 0.4em;
-	margin: 0 auto;
-}
-
-.single-numeric table,
-div.details_submit {
-	margin: 1em 1em 2em 0.5em;
-}
-.single-numeric table,
-.textarea table {
-	width: 96%;
-}
-.single-numeric input {
-	width: 57px;
 	height: 2em;
 	margin: 0.4em;
 }
+#topOfTicket table,
+#customer table,
+
+.single-numeric table {
+	margin: 0.5em 0;
+}
+#topOfTicket table,
+#customer table,
+.single-numeric table,
+.textarea table {
+	width: 99%;
+}
+#topOfTicket tr,
+#customer tr,
+.single-numeric tr,
+.textarea tr {
+	background-color: rgb(240,240,240);
+}
+#topOfTicket table td,
+#customer table td,
 .single-numeric td,
 .textarea td {
 	vertical-align: middle;
 	border-bottom: 1px solid rgb(207,207,207);
+	text-align: left;
 }
-.single-numeric tr,
-.textarea tr {
-	background-image: linear-gradient(bottom, rgb(227,227,227) 24%, rgb(240,240,240) 50%);
-	background-image: -o-linear-gradient(bottom, rgb(227,227,227) 24%, rgb(240,240,240) 50%);
-	background-image: -moz-linear-gradient(bottom, rgb(227,227,227) 24%, rgb(240,240,240) 50%);
-	background-image: -webkit-linear-gradient(bottom, rgb(227,227,227) 24%, rgb(240,240,240) 50%);
-	background-image: -ms-linear-gradient(bottom, rgb(227,227,227) 24%, rgb(240,240,240) 50%);
+#topOfTicket table td:nth-child(1),
+#customer table td:nth-child(1),
+.textarea table td:nth-child(1) {
+	width: 161px;
+}
+#topOfTicket table td:nth-child(2),
+#customer table td:nth-child(2) {
+	width: 60px;
+	padding: 0 5px;
+}
+#topOfTicket .wp_lores,
+#customer .wp_lores {
+	background: none;
+}
+#topOfTicket .wp_lores td,
+#customer .wp_lores td {
+	border: none;
+	padding: 12px 0 0 5px;
+}
+#topOfTicket .omit_label,
+#customer .omit_label {
+	display: none;
+}
+#topOfTicket table td:nth-child(3),
+#customer table td:nth-child(3) {
+	padding: 4px 5px;
+}
 
-	background-image: -webkit-gradient(
-		linear,
-		left bottom,
-		left top,
-		color-stop(0.24, rgb(227,227,227)),
-		color-stop(0.5, rgb(240,240,240))
-	);
+.workreports_date input,
+.single-numeric input {
+	width: 57px;
+	height: 2em;
+	margin: 0.4em;
 }
 
 .single-numeric td:nth-child(1) {
@@ -571,15 +645,12 @@ div.details_submit {
 .single-numeric td:nth-child(3) {
 	padding: 0.4em 0.8em;
 }
-.backgroundImage {
-	background: rgb(227,238,255) !important;
-}
 
-.textarea table {
-	margin: 0 1em 0 0.5em;
+.textarea {
+	padding: 0 !important;
 }
-.textarea table td:nth-child(1) {
-	width: 170px;
+#remarks {
+	padding-top: 2.5em !important;
 }
 .textarea textarea {
 	height: 4em;
@@ -587,6 +658,13 @@ div.details_submit {
 	width: 150px;
 }
 
+div.details_submit  {
+	margin-top: 1.5em;
+	margin-bottom: 5em;
+}
+.details_submit input {
+	margin-right: .5em;
+}
 
 /*****************************
 *  Content
@@ -786,6 +864,9 @@ input.submit_answer_button:hover {
 *  Comments
 *****************************/
 
+#comments {
+	color: white;
+}
 #comment, 
 #new-comment, 
 #comments-container {
@@ -1054,8 +1135,31 @@ Android/HD mobile styles
 		margin: 20px 15%;
 	}
 
+	form nav span {
+		display: inline;
+	}
+	form nav .nav li {
+		font-size: 10px;
+		width: auto;
+	}
+
+	#topOfTicket .omit_label,
+	#customer .omit_label {
+		display: table-cell;
+	}
+	#topOfTicket .wp_lores,
+	#customer .wp_lores {
+		display: none;
+	}
+
+	#topOfTicket table,
+	#customer table,
+	.single-numeric table,
+	.textarea table {
+		width: 100%;
+	}
 	.textarea table td:nth-child(1) {
-		width: 290px;
+		width: 291px;
 	}
 	.textarea textarea {
 		width: 280px;
@@ -1248,13 +1352,22 @@ Android/HD mobile styles
 		float: left;
 	}
 
-	#topOfTicket .span4 {
-		float: left;
+	form nav .nav li {
+		font-size: 13px;
 	}
 
+	#topOfTicket tr:hover,
+	#customer tr:hover,
 	.single-numeric tr:hover,
 	.textarea tr:hover {
-		background: rgb(227,238,255);
+		background: rgb(242,247,255);
+	}
+	#topOfTicket .wp_lores:hover,
+	#customer .wp_lores:hover {
+		background: none;
+	}
+	#customer input {
+		width: 280px;
 	}
 
 	.details_submit input {
@@ -1476,7 +1589,7 @@ Android/HD mobile styles
 	background-color: rgb(56,0,147);
 }
 .applus-brown {
-	background-color: rgb(129,101,92);
+	background-color: rgb(107,101,96);
 }
 
 /* ==== non-semantic helper classes ====================================== */
