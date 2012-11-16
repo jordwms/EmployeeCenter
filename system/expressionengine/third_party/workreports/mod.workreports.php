@@ -638,10 +638,26 @@ class Workreports {
     }
 
     /*
-    * Fetches data for a single work report.
-    * Used in details() and PDF()
-    */
-    function wrData($project_id=NULL) {
+     * Fetches data for a single work report and processes the template.
+     */
+    function wrDetails($project_id = NULL) {
+        $employee = $this->EE->axapta->employee->get_remote( array('email' => $this->EE->session->userdata('email')) );
+        $employee = $employee[0];
+
+        // If this was called for details.html
+        if($project_id == NULL){ 
+            $project_id = str_replace('-', '/', $this->EE->TMPL->fetch_param('projid') );
+            $tagdata = $this->EE->TMPL->tagdata;
+        }
+        // This was called for print.html
+        else {
+            $this->EE->load->library('Template', NULL, 'TMPL');
+            $tagdata = $this->EE->TMPL->fetch_template('workreports', 'print', FALSE, $this->EE->config->item('site_id') );
+        }
+
+        $submit_uri = $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$this->EE->functions->fetch_action_id('Workreports', 'submit');
+
+        //fetch base report data
         $this->EE->db->select(
             'id,
             project_id,
@@ -705,7 +721,7 @@ class Workreports {
         // $this->EE->db->where('crew_leader_id', $employee);
 
         $data[0] = $this->EE->db->get()->row_array();
-
+        
         $data[0]['materials'] = $this->EE->db->get_where('wr_materials', array('report_id' => $data[0]['id']) )->result_array();
         $data[0]['sales_items'] = $this->EE->db->get_where('wr_items', array('report_id' => $data[0]['id']) )->result_array();
 
@@ -718,18 +734,6 @@ class Workreports {
         }else {
             $data[0]['resources'] = $this->EE->db->get_where('wr_resources', array('report_id' => $data[0]['id']) )->result_array();
         }
-        return $data;
-    }
-
-    function wrDetails() {
-        $employee = $this->EE->axapta->employee->get_remote( array('email' => $this->EE->session->userdata('email')) );
-        $employee = $employee[0];
-
-        $project_id = str_replace('-', '/', $this->EE->TMPL->fetch_param('projid') );
-
-        $submit_uri = $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$this->EE->functions->fetch_action_id('Workreports', 'submit');
-
-        $data = $this->wrData($project_id);
 
         $form_open = array(
             'action'        => $submit_uri,
@@ -754,37 +758,52 @@ class Workreports {
         $data[0]['form_open'] = $this->EE->functions->form_declaration($form_open);
         $data[0]['form_close'] = '</form>';
 
-        $data[0]['actions'] = '<input type="submit" name="print" class="btn" value="Print">'; // 1 concatonated string for all submit buttons
+        /*
+         *  Logic to set the appropriate actions based on user groups and current status of the work report.
+         */
+        $data[0]['actions'] = ''; //Initilize actions string
+        if( (array_key_exists('WA DISP', $employee['groups']) && in_array($data[0]['company_id'], $employee['groups']['WA DISP']))
+         || (array_key_exists('WA ADMIN', $employee['groups']) && in_array($data[0]['company_id'], $employee['groups']['WA ADMIN'])) ){
+            // Current employee is DISP or ADMIN permissions for the company_id of the work report
+            if( $data[0]['status'] < 5 ){
+                // Work report has not been ADMIN approved, Allow Save
+                // Save Button
+                $data[0]['actions'] .= '<input type="submit" name="save" class="btn" value="Save" />';
+            }
 
-        if ($data[0]['status'] < 4){
-                if( (array_key_exists('WA DISP', $employee['groups']) && in_array($data[0]['company_id'], $employee['groups']['WA DISP']))
-                    || (array_key_exists('WA ADMIN', $employee['groups']) && in_array($data[0]['company_id'], $employee['groups']['WA ADMIN'])) ){              // Save button
+            if( $data[0]['status'] < 3 ){
+                // Workreport has not been completed by a TECH yet, allow submit (renamed to Submit and Approve for UI)
+                // Submit + Approve button
+                $data[0]['actions'].= '<input type="submit" name="submit" class="btn" value="Submit and Approve" />';
+            }
+
+            if( $data[0]['status'] > 2 && $data[0]['status'] < 5 ){
+                // Workreport has been completed by a TECH, but has not passed ADMIN and DISP Approval, Allow only Approval
+                // Approve button
+                $data[0]['actions'].= '<input type="submit" name="approve" class="btn" value="Approve" />';
+            }
+
+            if( $data[0]['status'] > 2 && $data[0]['status'] < 5){
+                // Workreport is completed by a TECH, but has not recieved ADMIN approval, Allow Reject
+                // Reject Button
+                $data[0]['actions'].= '<input type="submit" name="reject" class="btn" value="Reject" />';
+            }
+        } else {
+            // Current Employee does NOT have ADMIN or DISP permissions for the company_id of the work report
+            // Assuming they have TECH, which isn't ideal...
+            if($data[0]['status'] < 3){
+                // Workreport has NOT been completed by a TECH
+                // Submit button, Save button
+                $data[0]['actions'].= '<input type="submit" name="submit" class="btn" value="Submit" />';
                 $data[0]['actions'].= '<input type="submit" name="save" class="btn" value="Save" />';
-
-                if($data[0]['status'] < 3){
-                    // Submit + Approve button
-                    $data[0]['actions'].= '<input type="submit" name="submit" class="btn" value="Submit and Approve" />';
-                }
-
-                if($data[0]['status'] > 2 && $data[0]['status'] < 5 ){
-                    // Approve button, Reject button
-                    $data[0]['actions'].= '<input type="submit" name="approve" class="btn" value="Approve" />';
-                    $data[0]['actions'].= '<input type="submit" name="reject" class="btn" value="Reject" />';
-                }
-            } else { // NOT DISP/ADMIN
-                if($data[0]['status'] < 3){
-                    // Submit button, Save button
-                    $data[0]['actions'].= '<input type="submit" name="submit" class="btn" value="Submit" />';
-                    $data[0]['actions'].= '<input type="submit" name="save" class="btn" value="Save" />';
-                }
-                if($data[0]['status'] > 2) {
-                    // No buttons!
-                }
-
+            }
+            if($data[0]['status'] > 2) {
+                // Workreport has been completed by a TECH
+                // No buttons for you!
             }
         }
-
-        $tagdata = $this->EE->TMPL->tagdata;
+        //Print button is always available
+        $data[0]['actions'] .= '<input type="submit" name="print" class="btn" value="Print">';
 
         $this->return_data = $this->EE->TMPL->parse_variables( $tagdata,  $data );
 
@@ -801,8 +820,10 @@ class Workreports {
          */
         if ( $employee = $this->EE->axapta->employee->get_remote(array( 'email' => $this->EE->session->userdata('email') )) ) {
             $employee = $employee[0];
+
             $send_mail = FALSE; // Flag indicating whether the PDF should be emailed.
             //$success = array();
+            $message = '';
 
             // Get the work report already in the cache (MySQL)
             $this->EE->db->where('project_id', $this->EE->input->post('project_id') );
@@ -828,6 +849,7 @@ class Workreports {
                 }
                 if(array_key_exists('WA DISP', $employee['groups']) && in_array($this->EE->input->post('company_id'), $employee['groups']['WA DISP']) && $existing_wr['status'] < 4) {
                     $status = 4;
+                    $send_mail = TRUE;
                 }
                 if(array_key_exists('WA ADMIN', $employee['groups']) && in_array($this->EE->input->post('company_id'), $employee['groups']['WA ADMIN']) && $existing_wr['status'] < 5) {
                     $status = 5;
@@ -934,10 +956,14 @@ class Workreports {
                     'export_reason' => NULL         //make sure this isn't treated as a template in the future
                 ));
 
+                $data['id'] = NULL;
+
                 $this->EE->db->insert('wr_reports', $data);
                 $success['wr_reports'] = $this->EE->db->affected_rows();
 
                 $report_id = $this->EE->db->insert_id();
+
+                $message .= 'Sucessfully created new workreport from template'.NL;
             } else {
                 /*
                  *  Update Existing Work Report
@@ -951,6 +977,8 @@ class Workreports {
                 $this->EE->db->where('id', $report_id );
                 $this->EE->db->update('wr_reports', $data);
                 $success['wr_reports'] = $this->EE->db->affected_rows();
+
+                $message .= 'Sucessfully updated workreport'.NL;
             }
 
             /*** Resources ***************************************************************
@@ -1106,11 +1134,15 @@ class Workreports {
                 }
             }
 
+            //Make sure we have the correct project_id
+            $project_id = (isset($project_id)) ? $project_id : $existing_wr['project_id'];
+
             // If submit() was called by the "print" button redirect to print.html (changes are saved)
             if( $this->EE->input->post('print') ){
-                $this->EE->load->helper('url');
-                redirect('/workreports/print/'.str_replace('/','-',$existing_wr['project_id']));
+                echo $this->wrDetails($existing_wr['project_id']);
+                return;
             }
+
             /*
              *  We're almost done.
              *  First, check if the work report has admin approval status
@@ -1118,23 +1150,47 @@ class Workreports {
              */
             if($status == 5) {
                 $this->EE->mysql->create_xml($report_id);
+
                 $this->EE->axapta->work_report->set_approval(array(
                     'status' => 1,
-                    'project_id' => (isset($project_id)) ? $project_id : $existing_wr['project_id'],
+                    'project_id' => $project_id,
                     'employee_id' => $employee['id'],
                     'company_id' => $existing_wr['company_id']
                 ));
+
+                $message .= 'XML successfully generated.'.NL;
             }
 
-            // If WA DISP approved and has not been approved before, send email
-            if($send_mail) { $this->wrPDF( $this->EE->input->post('project_id') ); }
+            // Send Email (triggered by WA DISP approval)
+            if($send_mail) { 
+                // create a PDF from the print template
+                $pdf = $this->wrPDF( $project_id );
+
+                // Send email with PDF attachment
+                # TODO: $to = customer_contact_email
+                # TODO: Check if customer_contact_email is valid before sending
+                // if(! is_null($data[0]['customer_contact_email']) ) {
+                //  $to = $data[0]['customer_contact_email'];
+                // }
+                $from = 'Robert.McCann@applusrtd.com';
+                $to = 'Robert.McCann@applusrtd.com'; // , Bert.Weber@applusrtd.com';
+
+                if( $this->send_mail($from, $to, $pdf, $project_id) ) {
+                    // Message successfully sent! Delete local file from /tmp
+                    // $pdf->delete_file($file);
+                    $message .= 'Email sucessfully sent.'.NL; 
+                } else {
+                    $message .= 'Error sending email.'.NL;
+                }
+            }
 
             $this->EE->output->show_message(array(
                 'title'   => 'Information Accepted',
                 'heading' => 'Thank you',
-                'content' => 'Sucessfully submitted work report.',
+                'content' => nl2br($message),
                 'link'    => array($this->EE->functions->form_backtrack('0'), 'Return to Work Reports')
             ));
+
             return TRUE;
         }
     }
