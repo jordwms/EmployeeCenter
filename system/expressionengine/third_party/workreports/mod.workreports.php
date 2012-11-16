@@ -10,42 +10,38 @@ class Workreports {
     }
 
     /*
-     * Creates a PDF document an either prints it to the screen or emails it to the customer, depending on how it was called.
+     *  Creates a PDF document from the workreports print template.
+     *  Returns the full path to the PDF File
+     *  Hardcoded to a tmp/ folder in the base directory of the site
      */
     function wrPDF($project_id=NULL) {
         $this->EE->load->library('Template', NULL, 'TMPL');
+        //$this->EE->load->library('WKPDF.php');
         include_once(__DIR__.'/libraries/WKPDF.php');
-        $pdf = new WKPDF();
 
         // Get work report data array, parse corresponding template, and generate HTML from template + data
         $data = $this->wrData($project_id);
 
         $template = $this->EE->TMPL->fetch_template('workreports', 'print', FALSE, $this->EE->config->item('site_id') );
+        // print_r($template); die;
         $template = $this->EE->TMPL->parse_variables($template, $data);
+        // print_r($template); die;
 
-        $this->EE->TMPL->parse($template, FALSE, $this->EE->config->item('site_id'));
+        // $this->EE->TMPL->parse($template, FALSE, $this->EE->config->item('site_id'));
+        
 
         // Create PDF
+        $file_name = str_replace('/', '-', $project_id );
+
+        $pdf = new WKPDF();
         $pdf->set_title('WorkReport');
         $pdf->set_html($this->EE->TMPL->final_template);
         $pdf->render();
-        $pdf->output(WKPDF::$PDF_SAVEFILE, 'TEST.pdf');
+        $pdf->output(WKPDF::$PDF_SAVEFILE, $file_name.'.pdf');
 
-        // Send email with PDF attachment
-        # TODO: $to = customer_contact_email
-        # TODO: Check if customer_contact_email is valid before sending
-        // if(! is_null($data[0]['customer_contact_email']) ) {
-        //  $to = $data[0]['customer_contact_email'];
-        // }
-        $to = 'Robert.McCann@applusrtd.com'; // , Bert.Weber@applusrtd.com';
-        $file = FCPATH.'tmp/TEST.pdf';
+        $file = FCPATH.'tmp/'.$file_name.'.pdf';
 
-        if( $this->send_mail($to, $file, $data[0]['project_id']) ) {
-            // Message successfully sent! Delete local file from /tmp
-            $pdf->delete_file($file);
-        } else {
-            echo 'Error sending email.';
-        }
+        return $file;
     }
 
     /*
