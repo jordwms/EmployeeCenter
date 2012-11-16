@@ -18,24 +18,15 @@ class Workreports {
         $this->EE->load->library('Template', NULL, 'TMPL');
         //$this->EE->load->library('WKPDF.php');
         include_once(__DIR__.'/libraries/WKPDF.php');
-
-        // Get work report data array, parse corresponding template, and generate HTML from template + data
-        $data = $this->wrData($project_id);
-
-        $template = $this->EE->TMPL->fetch_template('workreports', 'print', FALSE, $this->EE->config->item('site_id') );
-        // print_r($template); die;
-        $template = $this->EE->TMPL->parse_variables($template, $data);
-        // print_r($template); die;
-
-        // $this->EE->TMPL->parse($template, FALSE, $this->EE->config->item('site_id'));
         
+        $html = $this->wrDetails($project_id); // Get HTML
 
         // Create PDF
         $file_name = str_replace('/', '-', $project_id );
 
         $pdf = new WKPDF();
         $pdf->set_title('WorkReport');
-        $pdf->set_html($this->EE->TMPL->final_template);
+        $pdf->set_html($html);
         $pdf->render();
         $pdf->output(WKPDF::$PDF_SAVEFILE, $file_name.'.pdf');
 
