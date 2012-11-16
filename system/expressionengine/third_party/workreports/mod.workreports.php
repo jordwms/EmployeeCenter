@@ -51,7 +51,7 @@ class Workreports {
         $body = 'Attached is a work report from ApplusRTD. Please keep this for your records.';
 
         // multipart boundary
-        $mime_boundary = '==Multipart_Boundary_x{'.md5(time()).'}x';
+        $mime_boundary = 'Multipart_Boundary_x{'.md5(time()).'}x';
 
         // headers with multipart boundary definition
         $headers = "From: $from".NL; // root@localhost
@@ -60,31 +60,29 @@ class Workreports {
 
         // Main Body Boundary
         $message = "--$mime_boundary".NL;
-        $message .= 'Content-Type: text/plain; charset="iso-8859-1"'.NL;
-        $message .= 'Content-Transfer-Encoding: 7bit'.NL.NL;
+        $message .= 'Content-Type: text/plain; charset="utf-8"'.NL;
+        $message .= 'Content-Transfer-Encoding: 8bit'.NL.NL;
         // Actual Message Body
         $message .= $body;
         $message .= NL.NL;
 
-        // preparing attachments
+        /*** Repeat this section for multiple attachments ***/
+        // open and prepare attachments
         $fp =         @fopen($file,"rb");
         $attachment = @fread($fp,filesize($file));
                       @fclose($fp);
         // encode attachment
         $attachment = chunk_split(base64_encode($attachment));
-
+        
         // Attachment Boundary
-        /*** Repeat this section for multiple attachments ***/
         $message .= "--$mime_boundary".NL;
-        $message .= 'Content-Type: application/octet-stream; name="'.basename($file).'"'.NL;
+        $message .= 'Content-Type: application/octet-stream; name='.basename($file).NL;
         $message .= 'Content-Description: '.basename($file).NL;
-        $message .= 'Content-Disposition: attachment;'.NL;
-        $message .= 'filename="'.basename($file).'";'.NL;
-        $message .= 'size="'.filesize($file).'";'.NL;
-        $message .= 'Content-Transfer-Encoding: base64'.NL;
+        $message .= 'Content-Disposition: attachment; filename='.basename($file).'; size='.filesize($file).';'.NL;
+        $message .= 'Content-Transfer-Encoding: base64'.NL.NL;
         // encoded attachment
         $message .= $attachment;
-        $message .= NL;
+        $message .= NL.NL;
         /*** End attachment section  ***/
 
         // End Boundary
