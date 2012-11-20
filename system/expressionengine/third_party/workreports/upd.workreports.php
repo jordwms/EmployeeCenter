@@ -1,6 +1,6 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 class Workreports_upd {
-    var $version = '1.3.9';
+    var $version = '1.4.0';
     function __construct() {
         $this->EE =& get_instance();
     }
@@ -345,7 +345,7 @@ class Workreports_upd {
         if($current < '1.3.8') {
             $this->EE->dbforge->add_field(array(
                 'id'                    => array('type' => 'int', 'constraint' => '10', 'unsigned' => TRUE, 'auto_increment' => TRUE),
-                'resource_id'           => array('type' => 'int', 'constraint' => '10', 'unsigned' => TRUE),
+                'resource_id'           => array('type' => 'int', 'constraint' => '10', 'unsigned' => TRUE), // Employee ID, not wr_resources.id
                 'start_datetime'        => array('type' => 'int', 'constraint' =>'10'),
                 'end_datetime'          => array('type' => 'int', 'constraint' =>'10')
             ));     
@@ -358,6 +358,13 @@ class Workreports_upd {
                 'customer_approval'     => array('type' => 'text')
             );
             $this->EE->dbforge->add_column('wr_reports', $fields);
+        }
+
+        if($current < '1.4.0') {
+            $fields = array(
+                'project_id'            => array('type' => 'varchar', 'constraint' => '50') // Related to wr_reports.project_id. Needed for timecard style lookups, and completing updates/inserts
+            );
+            $this->EE->dbforge->add_column('wr_resource_time_log', $fields);
         }
 
         return TRUE;
