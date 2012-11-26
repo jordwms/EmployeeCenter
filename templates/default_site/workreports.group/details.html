@@ -520,7 +520,7 @@
                 type: 'POST',
                 url: '?ACT=43&output=json&method=resource_time',
                 data: {
-                    report_id: $('input[name=project_id]').val(),
+                    project_id: $('input[name=project_id]').val(),
                     resource_id: $(fun_button).parent().find('input[name*="resource_id"]').val(),
                     value: $(fun_button).val()
                     }
