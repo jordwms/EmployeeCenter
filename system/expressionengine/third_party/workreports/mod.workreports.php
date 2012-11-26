@@ -250,11 +250,44 @@ class Workreports {
                     $this->sync($employee['id']);
                     break;
 
-                case 'resource_time':   // Take whether time is "start" or "end" from AJAX, 
-                                        // insert NOW() to wr_resource_time entry 
-                                        // and make cumulative hours work to wr_resources.qty
+                case 'resource_time': // Expects resource ID, report ID, button's value
+                    $table = 'wr_resource_time_log';
+                    $success = FALSE;
+                    $param_arr['project_id'] = $this->EE->input->post('project_id');
 
-                    $return_data = array('success' => TRUE);
+                    // Get wr_reports.id using 'project_id'
+                    $reports_id = $this->EE->mysql->get_field('id','wr_reports',$param_arr, 'id');
+
+                    $param_arr['resource_id'] = $this->EE->input->post('resource_id');
+                    
+                    // If starting clock then 
+                    if($this->EE->input->post('value') == 'Begin Time') {
+                        $param_arr['start_datetime'] = time();
+                        $this->EE->db->insert($table, $param_arr);
+                        $success = $this->EE->db->affected_rows();
+                    } else { // Look up entry based on wr_resource.id and wr_report.id
+                        $data = array( 'end_datetime' => time() );
+                        
+                        $this->EE->db->where($param_arr);
+                        $this->EE->db->update($table, $data);
+
+                        // Find and update cumulative hours of work to wr_resources.qty
+                        $time = $this->EE->mysql->get_field('SUM(end_datetime - start_datetime) AS time', $table, $param_arr, 'time');
+                        
+                        $this->EE->db->where( 'report_id', $reports_id )
+                                        ->where( 'resource_id', $param_arr['resource_id'] )
+                                        ->update( 'wr_resources', array('qty' => $time) );
+                        
+                        $success = $this->EE->db->affected_rows();
+                    }
+
+                   
+                    // If update/insert was successful (non-zero rows affected)
+                    if($success) {
+                        $return_data = array('success' => TRUE);
+                    } else {
+                         $return_data = array('success' => FALSE);
+                    }
                     break;
 
                 default:
