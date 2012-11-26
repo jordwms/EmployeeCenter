@@ -40,7 +40,7 @@ class research_procedure extends axapta {
 		$return_data = $stmt->fetchAll();
 
 		foreach ($return_data as &$row) {
-			$row['pdf_link'] = 'https://portal.applusrtd.com/Knowledge/PolProc/Technical%20Procedures/'.$row['pdf'];
+			$row['pdf_link'] = 'https://portal.applusrtd.com/Search/Pages/Results.aspx?k='.$row['pdf'].'&s=All%20Sites';
 		}
 
 		return $this->fix_padding( $return_data );
