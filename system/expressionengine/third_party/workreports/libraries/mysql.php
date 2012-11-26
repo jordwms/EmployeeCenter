@@ -49,6 +49,22 @@ class mysql {
 	}
 
 	/*
+	* Returns a single element from a field designated by the parameters.
+	* @param $field - the single item to be returned. Expected to be string
+	* @param $table - the table in the database. Expected to be string. prefix 'exp_' must be present on table, but not in string
+	* @param $where_arr - an assoc. array of key-pair values. Expected to be in form of 'field name' => 'value'
+	* @param $field_name - the alias of the field to be returned. 'e.g. SELECT `id` AS `pickle`....' $field_name == 'pickle'
+	*/
+	function get_field($select, $table, $where_arr, $field_name) {
+		return $this->EE->db->select($select)
+							->where($where_arr)
+							->from($table)
+							->get()
+							->row()
+							->$field_name;
+	}
+
+	/*
 	* Returns an array for a single report given its id,
 	* OR returns an array of reports given a status code.
 	*/
