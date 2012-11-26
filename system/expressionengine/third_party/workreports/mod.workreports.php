@@ -357,13 +357,9 @@ class Workreports {
                         'object_description'        => $work_report[0]['object_description'],
                         'order_description'         => $work_report[0]['order_description'],
 
-                        'research_norm_id'          => $work_report[0]['research_norm_id'],
                         'research_procedure_id'     => $work_report[0]['research_procedure_id'],
-                        'research_spec_id'          => $work_report[0]['research_spec_id'],
 
-                        'review_norm_id'            => $work_report[0]['review_norm_id'],
                         'review_procedure_id'       => $work_report[0]['review_procedure_id'],
-                        'review_spec_id'            => $work_report[0]['review_spec_id'],
 
                         'status'                    => 1,
                         'export_reason'             => $work_report[0]['export_reason'],
@@ -418,12 +414,14 @@ class Workreports {
                     if( $research_procedure = $this->EE->axapta->research_procedure->get_remote(array( 'id' => $work_report[0]['research_procedure_id'] ) )){
                         $data = array_merge($data, array(
                             'research_procedure_description' => $research_procedure[0]['description']
+                            //,'research_procedure_pdf_link' => $research_procedure[0]['pdf_link']
                         ));
                     }
 
                     if( $review_procedure = $this->EE->axapta->review_procedure->get_remote(array( 'id' => $work_report[0]['review_procedure_id'] ) )){
                         $data = array_merge($data, array(
                             'review_procedure_description' => $review_procedure[0]['description']
+                            //,'review_procedure_pdf_link' => $review_procedure[0]['pdf_link']
                         ));
                     }
 

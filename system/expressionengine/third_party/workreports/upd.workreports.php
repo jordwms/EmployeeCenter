@@ -1,6 +1,6 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 class Workreports_upd {
-    var $version = '1.3.9';
+    var $version = '1.4.1';
     function __construct() {
         $this->EE =& get_instance();
     }
@@ -356,6 +356,14 @@ class Workreports_upd {
         if($current < '1.3.9') {
             $fields = array(
                 'customer_approval'     => array('type' => 'text')
+            );
+            $this->EE->dbforge->add_column('wr_reports', $fields);
+        }
+
+        if($current < '1.4.1'){
+            $fields = array(
+                'research_procedure_pdf'     => array('type' => 'text'),
+                'review_procedure_pdf'     => array('type' => 'text')
             );
             $this->EE->dbforge->add_column('wr_reports', $fields);
         }

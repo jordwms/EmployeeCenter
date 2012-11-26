@@ -4,6 +4,7 @@ class review_procedure extends axapta {
 	protected $description  = 'DESCRIPTION';
 	protected $customer_id  = 'CUSTACCOUNT';
 	protected $active       = 'ACTIVE';
+	protected $pdf          = 'DOCUREF.NAME';
 	protected $compnay_id   = 'DATAAREAID';
 
 	function __construct($conn){
@@ -18,6 +19,7 @@ class review_procedure extends axapta {
 		$query = $this->build_SELECT();
 
 		$query .= 'FROM RTDREVIEWPROCEDURE'.NL;
+		$query .= 'LEFT JOIN DOCUREF ON DOCUREF.REFRECID = RTDREVIEWPROCEDURE.RECID'.NL;
 
 		$query .= $this->build_WHERE( $options );
 
@@ -28,14 +30,18 @@ class review_procedure extends axapta {
 			echo '</pre>';
 		}
 
-		$review_procedure = $this->conn->prepare($query);
+		$stmt = $this->conn->prepare($query);
 
-		$this->bind_option_values( $review_procedure, $options );
+		$this->bind_option_values( $stmt, $options );
 
-		$review_procedure->setFetchMode(PDO::FETCH_NAMED);
-		$review_procedure->execute();
+		$stmt->setFetchMode(PDO::FETCH_NAMED);
+		$stmt->execute();
 
-		$return_data = $review_procedure->fetchAll();
+		$return_data = $stmt->fetchAll();
+
+		foreach ($return_data as &$row) {
+			$row['pdf_link'] = 'https://portal.applusrtd.com/Knowledge/PolProc/Verification%20Procedures/'.$row['pdf'];
+		}
 
 		return $this->fix_padding( $return_data );
 	}
