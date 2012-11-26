@@ -1,10 +1,11 @@
 <?php
 class research_procedure extends axapta {
-	protected $id           = 'RESEARCHPROCEDUREID';
-	protected $description  = 'DESCRIPTION';
-	protected $customer_id  = 'CUSTACCOUNT';
-	protected $active       = 'ACTIVE';
-	protected $compnay_id   = 'DATAAREAID';
+	protected $id           = 'RTDRESEARCHPROCEDURE.RESEARCHPROCEDUREID';
+	protected $description  = 'RTDRESEARCHPROCEDURE.DESCRIPTION';
+	protected $customer_id  = 'RTDRESEARCHPROCEDURE.CUSTACCOUNT';
+	protected $active       = 'RTDRESEARCHPROCEDURE.ACTIVE';
+	protected $pdf          = 'DOCUREF.NAME';
+	protected $compnay_id   = 'RTDRESEARCHPROCEDURE.DATAAREAID';
 
 	function __construct($conn){
 		$this->conn =& $conn;
@@ -18,7 +19,8 @@ class research_procedure extends axapta {
 		$query = $this->build_SELECT();
 
 		$query .= 'FROM RTDRESEARCHPROCEDURE'.NL;
-
+		$query .= 'LEFT JOIN DOCUREF ON DOCUREF.REFRECID = RTDRESEARCHPROCEDURE.RECID'.NL;
+		
 		$query .= $this->build_WHERE( $options );
 
 		if( isset($_GET['output']) && $_GET['output'] == 'debug' ){
@@ -28,14 +30,18 @@ class research_procedure extends axapta {
 			echo '</pre>';
 		}
 
-		$research_procedure = $this->conn->prepare($query);
+		$stmt = $this->conn->prepare($query);
 
-		$this->bind_option_values( $research_procedure, $options );
+		$this->bind_option_values( $stmt, $options );
 
-		$research_procedure->setFetchMode(PDO::FETCH_NAMED);
-		$research_procedure->execute();
+		$stmt->setFetchMode(PDO::FETCH_NAMED);
+		$stmt->execute();
 
-		$return_data = $research_procedure->fetchAll();
+		$return_data = $stmt->fetchAll();
+
+		foreach ($return_data as &$row) {
+			$row['pdf_link'] = 'https://portal.applusrtd.com/Search/Pages/Results.aspx?k='.$row['pdf'].'&s=All%20Sites';
+		}
 
 		return $this->fix_padding( $return_data );
 	}
