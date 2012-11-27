@@ -3,19 +3,10 @@
 		<header id="dashboard-header">
 			<h2>{screen_name}</h2>
 		</header>
-		<!--
-		<div id="pm_stats">
-		{if private_messages == "0" OR private_messages > "1"}
-			You have {private_messages} messages waiting.
-		{if:else}
-			You have {private_messages} message waiting.
-		{/if}
-		</div>
-		-->
-
 		<nav class="dashboard">
 			<div id="work_reports">
 				<h3>Work Reports</h3>
+				<img id="loading_spinner" style="float: right" class="hidden" src="/media/site-images/spinner-snake.gif">
 				<a href="{path='workreports'}">{exp:workreports:dashboard}</a>
 			</div>
 			<div id="asset_manager">
@@ -31,4 +22,24 @@
 	</div>
 {embed="assets/scripts"}
 
-<script></script>
+<script>
+	/*
+	 *	AJAX Sync
+	 */
+    $(document).ready(function() {
+    	$.ajax({
+    		url: '?ACT=43&output=html&method=sync',
+    		beforeSend: function(){
+    			//show spinner
+    			$('#work_reports > #loading_spinner').removeClass('hidden')
+    		},
+    		success: function(data){
+    			//hide spinner
+    			$('#work_reports > #loading_spinner').addClass('hidden')
+    			//update dashboard text
+    			$('#work_reports a').html(data)
+    		},
+    		datatype: 'text/html'
+    	})
+	})
+</script>
