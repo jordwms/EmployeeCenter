@@ -251,6 +251,7 @@ class Workreports {
                     break;
 
                 case 'resource_time': // Expects resource ID, report ID, button's value
+                case 'resource_time': // Expects resource ID, project ID, button's value
                     $table = 'wr_resource_time_log';
                     $success = FALSE;
                     $param_arr['project_id'] = $this->EE->input->post('project_id');
