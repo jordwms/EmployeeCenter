@@ -449,12 +449,12 @@ class Workreports_upd {
         $this->EE->load->dbforge();
 
         $this->EE->db->select('module_id');
-        $query = $this->EE->db->get_where('modules', array('module_name' => 'workreports'));
+        $query = $this->EE->db->get_where('modules', array('module_name' => 'Workreports'));
 
         $this->EE->db->where('module_id', $query->row('module_id'));
         $this->EE->db->delete('module_member_groups');
 
-        $this->EE->db->where('module_name', 'workreports');
+        $this->EE->db->where('module_name', 'Workreports');
         $this->EE->db->delete('modules');
 
         $this->EE->db->where('class', 'Workreports');
