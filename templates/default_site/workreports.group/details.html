@@ -522,6 +522,13 @@
                     project_id: $('input[name=project_id]').val(),
                     resource_id: $(fun_button).parent().find('input[name*="resource_id"]').val(),
                     value: $(fun_button).val()
+                },
+                dataType: "json",
+                success:  // if 'qty' returned a number update resource's qty field
+                    function(callback) {
+                        if(callback.qty){
+                            $(fun_button).parent().find('input[name*="qty"]').val(callback.qty); 
+                        }
                     }
             });
             $(fun_button).parent().find('.fun').toggle();
