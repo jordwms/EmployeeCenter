@@ -250,34 +250,46 @@ class Workreports {
                     $this->sync($employee['id']);
                     break;
 
-                case 'resource_time': // Expects resource ID, report ID, button's value
                 case 'resource_time': // Expects resource ID, project ID, button's value
                     $table = 'wr_resource_time_log';
+                    $time = FALSE; // Set for return_data
                     $success = FALSE;
-                    $param_arr['project_id'] = $this->EE->input->post('project_id');
-
-                    // Get wr_reports.id using 'project_id'
-                    $reports_id = $this->EE->mysql->get_field('id','wr_reports',$param_arr, 'id');
-
-                    $param_arr['resource_id'] = $this->EE->input->post('resource_id');
+                    $ax_resource_id = $this->EE->input->post('resource_id'); // AX value
+                    $project_id = $this->EE->input->post('project_id'); // wr_reports.id
+                    $report_id = $this->EE->mysql->get_field('id','wr_reports',array('project_id'=> $project_id ), 'id');
                     
-                    // If starting clock then 
+                    // get resource_id
+                    $params = array(
+                        'resource_id' => $ax_resource_id,
+                        'report_id'   => $report_id
+                        );
+
+                    $resource_id = $this->EE->mysql->get_field('id', 'wr_resources', $params, 'id');// wr_resources.id
+                    
+                    // If starting clock 
                     if($this->EE->input->post('value') == 'Begin Time') {
-                        $param_arr['start_datetime'] = time();
-                        $this->EE->db->insert($table, $param_arr);
-                        $success = $this->EE->db->affected_rows();
-                    } else { // Look up entry based on wr_resource.id and wr_report.id
-                        $data = array( 'end_datetime' => time() );
                         
-                        $this->EE->db->where($param_arr);
-                        $this->EE->db->update($table, $data);
+                        // Insert new log entry
+                        $params = array(
+                            'start_datetime'    => time(),
+                            'resource_id'       => $resource_id
+                            );
+
+                        $this->EE->db->insert($table, $params);
+                        $success = $this->EE->db->affected_rows();
+                    } else {
+                        // Look up entry based on wr_resource.id and wr_report.id
+                        $this->EE->db->where('resource_id', $resource_id)
+                                    ->where('end_datetime IS NULL')
+                                    ->update($table, array('end_datetime' => time() ) );                        
 
                         // Find and update cumulative hours of work to wr_resources.qty
-                        $time = $this->EE->mysql->get_field('SUM(end_datetime - start_datetime) AS time', $table, $param_arr, 'time');
-                        
-                        $this->EE->db->where( 'report_id', $reports_id )
-                                        ->where( 'resource_id', $param_arr['resource_id'] )
-                                        ->update( 'wr_resources', array('qty' => $time) );
+                        $params = array( 'resource_id' => $resource_id );
+                        $time = $this->EE->mysql->get_field('SUM(end_datetime - start_datetime) AS time', $table, $params, 'time');
+
+                        $this->EE->db->where( 'report_id', $report_id )
+                                    ->where( 'resource_id', $ax_resource_id )
+                                    ->update( 'wr_resources', array('qty' => $time) );
                         
                         $success = $this->EE->db->affected_rows();
                     }
@@ -285,7 +297,10 @@ class Workreports {
                    
                     // If update/insert was successful (non-zero rows affected)
                     if($success) {
-                        $return_data = array('success' => TRUE);
+                        $return_data = array(
+                            'success'   => TRUE,
+                            'qty'       => $time
+                            );
                     } else {
                          $return_data = array('success' => FALSE);
                     }
