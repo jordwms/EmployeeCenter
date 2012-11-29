@@ -56,12 +56,12 @@ class mysql {
 	* @param $field_name - the alias of the field to be returned. 'e.g. SELECT `id` AS `pickle`....' $field_name == 'pickle'
 	*/
 	function get_field($select, $table, $where_arr, $field_name) {
-		return $this->EE->db->select($select)
+		$query = $this->EE->db->select($select)
 							->where($where_arr)
 							->from($table)
 							->get()
-							->row()
-							->$field_name;
+							->row_array();
+		return $query[$field_name];
 	}
 
 	/*
