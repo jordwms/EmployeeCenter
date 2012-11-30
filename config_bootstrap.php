@@ -63,6 +63,7 @@ if(!defined('NSM_ENV')) {
     define('NSM_SERVER_NAME', $_SERVER['SERVER_NAME'].str_replace(array('/index.php', '/admin.php'), '', $_SERVER['SCRIPT_NAME']));
     define('NSM_BASEPATH', dirname(__FILE__));
     define('NSM_SYSTEM_FOLDER', 'system');
+    define('NSM_SITE_URL', "//".NSM_SERVER_NAME);
 
     // Set the environment
     if ( strstr(NSM_SERVER_NAME, 'dc2-s-ec-01') ) define('NSM_ENV', 'local');
@@ -83,11 +84,7 @@ $env_db_config = array();
 $env_global_vars = array();
 
 // Set the environmental config and global vars
-if (NSM_ENV == 'local') { 
-    if( !defined('NSM_SITE_URL') ){
-        define('NSM_SITE_URL', "http://".NSM_SERVER_NAME);
-    }
-
+if (NSM_ENV == 'local') {
     $env_db_config = array(
         'hostname' => 'dc2-s-mysql',
         'username' => 'ec_admin',
@@ -99,10 +96,6 @@ if (NSM_ENV == 'local') {
     );
 }
 elseif(NSM_ENV == 'production') {
-    if( !defined('NSM_SITE_URL') ){
-        define('NSM_SITE_URL', "https://".NSM_SERVER_NAME);
-    }
-
     $env_db_config = array(
         'hostname' => 'dc2-s-mysql',
         'username' => 'employee_center',
@@ -114,10 +107,6 @@ elseif(NSM_ENV == 'production') {
     );
 }
 elseif(NSM_ENV == 'staging') {
-    if( !defined('NSM_SITE_URL') ){
-        define('NSM_SITE_URL', "https://".NSM_SERVER_NAME);
-    }
-
     $env_db_config = array(
         'hostname' => 'localhost',
         'username' => 'employee_center',
@@ -135,10 +124,6 @@ elseif(NSM_ENV == 'staging') {
     );
 }
 else { // 'development'
-    if( !defined('NSM_SITE_URL') ) {
-        define('NSM_SITE_URL', "https://".NSM_SERVER_NAME);
-    }
-
     $env_db_config = array(
         'hostname' => 'localhost',
         'username' => 'employee_center',
