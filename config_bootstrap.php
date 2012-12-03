@@ -64,16 +64,10 @@ if(!defined('NSM_ENV')) {
     define('NSM_BASEPATH', dirname(__FILE__));
     define('NSM_SYSTEM_FOLDER', 'system');
 
-    // it's a nice thought... but this doesn't work behind a Reverse Proxy... We'll hardcode it to https://
-    //if (!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] != "on") { 
-    //    define('NSM_SITE_URL', "http://".NSM_SERVER_NAME);
-    //} else {
-        define('NSM_SITE_URL', "https://".NSM_SERVER_NAME);
-    //}
     // Set the environment
-    if ( strstr( NSM_SERVER_NAME, 'local.' ) ) define('NSM_ENV', 'local');
-    elseif( strstr( NSM_SERVER_NAME, 'ec.applusrtd' ) ) define('NSM_ENV', 'production');
-    elseif( strstr( NSM_SERVER_NAME, 'ec.vxray' ) ) define('NSM_ENV', 'staging');
+    if ( strstr(NSM_SERVER_NAME, 'dc2-s-ec-01') ) define('NSM_ENV', 'local');
+    elseif( strstr(NSM_SERVER_NAME, 'ec.applusrtd') ) define('NSM_ENV', 'production');
+    elseif( strstr(NSM_SERVER_NAME, 'ec.vxray') ) define('NSM_ENV', 'staging');
     else define('NSM_ENV', 'development');
 }
 
@@ -90,34 +84,45 @@ $env_global_vars = array();
 
 // Set the environmental config and global vars
 if (NSM_ENV == 'local') { 
+    if( !defined('NSM_SITE_URL') ){
+        define('NSM_SITE_URL', "http://".NSM_SERVER_NAME);
+    }
+
     $env_db_config = array(
-        'hostname' => '',
-        'username' => '',
-        'password' => '',
-        'database' => '',
+        'hostname' => 'dc2-s-mysql',
+        'username' => 'ec_admin',
+        'password' => 'pinkelephant',
+        'database' => 'employee_center'
     );
     $env_global_vars = array(
         'global:cm_subscriber_list_slug' => ''
     );
 }
 elseif(NSM_ENV == 'production') {
+    if( !defined('NSM_SITE_URL') ){
+        define('NSM_SITE_URL', "https://".NSM_SERVER_NAME);
+    }
+
     $env_db_config = array(
-        'hostname' => 'mysql-server',
+        'hostname' => 'dc2-s-mysql',
         'username' => 'employee_center',
-        'password' => 'gi0kQ#vdmw7b',
-        'database' => 'training_center',
+        'password' => 'pinkelephant',
+        'database' => 'employee_center'
     );
     $env_global_vars = array(
-        'global:cm_subscriber_list_slug' => '',
-        'global:google_analytics_key' => 'XX-XXXX'
+        'global:cm_subscriber_list_slug' => ''
     );
 }
 elseif(NSM_ENV == 'staging') {
+    if( !defined('NSM_SITE_URL') ){
+        define('NSM_SITE_URL', "https://".NSM_SERVER_NAME);
+    }
+
     $env_db_config = array(
         'hostname' => 'localhost',
         'username' => 'employee_center',
         'password' => 'gi0kQ#vdmw7b',
-        'database' => 'employee_center',
+        'database' => 'employee_center'
     );
 
     $env_global_vars = array(
@@ -126,15 +131,19 @@ elseif(NSM_ENV == 'staging') {
 
     $env_config = array(
         'webmaster_email' => 'webmaster@' . NSM_SERVER_NAME,
-        'webmaster_name' => 'Webmaster',
+        'webmaster_name' => 'Webmaster'
     );
 }
 else { // 'development'
+    if( !defined('NSM_SITE_URL') ) {
+        define('NSM_SITE_URL', "https://".NSM_SERVER_NAME);
+    }
+
     $env_db_config = array(
         'hostname' => 'localhost',
         'username' => 'employee_center',
         'password' => 'gi0kQ#vdmw7b',
-        'database' => 'employee_center',
+        'database' => 'employee_center'
     );
     $env_global_vars = array();
 }
