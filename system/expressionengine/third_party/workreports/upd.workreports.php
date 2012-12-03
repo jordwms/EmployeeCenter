@@ -110,7 +110,6 @@ class Workreports_upd {
             'id'                                => array('type' => 'int',       'constraint' => '10', 'unsigned' => TRUE, 'auto_increment' => TRUE),
             'report_id'                         => array('type' => 'int',       'constraint' => '10', 'unsigned' => TRUE),
             'qty'                               => array('type' => 'int',       'constraint' => '10', 'unsigned' => TRUE),
-            'date'                              => array('type' => 'int',       'constraint' => '10', 'unsigned' => TRUE),
             'item_id'                           => array('type' => 'varchar',   'constraint' => '50'),
             'unit'                              => array('type' => 'varchar',   'constraint' => '50'),
             'name'                              => array('type' => 'varchar',   'constraint' => '50'),
@@ -146,8 +145,7 @@ class Workreports_upd {
             'report_id'                         => array('type' => 'int',       'constraint' => '10', 'unsigned' => TRUE),
             'qty'                               => array('type' => 'int',       'constraint' => '10', 'unsigned' => TRUE),
             'resource_id'                       => array('type' => 'varchar',   'constraint' => '50'),
-            'name'                              => array('type' => 'varchar',   'constraint' => '50'),
-            'date'                              => array('type' => 'int',       'constraint' => '10')
+            'name'                              => array('type' => 'varchar',   'constraint' => '50')
             )
         );
         $this->EE->dbforge->add_key('id', TRUE);
