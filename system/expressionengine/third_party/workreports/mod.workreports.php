@@ -10,533 +10,19 @@ class Workreports {
     }
 
     /*
-     *  Creates a PDF document from the workreports print template.
-     *  Returns the full path to the PDF File
-     *  Hardcoded to a tmp/ folder in the base directory of the site
+     *  Template tags to return a simple dashboard message with current # of available work reports
+     *  Used in the dashboard/index.html template
      */
-    function wrPDF($project_id=NULL) {
-        $this->EE->load->library('Template', NULL, 'TMPL');
-        //$this->EE->load->library('WKPDF.php');
-        include_once(__DIR__.'/libraries/WKPDF.php');
-        
-        $html = $this->wrDetails($project_id); // Get HTML
-
-        // Create PDF
-        $file_name = str_replace('/', '-', $project_id );
-
-        $pdf = new WKPDF();
-        $pdf->set_title('WorkReport');
-        $pdf->set_html($html);
-        $pdf->render();
-        $pdf->output(WKPDF::$PDF_SAVEFILE, $file_name.'.pdf');
-
-        $file = FCPATH.'tmp/'.$file_name.'.pdf';
-
-        return $file;
-    }
-
-    /*
-     *  Sends an email with attachment(s)
-     *  Returns TRUE if sending was sucessful, FALSE if not
-     *
-     *  $from = senders email address
-     *  $to   = recipients email address
-     *  $file = path to attachment @TODO accept array for multiple attachments
-     *  $project_id = project id @TODO replace with "body" message
-     *  @TODO add $subject input
-     */
-    function send_mail($from=NULL, $to=NULL, $file=NULL, $project_id=NULL ) {
-        // email fields: to, from, subject, and so on
-        $subject = 'Applus RTD Work Report '.$project_id;
-        $body = 'Attached is a work report from ApplusRTD. Please keep this for your records.';
-
-        // multipart boundary
-        $mime_boundary = 'Multipart_Boundary_x{'.md5(time()).'}x';
-
-        // headers with multipart boundary definition
-        $headers = "From: $from".NL; // root@localhost
-        $headers .= 'MIME-Version: 1.0'.NL;
-        $headers .= 'Content-Type: multipart/mixed; boundary="'.$mime_boundary.'"';
-
-        // Main Body Boundary
-        $message = "--$mime_boundary".NL;
-        $message .= 'Content-Type: text/plain; charset="utf-8"'.NL;
-        $message .= 'Content-Transfer-Encoding: 8bit'.NL.NL;
-        // Actual Message Body
-        $message .= $body;
-        $message .= NL.NL;
-
-        /*** Repeat this section for multiple attachments ***/
-        // open and prepare attachments
-        $fp =         @fopen($file,"rb");
-        $attachment = @fread($fp,filesize($file));
-                      @fclose($fp);
-        // encode attachment
-        $attachment = chunk_split(base64_encode($attachment));
-        
-        // Attachment Boundary
-        $message .= "--$mime_boundary".NL;
-        $message .= 'Content-Type: application/octet-stream; name='.basename($file).NL;
-        $message .= 'Content-Description: '.basename($file).NL;
-        $message .= 'Content-Disposition: attachment; filename='.basename($file).'; size='.filesize($file).';'.NL;
-        $message .= 'Content-Transfer-Encoding: base64'.NL.NL;
-        // encoded attachment
-        $message .= $attachment;
-        $message .= NL.NL;
-        /*** End attachment section  ***/
-
-        // End Boundary
-        $message .= "--$mime_boundary--";
-
-        $returnpath = "-f" . $from;
-
-        return mail($to, $subject, $message, $headers, $returnpath);
-    }
-
-    /*
-     *  This is a simple router designed as a REST like API
-     *  Each method should return an named array, which is then passed to ouput,
-     *  which could be json encoded, print_r'd for debugging, or (todo) xml encoded
-     *
-     *  You must be logged in to use this
-     */
-    function rest() {
-        if( $this->EE->session->userdata('email') && $this->EE->session->userdata('is_banned') == 0 ) {
-            $this->EE->config->set_item('compress_output', FALSE);
-
-            $employee = $this->EE->axapta->employee->get_remote(array( 'email' => $this->EE->session->userdata('email') ));
-            //$employee = $this->EE->axapta->employee->get_remote(array( 'email' => 'jordan.williams@applusrtd.com' ));
-            $employee = $employee[0];
-
-            $method  = $this->EE->input->get('method');
-            $output  = $this->EE->input->get('output');
-
-            if( !is_array($options = $this->EE->input->post('options'))) {
-                $options = array();
-            }
-
-
-            switch ($method) {
-
-                case 'employee':
-                    $options = array_merge($options, array(
-                        'email' => $this->EE->session->userdata('email')
-                        //'email' => 'bert.weber@applusrtd.com'
-                    ));
-                    $return_data = $this->EE->axapta->employee->get_remote( $options );
-                    break;
-
-                case 'company':
-                    $options = array_merge($options, array(
-                        'id' => $employee['company_id']
-                    ));
-                    $return_data = $this->EE->axapta->company->get_remote( $options );
-                    break;
-
-                case 'cost_center':
-                    $options = array_merge($options, array(
-                        // 'id' => $employee['cost_center_id'],
-                        //'company_id' => '002',
-                        //'id' => '1312'
-                    ));
-                    $return_data = $this->EE->axapta->cost_center->get_remote( $options );
-                    break;
-
-                case 'customer':
-                    $options = array_merge($options, array(
-                        'company_id' => $employee['company_id'],
-                        'department_id' => $employee['department_id'],
-                        'cost_center_id' => $employee['cost_center_id'],
-                        'blocked' => 0
-                    ));
-                    $return_data = $this->EE->axapta->customer->get_remote( $options );
-                    break;
-
-                case 'work_location':
-                    $options = array_merge($options, array(
-                        //'company_id' => $employee['company_id']
-                    ));
-                    $return_data = $this->EE->axapta->work_location->get_remote( $options );
-                    break;
-
-                case 'contact_person':
-                    $options = array_merge($options, array(
-                        //'company_id' => $employee['company_id']
-                        //'id' => '107..SYB2001383'
-                    ));
-                    $return_data = $this->EE->axapta->contact_person->get_remote( $options );
-                    break;
-
-                case 'work_report':
-                    $options = array_merge($options, array(
-                        //'project_id' => '07.005541/001/121013'
-                        'export_reason' => 'TEMPLATE'
-                        ,'execution_date' => '2012-01-01'
-                    ));
-                    $return_data = $this->EE->axapta->work_report->get_remote( $options );
-                    break;
-
-                case 'template':
-                    $options = array_merge($options, array(
-                        //'company_id' => $employee['company_id'],
-                        'export_reason' => 'TEMPLATE',
-                        'execution_date' => '2012-01-01'
-                    ));
-                    $return_data = $this->EE->axapta->work_report->get_remote( $options );
-                    break;
-
-                case 'project_resources':
-                    $options = array_merge($options, array(
-                        //'project_id' => '07.005532/001/120820'
-                    ));
-                    $return_data = $this->EE->axapta->resources->get_remote( $options );
-                    break;
-
-                case 'resources':
-                    $options = array_merge($options, array(
-                        //'company_id' => $employee['company_id'],
-                        // 'department_id' => $employee['department_id'],
-                        'status' => 1
-                    ));
-                    $return_data = $this->EE->axapta->resources->get_remote( $options );
-                    break;
-
-                case 'materials':
-                    $options = array(
-                        //'project_id' => '07.003464/142/120802'
-                    );
-                    $return_data = $this->EE->axapta->materials->get_remote( $options );
-                    break;
-
-                case 'sales_items':
-                    $options = array_merge($options, array(
-                        //'project_id' => '07.005532/001/120820'
-                    ));
-                    $return_data = $this->EE->axapta->sales_items->get_remote( $options );
-                    break;
-
-                case 'contract_items':
-                    $options = array_merge($options, array(
-                        // 'contract_id' => '900.001975',
-                        // 'film_indicator' => 0
-                    ));
-                    $return_data = $this->EE->axapta->contract_items->get_remote( $options );
-                    break;
-
-                case 'dispatch_list':
-                    $options = array_merge($options, array(
-                        'employee_id' => $employee['id'],
-                        'invoiced_status' => 0
-                    ));
-                    $return_data = $this->EE->axapta->dispatch_list->get_remote( $options );
-                    break;
-
-                case 'research_procedure':
-                    $options = array_merge($options, array(
-                        //'id' => 'RT-95105r14'
-                    ));
-                    $return_data = $this->EE->axapta->research_procedure->get_remote( $options );
-                    break;
-
-                case 'review_procedure':
-                    $options = array_merge($options, array(
-                        //'id' => 'RT-95105r14'
-                    ));
-                    $return_data = $this->EE->axapta->review_procedure->get_remote( $options );
-                    break;
-
-                case 'sync':
-                    $return_data = array('message' => 'sync started');
-                    $this->sync($employee['id']);
-                    break;
-
-                case 'resource_time': // Expects resource ID, report ID, button's value
-                    $table = 'wr_resource_time_log';
-                    $success = FALSE;
-                    $param_arr['project_id'] = $this->EE->input->post('project_id');
-
-                    // Get wr_reports.id using 'project_id'
-                    $reports_id = $this->EE->mysql->get_field('id','wr_reports',$param_arr, 'id');
-
-                    $param_arr['resource_id'] = $this->EE->input->post('resource_id');
-                    
-                    // If starting clock then 
-                    if($this->EE->input->post('value') == 'Begin Time') {
-                        $param_arr['start_datetime'] = time();
-                        $this->EE->db->insert($table, $param_arr);
-                        $success = $this->EE->db->affected_rows();
-                    } else { // Look up entry based on wr_resource.id and wr_report.id
-                        $data = array( 'end_datetime' => time() );
-                        
-                        $this->EE->db->where($param_arr);
-                        $this->EE->db->update($table, $data);
-
-                        // Find and update cumulative hours of work to wr_resources.qty
-                        $time = $this->EE->mysql->get_field('SUM(end_datetime - start_datetime) AS time', $table, $param_arr, 'time');
-                        
-                        $this->EE->db->where( 'report_id', $reports_id )
-                                        ->where( 'resource_id', $param_arr['resource_id'] )
-                                        ->update( 'wr_resources', array('qty' => $time) );
-                        
-                        $success = $this->EE->db->affected_rows();
-                    }
-
-                   
-                    // If update/insert was successful (non-zero rows affected)
-                    if($success) {
-                        $return_data = array('success' => TRUE);
-                    } else {
-                         $return_data = array('success' => FALSE);
-                    }
-                    break;
-
-                default:
-                    $return_data = array('error' => 'no method found');
-                    break;
-            }
-
-            switch ($output) {
-                default:
-                case 'json':
-                    header('Cache-Control: no-cache, must-revalidate');
-                    header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
-                    header('Content-type: application/json; charset=utf-8');
-                    echo json_encode($return_data);
-                break;
-
-                /*
-                case 'xml':
-                    //should return an XML document;
-                break;
-                */
-
-                case 'debug':
-                    header('Content-Type: text/html; charset=utf-8');
-                    echo '<pre>';
-                    print_r($return_data);
-                    echo '</pre>';
-                break;
-            }
-        } else {
-            echo lang('unauthorized');
-        }
-    }
-
-    function sync($employee_id = NULL) {
-        if( is_null($employee_id) ){
-            $employee = $this->EE->axapta->employee->get_remote(array( 'email' => $this->EE->session->userdata('email') ));
-            $employee = $employee[0];
-
-            $employee_id = $employee['id'];
-        }
-
-        if( !is_null($employee_id) ){
-            // Get List of dispatched work reports
-            $dispatch_list = $this->EE->axapta->dispatch_list->get_remote(array(
-                'employee_id' => $employee_id,
-                'invoiced_status' => 0
-            ));
-
-            $templates = $this->EE->axapta->work_report->get_remote( array(
-                'export_reason' => 'TEMPLATE'
-                ,'execution_date' => '2012-01-01'
-            ) );
-
-            $all_reports = array_merge($dispatch_list, $templates);
-
-            //loop over dispatch list and sync the work report to mysql
-            foreach ($all_reports as $dispatch_item) {
-                $this->EE->db->select('project_id');
-                $this->EE->db->from('wr_reports');
-                $this->EE->db->where('project_id', $dispatch_item['project_id']);
-
-                //$existing_wr = $this->EE->db->result_array();
-
-                //if($this->EE->db->count_all_results() == 0 || $existing_wr['modified_datetime'] < $dispatch_item['modified_datetime']) {
-                if($this->EE->db->count_all_results() == 0) {
-
-                    //get workreport from axapta and add to mysql
-                    $work_report = $this->EE->axapta->work_report->get_remote( array( 'project_id' => $dispatch_item['project_id'] ) );
-
-                    // Insert each entry to the MySQL database
-                    $data = array(
-                        'project_id'                => $work_report[0]['project_id'],
-                        'sales_id'                  => $work_report[0]['sales_id'],
-                        //'submitter_id'            => $employee_id,
-
-                        'customer_id'               => $work_report[0]['customer_id'],
-                        'customer_reference'        => $work_report[0]['customer_reference'],
-
-                        'customer_contact_id'       => $work_report[0]['customer_contact_person_id'],
-
-                        'company_id'                => $work_report[0]['company_id'],
-                        'department_id'             => $work_report[0]['department_id'],
-                        'cost_center_id'            => $work_report[0]['cost_center_id'],
-                        'technique_id'              => $work_report[0]['technique_id'],
-
-                        'contract_id'               => $work_report[0]['contract_id'],
-
-                        // 'deadline_datetime'      => $work_report[0]['deadline_datetime'],
-                        'rtd_reference'             => $work_report[0]['rtd_reference'],
-                        'sales_responsible'         => $work_report[0]['sales_responsible'],
-                        'crew_leader_id'            => $work_report[0]['crew_leader_id'],
-
-                        'team_contact_id'           => $work_report[0]['team_contact_person_id'],
-
-                        'work_location_id'          => $work_report[0]['work_location_id'],
-                        'work_location_name'        => $work_report[0]['work_location_name'],
-                        'work_location_address'     => $work_report[0]['work_location_address'],
-
-                        'object_description'        => $work_report[0]['object_description'],
-                        'order_description'         => $work_report[0]['order_description'],
-
-                        'research_procedure_id'     => $work_report[0]['research_procedure_id'],
-
-                        'review_procedure_id'       => $work_report[0]['review_procedure_id'],
-
-                        'status'                    => 1,
-                        'export_reason'             => $work_report[0]['export_reason'],
-
-                        'created_by'                => $work_report[0]['created_by'],
-                        'modified_by'               => $work_report[0]['modified_by'],
-                        'modified_datetime'         => $work_report[0]['modified_datetime'],
-                        'created_datetime'          => $work_report[0]['created_datetime'],
-                        'execution_datetime'        => $work_report[0]['execution_datetime']
-                        );
-
-                    if( $cost_center = $this->EE->axapta->cost_center->get_remote( array( 'id' => $work_report[0]['cost_center_id'], 'company_id' => $work_report[0]['company_id'] ) )){
-                        $data = array_merge($data, array(
-                            'cost_center_name'          => $cost_center[0]['name'],
-                            'cost_center_address'       => $cost_center[0]['address'],
-                            'cost_center_email'         => $cost_center[0]['email'],
-                            'cost_center_phone'         => $cost_center[0]['phone'],
-                            'cost_center_fax'           => $cost_center[0]['fax']
-                        ));
-                    }
-
-                    if( $customer = $this->EE->axapta->customer->get_remote(array( 'id' => $work_report[0]['customer_id'] ) )){
-                        $data = array_merge($data, array(
-                            'customer_name'             => $customer[0]['name'],
-                            'customer_address'          => $customer[0]['address'],
-                            'customer_phone'            => $customer[0]['phone'],
-                            //'customer_email'          => $customer[0]['email'],
-                            'customer_fax'              => $customer[0]['fax']
-                        ));
-                    }
-
-                    if( $customer_contact = $this->EE->axapta->contact_person->get_remote( array( 'id' => $work_report[0]['customer_contact_person_id'] ) )){
-                        $data = array_merge($data, array(
-                            'customer_contact_name'     => $customer_contact[0]['name'],
-                            'customer_contact_email'    => $customer_contact[0]['email'],
-                            'customer_contact_phone'    => $customer_contact[0]['phone'],
-                            'customer_contact_mobile'   => $customer_contact[0]['cell_phone']
-                        ));
-                    }
-
-                    if( $team_contact = $this->EE->axapta->employee->get_remote( array( 'id' => $work_report[0]['sales_responsible'] ) )){
-                        $data = array_merge($data, array(
-                            'team_contact_name'         => $team_contact[0]['name'],
-                            //'team_contact_address'        => $team_contact[0]['address'],
-                            'team_contact_email'        => $team_contact[0]['email'],
-                            'team_contact_phone'        => $team_contact[0]['phone'],
-                            'team_contact_fax'          => $team_contact[0]['fax'],
-                            //'team_contact_mobile'         => $team_contact[0]['cell_phone']
-                        ));
-                    }
-
-                    if( $research_procedure = $this->EE->axapta->research_procedure->get_remote(array( 'id' => $work_report[0]['research_procedure_id'] ) )){
-                        $data = array_merge($data, array(
-                            'research_procedure_description' => $research_procedure[0]['description'],
-                            'research_procedure_pdf' => $research_procedure[0]['pdf_link']
-                        ));
-                    }
-
-                    if( $review_procedure = $this->EE->axapta->review_procedure->get_remote(array( 'id' => $work_report[0]['review_procedure_id'] ) )){
-                        $data = array_merge($data, array(
-                            'review_procedure_description' => $review_procedure[0]['description'],
-                            'review_procedure_pdf' => $review_procedure[0]['pdf_link']
-                        ));
-                    }
-
-                    $this->EE->db->insert('wr_reports', $data);
-                    $report_id = $this->EE->db->insert_id();
-
-                    if( !$this->EE->db->affected_rows() == count($work_report) ){
-                        // WE HAD A PROBLEM, DELETED EVERYTHING AND SHOW ERROR
-                    }
-
-                    //get resources from axapta and add to mysql
-                    $resources = $this->EE->axapta->project_resources->get_remote( array( 'project_id' => $dispatch_item['project_id'] ) );
-
-                    foreach($resources as $resource) {
-                        $data = array(
-                            'resource_id'   => $resource['id'],
-                            'name'          => $resource['name'],
-                            'report_id'     => $report_id
-                            );
-                        $this->EE->db->insert('wr_resources', $data);
-                    }
-
-                    if( !$this->EE->db->affected_rows() == count($resources) ){
-                        // WE HAD A PROBLEM, DELETED EVERYTHING AND SHOW ERROR
-                    }
-
-                    //get sales items from axapta and add to mysql
-                    $sales_items = $this->EE->axapta->sales_items->get_remote( array( 'project_id' => $dispatch_item['project_id'] ) );
-
-                    foreach($sales_items as $item) {
-                        $data = array(
-                            'item_id'       => $item['id'],
-                            'name'          => $item['name'],
-                            'unit'          => $item['unit'],
-                            'dimension_id'  => $item['dimension_id'],
-                            'report_id'     => $report_id
-                            );
-
-                        $this->EE->db->insert('wr_items', $data);
-                    }
-
-                    if( !$this->EE->db->affected_rows() == count($sales_items) ){
-                        // WE HAD A PROBLEM, DELETED EVERYTHING AND SHOW ERROR
-                    }
-
-                    //get materials from axapta and add to mysql
-                    $materials = $this->EE->axapta->materials->get_remote( array( 'project_id' => $dispatch_item['project_id'] ) );
-
-                    foreach($materials as $mat) {
-                        $data = array(
-                            'item_id'       => $mat['id'],
-                            'name'          => $mat['name'],
-                            'unit'          => $mat['unit'],
-                            // 'qty'            => (int)$mat['amount'],
-                            'dimension_id'  => $mat['dimension_id'],
-                            'report_id'     => $report_id
-                            );
-
-                        $this->EE->db->insert('wr_materials', $data);
-                    }
-
-                    if( !$this->EE->db->affected_rows() == count($materials) ){
-                        // WE HAD A PROBLEM, DELETED EVERYTHING AND SHOW ERROR
-                    }
-                }
-            }
-
-        } else {
-            echo 'invalid employee';
-        }
-    }
-
     function dashboard() {
         $message = '';
         if( $this->EE->axapta->axapta_connection() ) {
-            //if( $employee = $this->EE->axapta->employee->get_remote(array( 'email' => $this->EE->session->userdata('email') )) ) {
-            if( $employee = $this->EE->axapta->employee->get_remote(array( 'email' => 'bert.weber@applusrtd.com' )) ) {
+            if( $employee = $this->EE->axapta->employee->get_remote(array( 'email' => $this->EE->session->userdata('email') )) ) {
+            //if( $employee = $this->EE->axapta->employee->get_remote(array( 'email' => 'bert.weber@applusrtd.com' )) ) {
 
                 $employee = $employee[0];
 
                 // sync the 2 databases.
-                $this->sync($employee['id']);
+                //$this->sync($employee['id']);
 
                 if( count($employee['groups']) > 0 ) {
                     $message = '';
@@ -567,6 +53,9 @@ class Workreports {
         return $message;
     }
 
+    /*
+     *  Returns a count of availiable workreports, given an employee id and an axapta group
+     */
     function count($employee, $group_id) {
         $this->EE->db->from('wr_reports');
 
@@ -593,6 +82,10 @@ class Workreports {
         return $this->EE->db->count_all_results();
     }
 
+    /*
+     *  Template tags to return all workreports marked as TEMPLATE
+     *  Used primarily in workreports/index.html for the "new work report" button
+     */
     function templates() {
         $tagdata = $this->EE->TMPL->tagdata;
 
@@ -612,6 +105,11 @@ class Workreports {
         return $this->return_data;
     }
 
+
+    /*
+     *  Template Tags for the overview list
+     *  Used primarily in the workreports index.html template
+     */
     function wrList() {
         if ( $employee = $this->EE->axapta->employee->get_remote( array('email' => $this->EE->session->userdata('email')) ) ){
             $tagdata = $this->EE->TMPL->tagdata;
@@ -842,7 +340,7 @@ class Workreports {
     }
 
     /*
-     *  Posts a work report to the MySQL database for supervisor/admin approval
+     *  Handles all work report form submission possibilities
      */
     function submit() {
         /*
@@ -1195,7 +693,7 @@ class Workreports {
             // Send Email (triggered by WA DISP approval)
             if($send_mail) { 
                 // create a PDF from the print template
-                $pdf = $this->wrPDF( $project_id );
+                $pdf = $this->wr_to_pdf( $project_id );
 
                 // Send email with PDF attachment
                 # TODO: $to = customer_contact_email
@@ -1223,6 +721,537 @@ class Workreports {
             ));
 
             return TRUE;
+        }
+    }
+
+    /*
+     *  Pulls all new work reports from axapta and stores them in MySQL
+     *  Done primarily for 
+     */
+    function sync($employee_id = NULL) {
+        if( is_null($employee_id) ){
+            $employee = $this->EE->axapta->employee->get_remote(array( 'email' => $this->EE->session->userdata('email') ));
+            $employee = $employee[0];
+
+            $employee_id = $employee['id'];
+        }
+
+        if( !is_null($employee_id) ) {
+            // Get List of dispatched work reports
+            $dispatch_list = $this->EE->axapta->dispatch_list->get_remote(array(
+                'employee_id' => $employee_id,
+                'invoiced_status' => 0
+            ));
+
+            $templates = $this->EE->axapta->work_report->get_remote( array(
+                'export_reason' => 'TEMPLATE'
+                ,'execution_date' => '2012-01-01'
+            ) );
+
+            $all_reports = array_merge($dispatch_list, $templates);
+
+            //loop over dispatch list and sync the work report to mysql
+            foreach ($all_reports as $dispatch_item) {
+                $this->EE->db->select('project_id');
+                $this->EE->db->from('wr_reports');
+                $this->EE->db->where('project_id', $dispatch_item['project_id']);
+
+                //$existing_wr = $this->EE->db->result_array();
+
+                //if($this->EE->db->count_all_results() == 0 || $existing_wr['modified_datetime'] < $dispatch_item['modified_datetime']) {
+                if($this->EE->db->count_all_results() == 0) {
+
+                    //get workreport from axapta and add to mysql
+                    $work_report = $this->EE->axapta->work_report->get_remote( array( 'project_id' => $dispatch_item['project_id'] ) );
+
+                    // Insert each entry to the MySQL database
+                    $data = array(
+                        'project_id'                => $work_report[0]['project_id'],
+                        'sales_id'                  => $work_report[0]['sales_id'],
+                        //'submitter_id'            => $employee_id,
+
+                        'customer_id'               => $work_report[0]['customer_id'],
+                        'customer_reference'        => $work_report[0]['customer_reference'],
+
+                        'customer_contact_id'       => $work_report[0]['customer_contact_person_id'],
+
+                        'company_id'                => $work_report[0]['company_id'],
+                        'department_id'             => $work_report[0]['department_id'],
+                        'cost_center_id'            => $work_report[0]['cost_center_id'],
+                        'technique_id'              => $work_report[0]['technique_id'],
+
+                        'contract_id'               => $work_report[0]['contract_id'],
+
+                        // 'deadline_datetime'      => $work_report[0]['deadline_datetime'],
+                        'rtd_reference'             => $work_report[0]['rtd_reference'],
+                        'sales_responsible'         => $work_report[0]['sales_responsible'],
+                        'crew_leader_id'            => $work_report[0]['crew_leader_id'],
+
+                        'team_contact_id'           => $work_report[0]['team_contact_person_id'],
+
+                        'work_location_id'          => $work_report[0]['work_location_id'],
+                        'work_location_name'        => $work_report[0]['work_location_name'],
+                        'work_location_address'     => $work_report[0]['work_location_address'],
+
+                        'object_description'        => $work_report[0]['object_description'],
+                        'order_description'         => $work_report[0]['order_description'],
+
+                        'research_procedure_id'     => $work_report[0]['research_procedure_id'],
+                        'review_procedure_id'       => $work_report[0]['review_procedure_id'],
+
+                        'status'                    => 1,
+                        'export_reason'             => $work_report[0]['export_reason'],
+
+                        'created_by'                => $work_report[0]['created_by'],
+                        'modified_by'               => $work_report[0]['modified_by'],
+                        'modified_datetime'         => $work_report[0]['modified_datetime'],
+                        'created_datetime'          => $work_report[0]['created_datetime'],
+                        'execution_datetime'        => $work_report[0]['execution_datetime']
+                        );
+
+                    if( $cost_center = $this->EE->axapta->cost_center->get_remote( array( 'id' => $work_report[0]['cost_center_id'], 'company_id' => $work_report[0]['company_id'] ) )){
+                        $data = array_merge($data, array(
+                            'cost_center_name'          => $cost_center[0]['name'],
+                            'cost_center_address'       => $cost_center[0]['address'],
+                            'cost_center_email'         => $cost_center[0]['email'],
+                            'cost_center_phone'         => $cost_center[0]['phone'],
+                            'cost_center_fax'           => $cost_center[0]['fax']
+                        ));
+                    }
+
+                    if( $customer = $this->EE->axapta->customer->get_remote(array( 'id' => $work_report[0]['customer_id'] ) )){
+                        $data = array_merge($data, array(
+                            'customer_name'             => $customer[0]['name'],
+                            'customer_address'          => $customer[0]['address'],
+                            'customer_phone'            => $customer[0]['phone'],
+                            //'customer_email'          => $customer[0]['email'],
+                            'customer_fax'              => $customer[0]['fax']
+                        ));
+                    }
+
+                    if( $customer_contact = $this->EE->axapta->contact_person->get_remote( array( 'id' => $work_report[0]['customer_contact_person_id'] ) )){
+                        $data = array_merge($data, array(
+                            'customer_contact_name'     => $customer_contact[0]['name'],
+                            'customer_contact_email'    => $customer_contact[0]['email'],
+                            'customer_contact_phone'    => $customer_contact[0]['phone'],
+                            'customer_contact_mobile'   => $customer_contact[0]['cell_phone']
+                        ));
+                    }
+
+                    if( $team_contact = $this->EE->axapta->employee->get_remote( array( 'id' => $work_report[0]['sales_responsible'] ) )){
+                        $data = array_merge($data, array(
+                            'team_contact_name'         => $team_contact[0]['name'],
+                            //'team_contact_address'        => $team_contact[0]['address'],
+                            'team_contact_email'        => $team_contact[0]['email'],
+                            'team_contact_phone'        => $team_contact[0]['phone'],
+                            'team_contact_fax'          => $team_contact[0]['fax'],
+                            //'team_contact_mobile'         => $team_contact[0]['cell_phone']
+                        ));
+                    }
+
+                    if( $research_procedure = $this->EE->axapta->research_procedure->get_remote(array( 'id' => $work_report[0]['research_procedure_id'] ) )){
+                        $data = array_merge($data, array(
+                            'research_procedure_description' => $research_procedure[0]['description'],
+                            'research_procedure_pdf' => $research_procedure[0]['pdf_link']
+                        ));
+                    }
+
+                    if( $review_procedure = $this->EE->axapta->review_procedure->get_remote(array( 'id' => $work_report[0]['review_procedure_id'] ) )){
+                        $data = array_merge($data, array(
+                            'review_procedure_description' => $review_procedure[0]['description'],
+                            'review_procedure_pdf' => $review_procedure[0]['pdf_link']
+                        ));
+                    }
+
+                    $this->EE->db->insert('wr_reports', $data);
+                    $report_id = $this->EE->db->insert_id();
+
+                    if( !$this->EE->db->affected_rows() == count($work_report) ){
+                        // WE HAD A PROBLEM, DELETED EVERYTHING AND SHOW ERROR
+                    }
+
+                    //get resources from axapta and add to mysql
+                    $resources = $this->EE->axapta->project_resources->get_remote( array( 'project_id' => $dispatch_item['project_id'] ) );
+
+                    foreach($resources as $resource) {
+                        $data = array(
+                            'resource_id'   => $resource['id'],
+                            'name'          => $resource['name'],
+                            'report_id'     => $report_id
+                            );
+                        $this->EE->db->insert('wr_resources', $data);
+                    }
+
+                    if( !$this->EE->db->affected_rows() == count($resources) ){
+                        // WE HAD A PROBLEM, DELETED EVERYTHING AND SHOW ERROR
+                    }
+
+                    //get sales items from axapta and add to mysql
+                    $sales_items = $this->EE->axapta->sales_items->get_remote( array( 'project_id' => $dispatch_item['project_id'] ) );
+
+                    foreach($sales_items as $item) {
+                        $data = array(
+                            'item_id'       => $item['id'],
+                            'name'          => $item['name'],
+                            'unit'          => $item['unit'],
+                            'dimension_id'  => $item['dimension_id'],
+                            'report_id'     => $report_id
+                            );
+
+                        $this->EE->db->insert('wr_items', $data);
+                    }
+
+                    if( !$this->EE->db->affected_rows() == count($sales_items) ){
+                        // WE HAD A PROBLEM, DELETED EVERYTHING AND SHOW ERROR
+                    }
+
+                    //get materials from axapta and add to mysql
+                    $materials = $this->EE->axapta->materials->get_remote( array( 'project_id' => $dispatch_item['project_id'] ) );
+
+                    foreach($materials as $mat) {
+                        $data = array(
+                            'item_id'       => $mat['id'],
+                            'name'          => $mat['name'],
+                            'unit'          => $mat['unit'],
+                            // 'qty'            => (int)$mat['amount'],
+                            'dimension_id'  => $mat['dimension_id'],
+                            'report_id'     => $report_id
+                            );
+
+                        $this->EE->db->insert('wr_materials', $data);
+                    }
+
+                    if( !$this->EE->db->affected_rows() == count($materials) ){
+                        // WE HAD A PROBLEM, DELETED EVERYTHING AND SHOW ERROR
+                    }
+                }
+            }
+            return TRUE;
+        } else {
+            return FALSE;
+        }
+    }
+
+
+    /*
+     *  Creates a PDF document from the workreports print template.
+     *  Returns the full path to the PDF File
+     *  Hardcoded to a tmp/ folder in the base directory of the site
+     */
+    function wr_to_pdf($project_id=NULL) {
+        $this->EE->load->library('Template', NULL, 'TMPL');
+        //$this->EE->load->library('WKPDF.php');
+        include_once(__DIR__.'/libraries/WKPDF.php');
+        
+        $html = $this->wrDetails($project_id); // Get HTML
+
+        // Create PDF
+        $file_name = str_replace('/', '-', $project_id );
+
+        $pdf = new WKPDF();
+        $pdf->set_title('WorkReport');
+        $pdf->set_html($html);
+        $pdf->render();
+        $pdf->output(WKPDF::$PDF_SAVEFILE, $file_name.'.pdf');
+
+        $file = FCPATH.'tmp/'.$file_name.'.pdf';
+
+        return $file;
+    }
+
+    /*
+     *  Sends an email with attachment(s)
+     *  Returns TRUE if sending was sucessful, FALSE if not
+     *
+     *  $from = senders email address
+     *  $to   = recipients email address
+     *  $file = path to attachment @TODO accept array for multiple attachments
+     *  $project_id = project id @TODO replace with "body" message
+     *  @TODO add $subject input
+     */
+    function send_mail($from=NULL, $to=NULL, $file=NULL, $project_id=NULL ) {
+        // email fields: to, from, subject, and so on
+        $subject = 'Applus RTD Work Report '.$project_id;
+        $body = 'Attached is a work report from ApplusRTD. Please keep this for your records.';
+
+        // multipart boundary
+        $mime_boundary = 'Multipart_Boundary_x{'.md5(time()).'}x';
+
+        // headers with multipart boundary definition
+        $headers = "From: $from".NL; // root@localhost
+        $headers .= 'MIME-Version: 1.0'.NL;
+        $headers .= 'Content-Type: multipart/mixed; boundary="'.$mime_boundary.'"';
+
+        // Main Body Boundary
+        $message = "--$mime_boundary".NL;
+        $message .= 'Content-Type: text/plain; charset="utf-8"'.NL;
+        $message .= 'Content-Transfer-Encoding: 8bit'.NL.NL;
+        // Actual Message Body
+        $message .= $body;
+        $message .= NL.NL;
+
+        /*** Repeat this section for multiple attachments ***/
+        // open and prepare attachments
+        $fp =         @fopen($file,"rb");
+        $attachment = @fread($fp,filesize($file));
+                      @fclose($fp);
+        // encode attachment
+        $attachment = chunk_split(base64_encode($attachment));
+        
+        // Attachment Boundary
+        $message .= "--$mime_boundary".NL;
+        $message .= 'Content-Type: application/octet-stream; name='.basename($file).NL;
+        $message .= 'Content-Description: '.basename($file).NL;
+        $message .= 'Content-Disposition: attachment; filename='.basename($file).'; size='.filesize($file).';'.NL;
+        $message .= 'Content-Transfer-Encoding: base64'.NL.NL;
+        // encoded attachment
+        $message .= $attachment;
+        $message .= NL.NL;
+        /*** End attachment section  ***/
+
+        // End Boundary
+        $message .= "--$mime_boundary--";
+
+        $returnpath = "-f" . $from;
+
+        return mail($to, $subject, $message, $headers, $returnpath);
+    }
+
+    /*
+     *  This is a simple router designed as a REST like API
+     *  Each method should return an named array, which is then passed to ouput,
+     *  which could be json encoded, print_r'd for debugging, or (todo) xml encoded
+     *
+     *  You must be logged in to use this
+     */
+    function rest() {
+        if( $this->EE->session->userdata('email') && $this->EE->session->userdata('is_banned') == 0 ) {
+            $this->EE->config->set_item('compress_output', FALSE);
+
+            $employee = $this->EE->axapta->employee->get_remote(array( 'email' => $this->EE->session->userdata('email') ));
+            //$employee = $this->EE->axapta->employee->get_remote(array( 'email' => 'jordan.williams@applusrtd.com' ));
+            $employee = $employee[0];
+
+            $method  = $this->EE->input->get('method');
+            $output  = $this->EE->input->get('output');
+
+            if( !is_array($options = $this->EE->input->post('options'))) {
+                $options = array();
+            }
+
+
+            switch ($method) {
+
+                case 'employee':
+                    $options = array_merge($options, array(
+                        'email' => $this->EE->session->userdata('email')
+                        //'email' => 'bert.weber@applusrtd.com'
+                    ));
+                    $return_data = $this->EE->axapta->employee->get_remote( $options );
+                    break;
+
+                case 'company':
+                    $options = array_merge($options, array(
+                        'id' => $employee['company_id']
+                    ));
+                    $return_data = $this->EE->axapta->company->get_remote( $options );
+                    break;
+
+                case 'cost_center':
+                    $options = array_merge($options, array(
+                        // 'id' => $employee['cost_center_id'],
+                        //'company_id' => '002',
+                        //'id' => '1312'
+                    ));
+                    $return_data = $this->EE->axapta->cost_center->get_remote( $options );
+                    break;
+
+                case 'customer':
+                    $options = array_merge($options, array(
+                        'company_id' => $employee['company_id'],
+                        'department_id' => $employee['department_id'],
+                        'cost_center_id' => $employee['cost_center_id'],
+                        'blocked' => 0
+                    ));
+                    $return_data = $this->EE->axapta->customer->get_remote( $options );
+                    break;
+
+                case 'work_location':
+                    $options = array_merge($options, array(
+                        //'company_id' => $employee['company_id']
+                    ));
+                    $return_data = $this->EE->axapta->work_location->get_remote( $options );
+                    break;
+
+                case 'contact_person':
+                    $options = array_merge($options, array(
+                        //'company_id' => $employee['company_id']
+                        //'id' => '107..SYB2001383'
+                    ));
+                    $return_data = $this->EE->axapta->contact_person->get_remote( $options );
+                    break;
+
+                case 'work_report':
+                    $options = array_merge($options, array(
+                        //'project_id' => '07.005541/001/121013'
+                        'export_reason' => 'TEMPLATE'
+                        ,'execution_date' => '2012-01-01'
+                    ));
+                    $return_data = $this->EE->axapta->work_report->get_remote( $options );
+                    break;
+
+                case 'template':
+                    $options = array_merge($options, array(
+                        //'company_id' => $employee['company_id'],
+                        'export_reason' => 'TEMPLATE',
+                        'execution_date' => '2012-01-01'
+                    ));
+                    $return_data = $this->EE->axapta->work_report->get_remote( $options );
+                    break;
+
+                case 'project_resources':
+                    $options = array_merge($options, array(
+                        //'project_id' => '07.005532/001/120820'
+                    ));
+                    $return_data = $this->EE->axapta->resources->get_remote( $options );
+                    break;
+
+                case 'resources':
+                    $options = array_merge($options, array(
+                        //'company_id' => $employee['company_id'],
+                        // 'department_id' => $employee['department_id'],
+                        'status' => 1
+                    ));
+                    $return_data = $this->EE->axapta->resources->get_remote( $options );
+                    break;
+
+                case 'materials':
+                    $options = array(
+                        //'project_id' => '07.003464/142/120802'
+                    );
+                    $return_data = $this->EE->axapta->materials->get_remote( $options );
+                    break;
+
+                case 'sales_items':
+                    $options = array_merge($options, array(
+                        //'project_id' => '07.005532/001/120820'
+                    ));
+                    $return_data = $this->EE->axapta->sales_items->get_remote( $options );
+                    break;
+
+                case 'contract_items':
+                    $options = array_merge($options, array(
+                        // 'contract_id' => '900.001975',
+                        // 'film_indicator' => 0
+                    ));
+                    $return_data = $this->EE->axapta->contract_items->get_remote( $options );
+                    break;
+
+                case 'dispatch_list':
+                    $options = array_merge($options, array(
+                        'employee_id' => $employee['id'],
+                        'invoiced_status' => 0
+                    ));
+                    $return_data = $this->EE->axapta->dispatch_list->get_remote( $options );
+                    break;
+
+                case 'research_procedure':
+                    $options = array_merge($options, array(
+                        //'id' => 'RT-95105r14'
+                    ));
+                    $return_data = $this->EE->axapta->research_procedure->get_remote( $options );
+                    break;
+
+                case 'review_procedure':
+                    $options = array_merge($options, array(
+                        //'id' => 'RT-95105r14'
+                    ));
+                    $return_data = $this->EE->axapta->review_procedure->get_remote( $options );
+                    break;
+
+                case 'sync':
+                    if( $this->sync($employee['id']) ){
+                        $return_data = $this->dashboard();
+                    }
+
+                    break;
+
+                case 'resource_time': // Expects resource ID, report ID, button's value
+                    $table = 'wr_resource_time_log';
+                    $success = FALSE;
+                    $param_arr['project_id'] = $this->EE->input->post('project_id');
+
+                    // Get wr_reports.id using 'project_id'
+                    $reports_id = $this->EE->mysql->get_field('id','wr_reports',$param_arr, 'id');
+
+                    $param_arr['resource_id'] = $this->EE->input->post('resource_id');
+                    
+                    // If starting clock then 
+                    if($this->EE->input->post('value') == 'Begin Time') {
+                        $param_arr['start_datetime'] = time();
+                        $this->EE->db->insert($table, $param_arr);
+                        $success = $this->EE->db->affected_rows();
+                    } else { // Look up entry based on wr_resource.id and wr_report.id
+                        $data = array( 'end_datetime' => time() );
+                        
+                        $this->EE->db->where($param_arr);
+                        $this->EE->db->update($table, $data);
+
+                        // Find and update cumulative hours of work to wr_resources.qty
+                        $time = $this->EE->mysql->get_field('SUM(end_datetime - start_datetime) AS time', $table, $param_arr, 'time');
+                        
+                        $this->EE->db->where( 'report_id', $reports_id )
+                                        ->where( 'resource_id', $param_arr['resource_id'] )
+                                        ->update( 'wr_resources', array('qty' => $time) );
+                        
+                        $success = $this->EE->db->affected_rows();
+                    }
+
+                   
+                    // If update/insert was successful (non-zero rows affected)
+                    if($success) {
+                        $return_data = array('success' => TRUE);
+                    } else {
+                         $return_data = array('success' => FALSE);
+                    }
+                    break;
+
+                default:
+                    $return_data = array('error' => 'no method found');
+                    break;
+            }
+
+            switch ($output) {
+                default:
+                case 'json':
+                    header('Cache-Control: no-cache, must-revalidate');
+                    header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+                    header('Content-type: application/json; charset=utf-8');
+                    echo json_encode($return_data);
+                break;
+
+                /*
+                case 'xml':
+                    //should return an XML document;
+                break;
+                */
+                
+                case 'html':
+                    header('Cache-Control: no-cache, must-revalidate');
+                    header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+                    header('Content-type: text/html; charset=utf-8');
+                    echo $return_data;
+                break;
+
+                case 'debug':
+                    header('Content-Type: text/html; charset=utf-8');
+                    echo '<pre>';
+                    print_r($return_data);
+                    echo '</pre>';
+                break;
+            }
+        } else {
+            echo lang('unauthorized');
         }
     }
 }// END CLASS
