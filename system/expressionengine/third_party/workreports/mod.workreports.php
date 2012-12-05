@@ -1249,7 +1249,6 @@ class Workreports {
                             );
 
                         $resource_id = $this->EE->mysql->get_field('id', 'wr_resources', $params, 'id');// wr_resources.id
-                        // echo ' resource_id = '.$resource_id;
 
                         // If starting clock insert new log
                         if($this->EE->input->post('value') == 'Begin Time') {                            
@@ -1286,6 +1285,29 @@ class Workreports {
                     } else {
                          $return_data = array('success' => FALSE);
                     }
+                    break;
+
+                // Returns number of open logs for a given report_id
+                case 'get_open_logs':
+                    $table = 'wr_resource_time_log';
+                    $success = FALSE;
+                    $rows = 0; // number of entries open
+                    $ax_resource_id = $this->EE->input->post('resource_id'); // AX value array
+                    $project_id = $this->EE->input->post('project_id'); // wr_reports.id
+
+                    // Count open log entries in this work report
+                    for($i = 0; $i < count($ax_resource_id); $i++) {
+                        $this->EE->db->from('wr_resource_time_log')
+                                    ->where('resource_id', $ax_resource_id[$i])
+                                    ->where('end_datetime IS NULL')
+                                    ->get();
+                        $rows+= $this->EE->db->affected_rows();
+                    }
+                    $return_data = array(
+                            'success'   => TRUE,
+                            'rows'      => $rows
+                            );
+
                     break;
 
                 default:
