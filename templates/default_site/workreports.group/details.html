@@ -4,6 +4,7 @@
     {form_open}
     <fieldset id="topOfTicket">
         <h2>Work Report {project_id}</h2>
+        <input type="button" class="btn master" value="Begin Time"></input>
         <h3>Execution Date</h3>
         <div class="row-fluid">
             <div class="span12">
@@ -524,7 +525,7 @@
                     value: $(fun_button).val()
                 },
                 dataType: "json",
-                success:  // if 'qty' returned a number update resource's qty field
+                success:  // if 'qty' returned a number, update resource's qty field
                     function(callback) {
                         if(callback.qty){
                             $(fun_button).parent().find('input[name*="qty"]').val(callback.qty); 
@@ -532,6 +533,47 @@
                     }
             });
             $(fun_button).parent().find('.fun').toggle();
+        });
+
+        $('input.master').click(function() {
+            var btn = this;
+            var all_resources = new Array();
+            
+            $('input[name*="resource_id"]').each( function(index) {
+                if(this.value.length) {
+                    all_resources[index] = this.value;
+                }
+             });
+            
+            $.ajax({
+                type: 'POST',
+                url: '?ACT=43&output=json&method=track_all_time',
+                data: {
+                    project_id: $('input[name*="project_id"]').val(),
+                    resource_id: all_resources,
+                    value: $(btn).val()
+                },
+                dataType: "json",
+                success:  // if 'qty' returned an array of numbers, update each resource's qty field.
+                    function(callback) {
+                        if(callback.qty){
+                            // console.log(callback.qty);
+                            // $(fun_button).parent().find('input[name*="qty"]').val(callback.qty); 
+                            $('input[name*="resource_id"]').each( function(index) {
+
+                                console.log(this);
+                                console.log(callback.qty.index);
+                                // If resource_id's match then change the qty to the returned value
+                                if(this.value == all_resources[index]) {
+                                    $(this).parent().find('input[name*="qty"]').val(callback.qty[index]);
+                                    // console.log(" qty = "+callback.qty[index]);
+                                    // console.log(" val = "+$(this).val());
+                                }
+                             });
+                        }
+                    }
+            });
+            ($(btn).val() == 'Begin Time' ) ? $(btn).val('End Time') : $(btn).val('Begin Time');
         });
 
         work_locations(  );
