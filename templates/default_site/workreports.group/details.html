@@ -498,7 +498,40 @@
         );
     }
 
+    // Sets value for master resource time button based on related resource_time_log entries being open or closed
+    function set_master_button() {
+        var btn = $('input.master');
+        var all_resources = new Array();
+
+        $('input[name*="resource_id"]').each( function(index) {
+            if(this.value.length) {
+                all_resources[index] = this.value;
+            }
+         });
+
+        $.ajax({
+            type: 'POST',
+            url: '?ACT=43&output=json&method=get_open_logs',
+            data: {
+                project_id: $('input[name*="project_id"]').val(),
+                resource_id: all_resources
+            },
+            dataType: "json",
+            success: 
+                function(callback) { 
+                    (callback.rows > 0 ) ? $(btn).val('End Time') : '';
+            }
+            // 3 options: 
+            // 1. No result = leave unchanged. 
+            // 2. All open resources = Flip value 
+            // 3. Some open resource(s) = Hide button.
+
+            });
+    } 
+
     $(document).ready(function() {
+        set_master_button();
+
         $('input,textarea').focus(function() {
             $(this).parent().parent().addClass('active');
         });
