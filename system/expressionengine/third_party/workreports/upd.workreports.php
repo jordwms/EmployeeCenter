@@ -1,6 +1,6 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 class Workreports_upd {
-    var $version = '1.4.1';
+    var $version = '1.4.2';
 
     function __construct() {
         $this->EE =& get_instance();
@@ -156,11 +156,13 @@ class Workreports_upd {
          *  Create wr_resource_time_log table
          *******************************************************************************************/
         $this->EE->dbforge->add_field(array(
-                'id'                    => array('type' => 'int', 'constraint' => '10', 'unsigned' => TRUE, 'auto_increment' => TRUE),
-                'resource_id'           => array('type' => 'int', 'constraint' => '10', 'unsigned' => TRUE),
-                'project_id'            => array('type' => 'varchar', 'constraint' => '50'),
-                'start_datetime'        => array('type' => 'int', 'constraint' =>'10'),
-                'end_datetime'          => array('type' => 'int', 'constraint' =>'10')
+                'id'                         => array('type' => 'int', 'constraint' => '10', 'unsigned' => TRUE, 'auto_increment' => TRUE),
+                'resource_id'                => array('type' => 'int', 'constraint' => '10', 'unsigned' => TRUE),
+                'project_id'                 => array('type' => 'varchar', 'constraint' => '50'),
+                'start_datetime'             => array('type' => 'int', 'constraint' =>'10'), // Actual (PHP) times
+                'end_datetime'               => array('type' => 'int', 'constraint' =>'10'),
+                'submitted_start_datetime'   => array('type' => 'int', 'constraint' =>'10'), // user-defined (js) times
+                'submitted_end_datetime'     => array('type' => 'int', 'constraint' =>'10')
             ));     
             $this->EE->dbforge->add_key('id', TRUE);
             $this->EE->dbforge->create_table('wr_resource_time_log');
@@ -391,7 +393,7 @@ class Workreports_upd {
 
         if($current < '1.3.7') { // Added to install
             $data = array(
-                'class'     => 'Workreports' ,
+                'class'     => 'Workreports',
                 'method'    => 'submit'
             );
 
@@ -433,13 +435,22 @@ class Workreports_upd {
                 'project_id'            => array('type' => 'varchar', 'constraint' => '50') // Related to wr_reports.project_id. Needed for timecard style lookups, and completing updates/inserts
             );
             $this->EE->dbforge->add_column('wr_resource_time_log', $fields);
+        }
 
         if($current < '1.4.1') { // Added to install
             $fields = array(
-                'research_procedure_pdf'     => array('type' => 'text'),
+                'research_procedure_pdf'   => array('type' => 'text'),
                 'review_procedure_pdf'     => array('type' => 'text')
             );
             $this->EE->dbforge->add_column('wr_reports', $fields);
+        }
+
+        if($current < '1.4.2') { // Added to install
+            $fields = array(
+                'submitted_start_datetime'   => array('type' => 'int', 'constraint' =>'10'),
+                'submitted_end_datetime'     => array('type' => 'int', 'constraint' =>'10')
+            );
+            $this->EE->dbforge->add_column('wr_resource_time_log', $fields);
         }
 
         return TRUE;
