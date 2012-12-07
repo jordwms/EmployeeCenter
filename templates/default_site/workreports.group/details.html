@@ -520,12 +520,7 @@
             success: 
                 function(callback) { 
                     (callback.rows > 0 ) ? $(btn).val('End Time') : '';
-            }
-            // 3 options: 
-            // 1. No result = leave unchanged. 
-            // 2. All open resources = Flip value 
-            // 3. Some open resource(s) = Hide button.
-
+                }
             });
     } 
 
@@ -588,17 +583,10 @@
                 success:  // if 'qty' returned an array of numbers, update each resource's qty field.
                     function(callback) {
                         if(callback.qty){
-                            // console.log(callback.qty);
-                            // $(fun_button).parent().find('input[name*="qty"]').val(callback.qty); 
                             $('input[name*="resource_id"]').each( function(index) {
-
-                                console.log(this);
-                                console.log(callback.qty.index);
                                 // If resource_id's match then change the qty to the returned value
                                 if(this.value == all_resources[index]) {
                                     $(this).parent().find('input[name*="qty"]').val(callback.qty[index]);
-                                    // console.log(" qty = "+callback.qty[index]);
-                                    // console.log(" val = "+$(this).val());
                                 }
                              });
                         }
