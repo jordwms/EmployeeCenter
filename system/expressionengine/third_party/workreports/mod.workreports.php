@@ -1298,7 +1298,8 @@ class Workreports {
                             // Find and update cumulative hours of work to wr_resources.qty
                             $params = array( 'resource_id' => $resource_id );
                             $qty[$i] = $this->EE->mysql->get_field('SUM(submitted_end_datetime - submitted_start_datetime) AS time', $table, $params, 'time');
-                            // $qty[$i]/=3600; // Set to hours. 
+                            $qty[$i]/=3600; // Set to hours
+                            $qty[$i] = round($qty[$i], 1);
 
                             $this->EE->db->where( 'report_id', $report_id )
                                         ->where( 'resource_id', $ax_resource_id[$i] )
