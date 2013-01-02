@@ -264,6 +264,9 @@ class Workreports {
             $data[0]['resources'] = $this->EE->db->get_where('wr_resources', array('report_id' => $data[0]['id']) )->result_array();
         }
 
+        // Get formatted timezone offset +/-####
+        $timezone = $this->get_timezone( $this->EE->session->userdata('timezone') );
+
         $form_open = array(
             'action'        => $submit_uri,
             'name'          => 'workReport',
@@ -279,7 +282,8 @@ class Workreports {
                 'customer_contract_id'  => $data[0]['customer_id'],
                 'rtd_reference'         => $data[0]['rtd_reference'],
                 'work_location_name'    => $data[0]['work_location_name'],
-                'work_location_address' => $data[0]['work_location_address']
+                'work_location_address' => $data[0]['work_location_address'],
+                'timezone'              => $timezone
             ),
             'secure'        => TRUE,
             'onsubmit'      => ''
@@ -333,6 +337,7 @@ class Workreports {
         }
         //Print button is always available
         $data[0]['actions'] .= '<input type="submit" name="print" class="btn" value="Print">';
+        $data[0]['time_menu'] = $this->EE->localize->timezone_menu( $this->EE->session->userdata('timezone') );
 
         $this->return_data = $this->EE->TMPL->parse_variables( $tagdata,  $data );
 
@@ -1017,6 +1022,17 @@ class Workreports {
         return mail($to, $subject, $message, $headers, $returnpath);
     }
 
+    // Given a timezone code, returns the offset in minutes from GMT
+    function get_timezone($timezone) {
+        $this->EE->load->helper('date');
+        // Get and format timezone +/-####
+        $offset = timezones($timezone);
+        $offset*=60; // minutes like js, instead of hours
+        $offset = $offset<0 ? abs($offset) : "-$offset"; // Prepared for javascript evaluation (swapped signs)
+
+        return $offset;
+    }
+
     /*
      *  This is a simple router designed as a REST like API
      *  Each method should return an named array, which is then passed to ouput,
@@ -1234,11 +1250,21 @@ class Workreports {
 
                 case 'track_all_time': // Expects resource ID, project ID, button's value
                     $table = 'wr_resource_time_log';
-                    $time = FALSE; // Set for return_data
+                    $qty = FALSE; // Set for return_data
+                    $time = time();
                     $success = FALSE;
                     $ax_resource_id = $this->EE->input->post('resource_id'); // AX value array
+                    $submitted_time = $this->EE->input->post('time');
+                    $timezone = $this->EE->input->post('timezone');
                     $project_id = $this->EE->input->post('project_id'); // wr_reports.id
                     $report_id = $this->EE->mysql->get_field('id','wr_reports',array('project_id'=> $project_id ), 'id');
+
+                    // Turn a user-created time into a unix timestamp
+                    if($submitted_time != 0) {
+                        $submitted_time = strtotime($submitted_time.' '.$timezone);
+                    } else {
+                        $submitted_time = $time;
+                    }
                     
                     // For each axapta resource ID, either insert log entry (with start_datetime) or search for log entry and close with end_datetime
                     for($i = 0; $i < count($ax_resource_id); $i++) {
@@ -1253,8 +1279,9 @@ class Workreports {
                         // If starting clock insert new log
                         if($this->EE->input->post('value') == 'Begin Time') {                            
                             $params = array(
-                                'start_datetime'    => time(),
-                                'resource_id'       => $resource_id
+                                'start_datetime'            => $time,
+                                'submitted_start_datetime'  => $submitted_time,
+                                'resource_id'               => $resource_id
                                 );
 
                             $this->EE->db->insert($table, $params);
@@ -1263,15 +1290,19 @@ class Workreports {
                             // Look up entry based on wr_resource.id and wr_report.id
                             $this->EE->db->where('resource_id', $resource_id)
                                         ->where('end_datetime IS NULL')
-                                        ->update($table, array('end_datetime' => time() ) );                        
+                                        ->update($table, array(
+                                                            'end_datetime'           => $time,
+                                                            'submitted_end_datetime' => $submitted_time
+                                                            ) );                        
 
                             // Find and update cumulative hours of work to wr_resources.qty
                             $params = array( 'resource_id' => $resource_id );
-                            $time[$i] = $this->EE->mysql->get_field('SUM(end_datetime - start_datetime) AS time', $table, $params, 'time');
+                            $qty[$i] = $this->EE->mysql->get_field('SUM(submitted_end_datetime - submitted_start_datetime) AS time', $table, $params, 'time');
+                            // $qty[$i]/=3600; // Set to hours. 
 
                             $this->EE->db->where( 'report_id', $report_id )
                                         ->where( 'resource_id', $ax_resource_id[$i] )
-                                        ->update( 'wr_resources', array('qty' => $time[$i]) );
+                                        ->update( 'wr_resources', array('qty' => $qty[$i]) );
                             
                             $success = $this->EE->db->affected_rows();
                         }
@@ -1280,7 +1311,7 @@ class Workreports {
                     if($success) {
                         $return_data = array(
                             'success'   => TRUE,
-                            'qty'       => $time
+                            'qty'       => $qty
                             );
                     } else {
                          $return_data = array('success' => FALSE);
@@ -1308,6 +1339,16 @@ class Workreports {
                             'rows'      => $rows
                             );
 
+                    break;
+
+                // Returns a given timezone code's UTC offset
+                case 'convert_timezone':
+                    $tz = $this->get_timezone( $this->EE->input->post('timezone') );
+
+                    $return_data = array(
+                        'success'   => TRUE,
+                        'tz'        => $tz
+                        );
                     break;
 
                 default:
