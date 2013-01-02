@@ -1,6 +1,6 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 class Workreports_upd {
-    var $version = '1.4.2';
+    var $version = '1.4.3';
 
     function __construct() {
         $this->EE =& get_instance();
@@ -143,7 +143,7 @@ class Workreports_upd {
         $this->EE->dbforge->add_field(array(
             'id'                                => array('type' => 'int',       'constraint' => '10', 'unsigned' => TRUE, 'auto_increment' => TRUE),
             'report_id'                         => array('type' => 'int',       'constraint' => '10', 'unsigned' => TRUE),
-            'qty'                               => array('type' => 'int',       'constraint' => '10', 'unsigned' => TRUE),
+            'qty'                               => array('type' => 'double',       'constraint' => '10', 'unsigned' => TRUE),
             'resource_id'                       => array('type' => 'varchar',   'constraint' => '50'),
             'name'                              => array('type' => 'varchar',   'constraint' => '50')
             )
@@ -451,6 +451,13 @@ class Workreports_upd {
                 'submitted_end_datetime'     => array('type' => 'int', 'constraint' =>'10')
             );
             $this->EE->dbforge->add_column('wr_resource_time_log', $fields);
+        }
+
+        if($current < '1.4.3') { // Changed in install
+            $fields = array(
+                'qty' => array('name' => 'qty', 'type' => 'double')
+            );
+            $this->EE->dbforge->modify_column('wr_resources', $fields);
         }
 
         return TRUE;
