@@ -1320,19 +1320,25 @@ class Workreports {
                     break;
 
                 // Returns number of open logs for a given report_id
+                // Get report_id via project_id, get resource ID via resource_id + report_id, find each report with open logs
                 case 'get_open_logs':
                     $table = 'wr_resource_time_log';
                     $success = FALSE;
                     $rows = 0; // number of entries open
-                    $ax_resource_id = $this->EE->input->post('resource_id'); // AX value array
+                    $ax_resource_id = $this->EE->input->post('resource_id'); // AX value array - must find corresponding MySQL resource ID's
                     $project_id = $this->EE->input->post('project_id'); // wr_reports.id
+                    $resource_id = 0; // MySQL resource_id
 
                     // Count open log entries in this work report
                     for($i = 0; $i < count($ax_resource_id); $i++) {
                         $this->EE->db->from('wr_resource_time_log')
-                                    ->where('resource_id', $ax_resource_id[$i])
-                                    ->where('end_datetime IS NULL')
+                                    ->join('wr_resources', 'wr_resource_time_log.resource_id = wr_resources.id')
+                                    ->join('wr_reports', 'wr_resources.report_id = wr_reports.id')
+                                    ->where('wr_resources.resource_id', $ax_resource_id[$i])
+                                    ->where('wr_reports.project_id', $project_id)
+                                    ->where('wr_resource_time_log.end_datetime IS NULL')
                                     ->get();
+
                         $rows+= $this->EE->db->affected_rows();
                     }
                     $return_data = array(
