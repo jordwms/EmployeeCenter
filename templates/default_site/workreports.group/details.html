@@ -5,6 +5,8 @@
     <fieldset id="topOfTicket">
         <h2>Work Report {project_id}</h2>
         <input type="button" class="btn master" value="Begin Time"></input>
+        <input type="time" class="time" name="master_time_start" />
+        <div name="timezone_visible" hidden="hidden">{time_menu}</div>
         <h3>Execution Date</h3>
         <div class="row-fluid">
             <div class="span12">
@@ -498,6 +500,11 @@
         );
     }
 
+    $.validator.addMethod("time", function(element) { 
+        var regex = new RegExp('(^ *([01]?[0-9]|2[0-3]):[0-5][0-9] *$|^ *(1[0-2]|[1-9]):[0-5][0-9] *(a|p|A|P)(m|M) *$)');
+       return regex.test(element);
+    }, "Time must be in 12/24 hour format (ex: \"11:50 PM\" or \"23:50\").");
+
     // Sets value for master resource time button based on related resource_time_log entries being open or closed
     function set_master_button() {
         var btn = $('input.master');
@@ -508,6 +515,7 @@
                 all_resources[index] = this.value;
             }
          });
+        console.log(all_resources);
 
         $.ajax({
             type: 'POST',
@@ -519,13 +527,64 @@
             dataType: "json",
             success: 
                 function(callback) { 
+                    console.log(callback.rows);
                     (callback.rows > 0 ) ? $(btn).val('End Time') : '';
                 }
             });
     } 
 
+    // Sets the master start_time input value to time at page load
+    function set_start_time() {
+        var current_time = new Date();
+        var time_str = (current_time.getHours() < 10) ? "0": ""; // Always 2 digit hrs
+        
+        time_str+= current_time.getHours()+":";
+                
+        time_str+= (current_time.getMinutes() < 10) ? "0": ""; // Always 2 digit mins
+        time_str+= current_time.getMinutes();
+        
+        $('input[name="master_time_start"]').val( time_str );
+    }
+
+    // returns the local GMT offset as a string e.g. "+1130"
+    function pad(number, length){
+        var str = "" + number;
+        while (str.length < length) {
+            str = '0'+str;
+        }
+
+        return str;
+    }
+
+    // Takes browser's timezone offset and formats it to UTC value.
+    function formatted_timezone(offset) {
+        offset = (offset) ? offset : new Date().getTimezoneOffset(); // If val is set, use, else create.
+
+        offset = ((offset<0? '+':'-')+ // Note the reversed sign!
+        pad(parseInt(Math.abs(offset/60)), 2)+
+        pad(Math.abs(offset%60), 2));
+
+        return offset;
+    }
+
+    // Compares EE v. browser's timezone settings. If they differ, show a dropdown next to the time field so the user can tell us.
+    function compare_tz_offset() {
+        // $('select[name=server_timezone]').val();
+        var ee_tz = formatted_timezone( $('input[name=timezone]').val() ); // ExpressionEngine's timezone
+        var js_tz = formatted_timezone(); // Browser's timezone
+
+        if(ee_tz != js_tz) {
+            $('div[name="timezone_visible"]').toggle();
+        }
+    }
+
     $(document).ready(function() {
         set_master_button();
+        set_start_time(); // Initialize value...
+        compare_tz_offset();
+
+        var is_time_changed = false;
+        var refresh = setInterval(function() { set_start_time() }, 15000); // every 15 seconds
 
         $('input,textarea').focus(function() {
             $(this).parent().parent().addClass('active');
@@ -561,38 +620,89 @@
             $(fun_button).parent().find('.fun').toggle();
         });
 
-        $('input.master').click(function() {
-            var btn = this;
-            var all_resources = new Array();
-            
-            $('input[name*="resource_id"]').each( function(index) {
-                if(this.value.length) {
-                    all_resources[index] = this.value;
-                }
-             });
-            
+        // When this value changes, update the hidden timezone field in UTC format
+        $('select[name="server_timezone"]').change(function() {
+            var tz = this.value;
+
             $.ajax({
                 type: 'POST',
-                url: '?ACT=43&output=json&method=track_all_time',
+                url: '?ACT=43&output=json&method=convert_timezone', // # convert_timezone
                 data: {
-                    project_id: $('input[name*="project_id"]').val(),
-                    resource_id: all_resources,
-                    value: $(btn).val()
+                    timezone: tz
                 },
                 dataType: "json",
-                success:  // if 'qty' returned an array of numbers, update each resource's qty field.
-                    function(callback) {
-                        if(callback.qty){
-                            $('input[name*="resource_id"]').each( function(index) {
-                                // If resource_id's match then change the qty to the returned value
-                                if(this.value == all_resources[index]) {
-                                    $(this).parent().find('input[name*="qty"]').val(callback.qty[index]);
-                                }
-                             });
+                success: // Insert the new val into the server_timezone field
+                    function(callback){
+                        if(callback.tz){
+                            $('input[name="timezone"]').val(callback.tz);
                         }
                     }
+
             });
-            ($(btn).val() == 'Begin Time' ) ? $(btn).val('End Time') : $(btn).val('Begin Time');
+        });
+
+        $('input.master').click(function() {   
+            var time_obj = $('input[name="master_time_start"]');
+            var is_valid = $('form[name="workReport"]').validate().element('input[name="master_time_start"]');
+
+            // Check the value from "master_time_start"
+            if(is_valid) {
+                var d = 0;
+                var btn = this;
+                var all_resources = new Array();
+                var date = new Date();
+                var offset = new Date().getTimezoneOffset();
+
+                // Format the timezone value...
+                offset = formatted_timezone();
+                
+                if (is_time_changed) {
+                    d = $(time_obj).val();
+                }
+                
+                $('input[name*="resource_id"]').each( function(index) {
+                    if(this.value.length) {
+                        all_resources[index] = this.value;
+                    }
+                 });
+                
+                $.ajax({
+                    type: 'POST',
+                    url: '?ACT=43&output=json&method=track_all_time',
+                    data: {
+                        project_id: $('input[name*="project_id"]').val(),
+                        resource_id: all_resources,
+                        value: $(btn).val(),
+                        time: d,
+                        timezone: offset
+                    },
+                    dataType: "json",
+                    success:  // if 'qty' returned an array of numbers, update each resource's qty field.
+                        function(callback) {
+                            if(callback.qty){
+                                $('input[name*="resource_id"]').each( function(index) {
+                                    // If resource_id's match then change the qty to the returned value
+                                    if(this.value == all_resources[index]) {
+                                        $(this).parent().find('input[name*="qty"]').val(callback.qty[index]);
+                                    }
+                                 });
+                            }
+                        }
+                });
+                
+                ($(btn).val() == 'Begin Time' ) ? $(btn).val('End Time') : $(btn).val('Begin Time');
+
+            } else {
+                //  notify the user
+                $(time_obj).addClass("invalid");
+
+            }
+        });
+
+        // Stop refreshing time
+        $('input[name="master_time_start"]').change(function() {
+            clearInterval(refresh);
+            is_time_changed = true;
         });
 
         work_locations(  );
