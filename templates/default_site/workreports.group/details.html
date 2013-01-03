@@ -515,7 +515,6 @@
                 all_resources[index] = this.value;
             }
          });
-        console.log(all_resources);
 
         $.ajax({
             type: 'POST',
@@ -527,7 +526,6 @@
             dataType: "json",
             success: 
                 function(callback) { 
-                    console.log(callback.rows);
                     (callback.rows > 0 ) ? $(btn).val('End Time') : '';
                 }
             });
