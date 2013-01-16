@@ -141,7 +141,7 @@ class mysql {
 			$project_id = explode('/', $report_query['project_id']);
 
 			$dir = '/ax-public/'.$report_query['company_id'].'/Customer Reporting/Tablet Interface/';
-			$file = $project_id[0].' '.$project_id[0].'.'.$project_id[1].'.'.$project_id[2].' [TEST].xml';
+			$file = $project_id[0].' '.$project_id[0].'.'.$project_id[1].'.'.$project_id[2].'.xml';
 
 			// If directory DNE, create
 			if (!is_dir($dir)) {
