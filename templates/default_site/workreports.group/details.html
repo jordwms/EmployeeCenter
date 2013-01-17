@@ -476,7 +476,7 @@
                         new_row.find(':input[name="qty"]').removeAttr('disabled')
                         new_row.find(':input[name="qty"]').attr('name', 'materials[' + selection.id + '][qty]')
 
-                        new_row.find(':input[name="dimension_id"]').attr('name', 'materials[' + selection.id + '][dimension_id]').val(selection.dimension_id)
+                        new_row.find(':input[name="dimension_id"]').attr('name', 'materials[' + selection.id + '][dimension_id]').val(selection.id)
                         new_row.find(':input[name="item_id"]').attr('name', 'materials[' + selection.id + '][item_id]').val(selection.item_id)
                         new_row.find(':input[name="name"]').attr('name', 'materials[' + selection.id + '][name]').val(selection.config_name)
                         new_row.find(':input[name="unit"]').attr('name', 'materials[' + selection.id + '][unit]').val(selection.unit)
