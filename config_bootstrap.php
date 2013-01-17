@@ -136,11 +136,11 @@ elseif(NSM_ENV == 'staging') {
 }
 else { // 'development'
     if( !defined('NSM_SITE_URL') ) {
-        define('NSM_SITE_URL', "https://".NSM_SERVER_NAME);
+        define('NSM_SITE_URL', "http://".NSM_SERVER_NAME);
     }
 
     $env_db_config = array(
-        'hostname' => 'localhost',
+        'hostname' => 'dev-lamp',
         'username' => 'employee_center',
         'password' => 'gi0kQ#vdmw7b',
         'database' => 'employee_center'
