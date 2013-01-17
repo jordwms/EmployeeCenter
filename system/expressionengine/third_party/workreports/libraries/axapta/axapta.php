@@ -36,10 +36,10 @@ class axapta {
 	function axapta_connection() {
 		$this->EE->load->config('config');
 
-		$host   = 'DC-S-DB-11.applusrtd.net';
-		$db     = 'TEST';
-		$user   = 'sa.usaAccess';
-		$pass   = 'Development12';
+		$host   = config_item('ax_host');
+		$db     = config_item('ax_db');
+		$user   = config_item('ax_user');
+		$pass   = config_item('ax_pass');
 
 		try {
 			$ax_conn = new PDO("dblib:host=$host;Database=$db;", $user, $pass);
