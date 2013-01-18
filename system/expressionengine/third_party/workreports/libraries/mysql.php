@@ -135,7 +135,11 @@ class mysql {
 			$project_id = explode('/', $report_query['project_id']);
 
 			$dir = '/ax-public/'.$report_query['company_id'].'/Customer Reporting/Tablet Interface/';
-			$file = $project_id[0].' '.$project_id[0].'.'.$project_id[1].'.'.$project_id[2].'.xml';
+			
+			$file = $project_id[0].' '.$project_id[0].'.'.$project_id[1].'.'.$project_id[2];
+
+			// Testing areas need XML files to be marked with [TEST]
+			$file.= (NSM_ENV == 'development' || NSM_ENV == 'staging') ? ' [TEST].xml': '.xml';
 
 			// If directory DNE, create
 			if (!is_dir($dir)) {
