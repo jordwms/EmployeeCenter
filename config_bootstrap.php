@@ -140,7 +140,7 @@ else { // 'development'
     }
 
     $env_db_config = array(
-        'hostname' => 'dev-lamp',
+        'hostname' => 'dc2-s-dev-01',
         'username' => 'employee_center',
         'password' => 'gi0kQ#vdmw7b',
         'database' => 'employee_center'
