@@ -122,11 +122,7 @@ class mysql {
 	function create_xml($report_id = NULL) {
 		$dir_result = TRUE;
 
-		if( is_null($report_id) ) {
-			$id = $this->EE->input->GET('id');
-		} else {
-			$id = $report_id;
-		}
+			$id = is_null($report_id) ? $this->EE->input->GET('id') : $report_id;
 			
 		if( is_numeric($id) ) {
 			// Get work report and associated items...
@@ -134,8 +130,6 @@ class mysql {
 			$items_query		= $this->get_items($id);
 			$report_query		= $this->get_reports($id);
 			$resources_query	= $this->get_resources($id);
-
-			// echo '<pre>'; print_r($report_id); die;			
 
 			// Explode project_id into 'order', 'work order' and 'work report' sections
 			$project_id = explode('/', $report_query['project_id']);
