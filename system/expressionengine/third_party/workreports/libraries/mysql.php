@@ -122,7 +122,7 @@ class mysql {
 	function create_xml($report_id = NULL) {
 		$dir_result = TRUE;
 
-			$id = is_null($report_id) ? $this->EE->input->GET('id') : $report_id;
+		$id = is_null($report_id) ? $this->EE->input->GET('id') : $report_id;
 			
 		if( is_numeric($id) ) {
 			// Get work report and associated items...
@@ -148,20 +148,46 @@ class mysql {
 
 			if ($dir_result) {
 				
+				// Escape any special characters (ampersands, etc.) for XML compatibility... 
+				foreach($mats_query as $dim1) {
+					foreach($dim1 as &$dim2) {
+						$dim2 = htmlentities( $dim2, NULL, 'ISO-8859-1') ;
+					}	
+				}
+				foreach($items_query as &$dim1) {
+					foreach($dim1 as &$dim2) {
+						$dim2 = htmlentities( $dim2, NULL, 'ISO-8859-1') ;
+					}	
+				}
+				foreach($report_query as &$a) {
+					$a = htmlentities( $a, NULL, 'ISO-8859-1') ;
+				}
+				foreach($resources_query as &$dim1) {
+					foreach($dim1 as &$dim2) {
+						$dim2 = htmlentities( $dim2, NULL, 'ISO-8859-1') ;
+					}					}
+				// Done here so delimiter '/' is not escaped and causing problems
+				foreach($project_id as &$a) {
+					$a = htmlentities( $a, NULL, 'ISO-8859-1') ;
+				}
+
+
 				// New DOM document
-				$doc = new DOMDocument('1.0','iso-8859-1');
+				$doc = new DOMDocument();
 				$doc->formatOutput = TRUE;
+				$doc->xmlVersion = '1.0';
+				$doc->encoding = 'ISO-8859-1';
 
 				// Create and append root element of xml tree
 				$xml_root = $doc->createElement('xml');
 				$xml_root = $doc->appendChild($xml_root);
 
 				// Create and append Employee ID
-				$empl_id = $doc->createElement('EmplId', htmlentities( $report_query['submitter_id'], NULL, "ISO-8859-1") );
+				$empl_id = $doc->createElement('EmplId', $report_query['submitter_id'] );
 				$empl_id = $xml_root->appendChild($empl_id);
 
 				// Create and append Crew Leader ID
-				$crew_leader = $doc->createElement('CrewLeader', htmlentities( $report_query['crew_leader_id'], NULL, "ISO-8859-1") );
+				$crew_leader = $doc->createElement('CrewLeader', $report_query['crew_leader_id'] );
 				$crew_leader = $xml_root->appendChild($crew_leader);
 
 				// Create and append company
@@ -169,16 +195,16 @@ class mysql {
 				$company = $xml_root->appendChild($company);
 
 				// Fill company with work report elements
-				$company->appendChild($doc->createElement('Company', 				htmlentities( $report_query['company_id'], 				NULL, 'ISO-8859-1') ));
-				$company->appendChild($doc->createElement('CustomerAccount', 		htmlentities( $report_query['customer_id'], 			NULL, 'ISO-8859-1') ));
-				$company->appendChild($doc->createElement('Order', 					htmlentities( $project_id[0], 							NULL, 'ISO-8859-1') ));
-				$company->appendChild($doc->createElement('WorkOrder', 				htmlentities( $project_id[1], 							NULL, 'ISO-8859-1') ));
-				$company->appendChild($doc->createElement('WorkReport', 			htmlentities( $project_id[2], 							NULL, 'ISO-8859-1') ));
-				$company->appendChild($doc->createElement('CustomerReference',		htmlentities( $report_query['customer_reference'],		NULL, 'ISO-8859-1') ));
-				$company->appendChild($doc->createElement('RTDReference', 			htmlentities( $report_query['rtd_reference'], 			NULL, 'ISO-8859-1') ));
-				$company->appendChild($doc->createElement('WorkLocationName', 		htmlentities( $report_query['work_location_name'],		NULL, 'ISO-8859-1') ));
-				$company->appendChild($doc->createElement('ContactPerson', 			htmlentities( $report_query['customer_contact_name'],	NULL, 'ISO-8859-1') ));
-				$company->appendChild($doc->createElement('ObjectDescription',		htmlentities( $report_query['object_description'],		NULL, 'ISO-8859-1') )); // $this->EE->typography->parse_type($report_query['object_description'],array('text_format' => 'none'))
+				$company->appendChild($doc->createElement('Company', 				$report_query['company_id'] ));
+				$company->appendChild($doc->createElement('CustomerAccount', 		$report_query['customer_id'] ));
+				$company->appendChild($doc->createElement('Order', 					$project_id[0] ));
+				$company->appendChild($doc->createElement('WorkOrder', 				$project_id[1] ));
+				$company->appendChild($doc->createElement('WorkReport', 			$project_id[2] ));
+				$company->appendChild($doc->createElement('CustomerReference',		$report_query['customer_reference'] ));
+				$company->appendChild($doc->createElement('RTDReference', 			$report_query['rtd_reference'] ));
+				$company->appendChild($doc->createElement('WorkLocationName', 		$report_query['work_location_name'] ));
+				$company->appendChild($doc->createElement('ContactPerson', 			$report_query['customer_contact_name'] ));
+				$company->appendChild($doc->createElement('ObjectDescription',		$report_query['object_description'] ));
 				$company->appendChild($doc->createElement('ExecutionDate', 			date( 'Y-m-d', $report_query['execution_datetime']) ));
 
 				// Create and append Resources
