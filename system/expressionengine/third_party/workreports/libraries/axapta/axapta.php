@@ -190,13 +190,13 @@ class axapta {
 				if( is_array($data) ){
 					$this->fix_padding($val);
 				} elseif( is_string($val) ) {
-					$val = ltrim(rtrim($val));
+					$val = iconv('ISO8859-15', 'UTF-8', ltrim(rtrim($val)));
 				}
 			}
 		}
 		if( is_string($data) ){
 			//$data =  ltrim(rtrim($data));
-			$data = iconv('ISO8859-1', 'UTF-8', ltrim(rtrim($data)));
+			$data = iconv('ISO8859-15', 'UTF-8', ltrim(rtrim($data)));
 		}
 		return $data;
 	}
