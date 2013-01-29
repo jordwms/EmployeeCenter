@@ -1084,7 +1084,7 @@ class Workreports {
 
                 case 'work_location':
                     $options = array_merge($options, array(
-                        //'company_id' => $employee['company_id']
+                        'company_id' => $employee['company_id']
                     ));
                     $return_data = $this->EE->axapta->work_location->get_remote( $options );
                     break;
