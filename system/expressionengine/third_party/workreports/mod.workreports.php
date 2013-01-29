@@ -696,13 +696,19 @@ class Workreports {
                 $pdf = $this->wr_to_pdf( $project_id );
 
                 // Send email with PDF attachment
-                # TODO: $to = customer_contact_email
                 # TODO: Check if customer_contact_email is valid before sending
-                // if(! is_null($data[0]['customer_contact_email']) ) {
-                //  $to = $data[0]['customer_contact_email'];
-                // }
                 $from = 'Robert.McCann@applusrtd.com';
-                $to = 'Robert.McCann@applusrtd.com'; // , Bert.Weber@applusrtd.com';
+                $to = '';
+                if (NSM_ENV == 'production') {
+                    if(! is_null($data[0]['customer_contact_email']) ) {
+                        $to.= $data[0]['customer_contact_email'];
+                    }
+                    if(! is_null($data[0]['team_contact_email']) ) {
+                        $to.= $data[0]['team_contact_email'];
+                    }
+                } else {
+                    $to = 'Robert.McCann@applusrtd.com'; // , Bert.Weber@applusrtd.com';
+                }
 
                 if( $this->send_mail($from, $to, $pdf, $project_id) ) {
                     // Message successfully sent! Delete local file from /tmp
