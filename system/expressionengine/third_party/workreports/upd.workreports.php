@@ -1,6 +1,6 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 class Workreports_upd {
-    var $version = '1.4.1';
+    var $version = '1.4.2';
 
     function __construct() {
         $this->EE =& get_instance();
@@ -42,7 +42,7 @@ class Workreports_upd {
             'submitter_id'                      => array('type' => 'varchar',   'constraint' => '50'),
             'crew_leader_id'                    => array('type' => 'varchar',   'constraint' => '50'),
             'status'                            => array('type' => 'tinyint'),
-            'customer_approval'                 => array('type' => 'text'),
+            'customer_signature'                => array('type' => 'text'),
             'execution_datetime'                => array('type' => 'int',       'constraint' => '10'),
             'submission_datetime'               => array('type' => 'int',       'constraint' => '10'),
             'company_id'                        => array('type' => 'varchar',   'constraint' => '50'),
@@ -435,6 +435,7 @@ class Workreports_upd {
                 'project_id'            => array('type' => 'varchar', 'constraint' => '50') // Related to wr_reports.project_id. Needed for timecard style lookups, and completing updates/inserts
             );
             $this->EE->dbforge->add_column('wr_resource_time_log', $fields);
+        }
 
         if($current < '1.4.1') { // Added to install
             $fields = array(
@@ -444,6 +445,12 @@ class Workreports_upd {
             $this->EE->dbforge->add_column('wr_reports', $fields);
         }
 
+        if($current < '1.4.2') { // Changed in install
+            $fields = array(
+                'customer_approval' => array('name' => 'customer_signature', 'type' => 'text')
+            );
+            $this->EE->dbforge->modify_column('wr_reports', $fields);
+        }
         return TRUE;
     }
 
