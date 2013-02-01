@@ -242,6 +242,7 @@ class Workreports {
             export_reason,
             remarks,
             customer_approval,
+            customer_signature,
             status'
         );
 
@@ -279,7 +280,8 @@ class Workreports {
                 'customer_contract_id'  => $data[0]['customer_id'],
                 'rtd_reference'         => $data[0]['rtd_reference'],
                 'work_location_name'    => $data[0]['work_location_name'],
-                'work_location_address' => $data[0]['work_location_address']
+                'work_location_address' => $data[0]['work_location_address'],
+                'customer_signature'    => $data[0]['customer_signature']
             ),
             'secure'        => TRUE,
             'onsubmit'      => ''
