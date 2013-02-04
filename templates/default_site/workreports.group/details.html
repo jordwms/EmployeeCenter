@@ -282,9 +282,10 @@
                 <table>
                     <tr>
                         <td>
-                            <textarea name="customer_approval">{customer_approval}</textarea>
+                           <canvas class="customer_signature" style="" ></canvnas>
                         </td>
                         <td>Customer Approval</td>
+                        <td><input type="button" class="customer_signature btn" value="Reset" /></td>
                     </tr>
                 </table>
             </div>
@@ -313,6 +314,7 @@
 <script type="text/javascript" src="{path="assets/bootstrap-typeahead"}"></script>
 <script type="text/javascript" src="{path="assets/bootstrap-scrollspy"}"></script>
 <script type="text/javascript" src="{path="assets/jQueryFormValidator"}"></script>
+<script type="text/javascript" src="{path="assets/draw_canvas"}"></script>
 
 <script type="text/javascript">
     //Customer Contact TypeAhead
@@ -516,11 +518,11 @@
         new_resources(  );
         new_sales_items(  );
         new_materials(  );
-
-        // var signature_box = new CanvasDrawr({
-        //     id:"signature",
-        //     size: 5
-        // });
+        
+        /* Init draw area */
+        $(function(){
+          var draw_canvas = new drawCanvas({name:"customer_signature", size: 10 });
+        });
     });
 
 </script>
