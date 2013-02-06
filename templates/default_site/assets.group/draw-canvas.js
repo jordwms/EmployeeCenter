@@ -18,22 +18,30 @@
 *   image, like toDataURL( ) would generate
 */
 var drawCanvas = function(options) {
-    // grab canvas element
-    var canvas = $('canvas.'+options.name)[0], // Retrieving the DOM element from the jQ object
+    // Grab canvas element
+    var canvas = $('canvas.'+options.name)[0],
         ctxt = canvas.getContext("2d");
 
     ctxt.pX = undefined;
     ctxt.pY = undefined;
 
-    var is_move = false; // Tracks whether or not the user is click-and-dragging
-    var mouse_id = 0; // This is the only way to keep track of mouse actions
+    // Tracks whether or not the user is click-and-dragging
+    var is_move = false;
+    // This is the only way to keep track of mouse actions
+    var mouse_id = 0;
     var lines = [];
     var offset;
     
     var self = {
-        // Bind click events
         init: function() {
-            self.set();
+            // These 3 lines keep the canvas from 'zooming', which ensures the line follows exactly where the points indicate
+            canvas.style.width = '100%';
+            canvas.width = canvas.offsetWidth;
+
+            ctxt.lineWidth = options.size;
+            ctxt.lineCap = options.lineCap || "round";
+
+            offset = $(canvas).offset();
 
             // Reset the canvas - the selector reacts to <input type="button" /> or <button>
             $('button.'+options.name+', input[type=button].'+options.name).click(function() {
@@ -75,38 +83,26 @@ var drawCanvas = function(options) {
                 offset = $(canvas).offset();
             });
             
-            //set pX and pY from first click
-            
+            // Bind click events
             canvas.addEventListener('touchstart', self.preMove, false);
             canvas.addEventListener('touchmove', self.move, false);
             canvas.addEventListener('touchend', self.save, false);
 
             canvas.addEventListener('mousedown', self.mouse_startMove, false);
             canvas.addEventListener('mousemove', self.mouse_move, false);
-            window.addEventListener('mouseup',   self.mouse_endMove, false); // window so the line won't draw when mouse is off canvas
+            window.addEventListener('mouseup',   self.mouse_endMove, false);
             
-        },
-
-        set: function() {
-
-            // These 3 lines keep the canvas from 'zooming', which ensures the line follows exactly where the points indicate
-            canvas.style.width = '100%';
-            canvas.width = canvas.offsetWidth;
-
-            ctxt.lineWidth = options.size;
-            ctxt.lineCap = options.lineCap || "round";
-
-
-            offset = $(canvas).offset(); // I don't ~think~ this needs canvas.width= canvas.offsetWidth; making note of it here...
         },
 
         preMove: function(event) {
 
-            $.each(event.touches, function(i, touch) { // Each time the canvas is touched...
-              
-                var id      = touch.identifier; // Give the touch event an identifier
-              
-                lines[id] = { x     : this.pageX - offset.left, // Determine it's position on the canvas
+            // Each time the canvas is touched...
+            $.each(event.touches, function(i, touch) {
+                // Give the touch event an identifier
+                var id      = touch.identifier;
+                
+                // Determine event's position on the canvas
+                lines[id] = { x     : this.pageX - offset.left,
                               y     : this.pageY - offset.top
                             };
             });
@@ -117,8 +113,9 @@ var drawCanvas = function(options) {
         move: function(event) {
 
             $.each(event.touches, function(i, touch) {
+                // Dynamically find the position of X,Y
                 var id = touch.identifier,
-                    moveX = this.pageX - offset.left - lines[id].x, // Dynamically find the position of X,Y
+                    moveX = this.pageX - offset.left - lines[id].x,
                     moveY = this.pageY - offset.top - lines[id].y;
 
                 var ret = self.draw(id, moveX, moveY);
@@ -153,8 +150,9 @@ var drawCanvas = function(options) {
 
         mouse_startMove: function(event) {
 
+            // Position on the canvas found as coords on the page minus the offset of the canvas
             lines[mouse_id] = {
-                x     : event.pageX - offset.left, // Position on the canvas found as coords on the page minus the offset of the canvas
+                x     : event.pageX - offset.left,
                 y     : event.pageY - offset.top
             };
             is_move = true;
