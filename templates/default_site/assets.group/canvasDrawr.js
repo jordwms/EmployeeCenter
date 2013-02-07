@@ -17,7 +17,7 @@
 * "hidden" type input should hold a base64 encoded string for an
 *   image, like toDataURL( ) would generate
 */
-var drawCanvas = function(options) {
+var canvasDrawr = function(options) {
     // Grab canvas element
     var canvas = $('canvas.'+options.name)[0],
         ctxt = canvas.getContext("2d");
