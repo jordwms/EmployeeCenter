@@ -724,7 +724,7 @@ class Workreports {
                 'title'   => 'Information Accepted',
                 'heading' => 'Thank you',
                 'content' => nl2br($message),
-                'link'    => array($this->EE->functions->form_backtrack('0'), 'Return to Work Reports')
+                'link'    => array($this->EE->functions->fetch_site_index(0, 0).'workreports', 'Return to Work Reports')
             ));
 
             return TRUE;
