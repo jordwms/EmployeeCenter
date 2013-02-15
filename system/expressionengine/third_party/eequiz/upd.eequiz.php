@@ -12,7 +12,7 @@ require_once("common.php");
 
 class Eequiz_upd { 
 	
-    var $version = '2.1.0';
+    var $version = '2.1.1';
 	var $system_name = "Eequiz";
 	
     function Eequiz_upd() 
@@ -410,6 +410,25 @@ EOT;
 		{
 			// add 'tags' to quizzes
 			$this->EE->db->query("ALTER TABLE exp_eequiz_quizzes ADD COLUMN tags VARCHAR(255)");
+		}
+
+		if ($current < '2.1.1') {
+	        $this->EE->dbforge->add_field(array(
+	            'id'                                => array('type' => 'int',       'constraint' => '10', 'unsigned' => TRUE, 'auto_increment' => TRUE),
+	            'name'                        => array('type' => 'varchar',   'constraint' => '50')
+	            )
+	        );
+	        $this->EE->dbforge->add_key('id', TRUE);
+	        $this->EE->dbforge->create_table('eequiz_quiz_groups');
+
+	       	$this->EE->dbforge->add_field(array(
+	            'id'                                => array('type' => 'int',       'constraint' => '10', 'unsigned' => TRUE, 'auto_increment' => TRUE),
+	            'quiz_group_id'                     => array('type' => 'varchar',   'constraint' => '50'),
+	            'quiz_id'                           => array('type' => 'varchar',   'constraint' => '50')
+	            )
+	        );
+	        $this->EE->dbforge->add_key('id', TRUE);
+	        $this->EE->dbforge->create_table('eequiz_group_quizzes');
 		}
 		
 		return TRUE;
