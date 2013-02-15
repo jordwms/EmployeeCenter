@@ -32,6 +32,88 @@ class Eequiz {
 		require("front_end_messages.php");
     }
 
+	/*
+	 *	Added by Robert McCann
+	 *	4-ee guys need to rethink their shit
+	 *
+	 *	I'm using the poormans hack to provide quiz grouping
+	 *	A prefix can be used on the title of the quiz, and be provided to the score card functions
+	 *	This should be implemented into the database at some point
+	 *	
+	 *	This one is probably a little faster, but not as accurate as it relies on the cached_quizzes table
+	 *	Also, this doesn't show if the users has completed all questions required (is quiz complete?)
+	 *	
+	 *	{quiz_id}
+	 *	{quiz_title}
+	 *	{grade_percent}
+	 *	{date_completed}
+	 *	{passing}
+	 *	
+	 */
+	function score_card() {
+		$this->EE->load->library('score');
+		$tagdata = $this->EE->TMPL->tagdata;
+
+		$prefix = $this->EE->db->escape_str( $this->EE->TMPL->fetch_param('prefix') );
+		$active_member_id = $this->_get_active_member_id($quiz);
+
+		$scores = $this->EE->score->score_card($prefix, $active_member_id);
+
+		$this->return_data = $this->EE->TMPL->parse_variables( $tagdata, $scores );
+		return $this->return_data;
+	}
+	
+	function score_card2($prefix=NULL) {
+		$this->EE->load->library('score');
+		if(is_null($prefix)){
+			$prefix = $this->EE->db->escape_str( $this->EE->TMPL->fetch_param('prefix') );
+		}
+		$active_member_id = $this->_get_active_member_id($quiz);
+
+		$tagdata = $this->EE->TMPL->tagdata;
+
+		$scores = $this->EE->score->score_card2($prefix, $active_member_id);
+
+		$this->return_data = $this->EE->TMPL->parse_variables( $tagdata, $scores );
+		return $this->return_data;
+	}
+	
+	//Returns the number of quizzes that a user is passing in a group
+	//If I trusted the cached_scores table, this would be simpler.
+	//The group is defined as the template tag parameter: prefix
+	//Default behavior is current user
+	function number_passing_in_group($prefix=NULL, $member_id=NULL) {
+		$this->EE->load->library('score');
+		if(is_null($prefix)){
+			$prefix = $this->EE->db->escape_str( $this->EE->TMPL->fetch_param('prefix') );
+		}
+
+		if(is_null($member_id)) { $member_id = $this->_get_active_member_id($quiz); };
+		
+		return $this->EE->score->number_passing_in_group($prefix, $member_id);
+	}
+
+	//Returns the number of quizzes in a "group"
+	//The group is defined as the template tag parameter: prefix
+	function number_in_group($prefix=NULL, $member_id=NULL) {
+		$this->EE->load->library('score');
+		$prefix = $this->EE->db->escape_str( $this->EE->TMPL->fetch_param('prefix') );
+		
+		return $this->EE->score->number_in_group($prefix);
+	}
+
+	function passing_all_in_group($prefix=NULL, $member_id=NULL){
+		$this->EE->load->library('score');
+		$prefix = $this->EE->db->escape_str( $this->EE->TMPL->fetch_param('prefix') );
+
+		if(is_null($member_id)) { $member_id = $this->_get_active_member_id($quiz); };
+		
+		return $this->EE->score->number_in_group($prefix, $member_id);
+	}
+	
+	/*
+	 *	END of section added by Robert McCann
+	 */
 	
 	
 	
