@@ -9,6 +9,8 @@
 		<th class=''></th>
 		<th class=''></th>
 		<th class=''></th>
+		<th class=''></th>
+		<th class=''></th>
 	</thead>
 	
 	<tbody id='quizzes_tbody'>
@@ -18,6 +20,12 @@
 			<td><a href='<?=$module_url?>&method=edit_quiz&quiz_id=<?=$q['quiz_id']?>'><?=$q['title']?></a></td>
 			<td>
 				<a class='duplicate_btn' href='<?=$module_url?>&method=view_answer_data&quiz_id=<?=$q['quiz_id']?>'>View Answer Data</a>
+			</td>
+			<td>
+				<a class='duplicate_btn' href='<?=$module_url?>&method=export_answers&quiz_id=<?=$q['quiz_id']?>'>Export Answers</a>
+			</td>
+			<td>
+				<a class='duplicate_btn' href='<?=$module_url?>&method=export_scores&quiz_id=<?=$q['quiz_id']?>'>Export Scores</a>
 			</td>
 			<td>
 				<a class='duplicate_btn' href='javascript:void(0)' onclick='viewQuizzes.duplicateQuiz(<?=$q['quiz_id']?>);'>Duplicate</a>

@@ -9,6 +9,7 @@ define("QUIZ_FEEDBACK_SHOW_IF_WRONG", 5);
 define("QUIZ_EMAIL_OFF", 0);
 define("QUIZ_EMAIL_ON_PASS", 1);
 define("QUIZ_EMAIL_ON_COMPLETE", 2);
+define("QUIZ_EMAIL_ON_CORRECT_OR_NO_MORE_ATTEMPTS", 3);
 
 class Quiz
 {
@@ -16,6 +17,7 @@ class Quiz
 	var $quiz_id				= 0;
 	var $title					= "";
 	var $url_title				= "";
+	var $tags					= "";
 	var $description			= "";
 	var $quiz_template_id		= "";
 	var $disabled				= FALSE;
@@ -39,7 +41,8 @@ class Quiz
 	var $max_score				= 0;
 	var $attempted_any			= FALSE;
 	var $attempted_all			= FALSE;
-	var $attempted_all_mandatory	= FALSE;
+	var $attempted_all_mandatory		= FALSE;
+	var $correct_or_no_more_attempts	= FALSE;
 	var $questions				= array();
 	var $last_time				= 0;
 	var $last_time_formatted	= 0;
@@ -75,6 +78,7 @@ class Quiz
 		$this->title = $this->db_data["title"];
 		$this->url_title = $this->db_data["url_title"];
 		$this->description = $this->db_data["description"];
+		$this->tags = $this->db_data["tags"];
 		$this->quiz_template_id = $this->db_data["quiz_template_id"];
 		
 		$this->disabled = $this->db_data["disabled"] == 1;
@@ -122,6 +126,7 @@ class Quiz
 		$this->title = $this->EE->input->get_post("title");
 		$this->url_title = $this->EE->input->get_post("url_title");
 		$this->description = $this->EE->input->get_post("description");
+		$this->tags = $this->EE->input->get_post("tags");
 		$this->quiz_template_id = $this->EE->input->get_post("quiz_template_id");
 		
 		$this->disabled = (!$this->EE->input->get_post("enabled"));
@@ -176,6 +181,7 @@ class Quiz
 		$this->attempted_any = FALSE;
 		$this->attempted_all = TRUE;
 		$this->attempted_all_mandatory = TRUE;
+		$this->correct_or_no_more_attempts = TRUE;
 		$this->score = 0;
 		$this->max_score = 0;
 		$this->percent = 0;
@@ -207,6 +213,9 @@ class Quiz
 				if (!$question->optional) $this->attempted_all_mandatory = FALSE;
 			}
 			else $this->attempted_any = TRUE;
+			
+			if (!(($question->attempts > 0 && $question->attempts >= $question->max_attempts) || $question->last_answer === $question->answer))
+				$this->correct_or_no_more_attempts = FALSE;
 		}
 		
 		$this->percent = ($this->max_score > 0) ? number_format(100*$this->score/$this->max_score, 1, '.', '') : 100;
@@ -235,6 +244,11 @@ class Quiz
 			"label"			=> $this->EE->lang->line('quiz_description_lbl'),
 			"description"	=> $this->EE->lang->line('quiz_description_desc'),
 			"content"		=> "<textarea name='description' id='description'>{$this->description}</textarea>"
+		);
+		$information[] = array(
+			"label"			=> "Tags",
+			"description"	=> "Use this to tag your quizzes. Separate each tag by spaces. Ex: math science physics",
+			"content"		=> "<input class='text_input_long' name='tags' id='tags' type='text' value='".htmlentities($this->tags, ENT_QUOTES)."' />"
 		);
 		
 		$templates = $this->EE->db->get("eequiz_quiz_templates");
@@ -294,7 +308,8 @@ class Quiz
 			"content"			=> "<select name='email_mode'>".
 									"<option ".($this->email_mode == QUIZ_EMAIL_OFF ? "selected='selected' " : "")." value='".QUIZ_EMAIL_OFF."'>off</option>".
 									"<option ".($this->email_mode == QUIZ_EMAIL_ON_PASS ? "selected='selected' " : "")." value='".QUIZ_EMAIL_ON_PASS."'>sent when user passes the quiz</option>".
-									"<option ".($this->email_mode == QUIZ_EMAIL_ON_COMPLETE ? "selected='selected' " : "")." value='".QUIZ_EMAIL_ON_COMPLETE."'>sent when user completes the quiz</option>".
+									"<option ".($this->email_mode == QUIZ_EMAIL_ON_COMPLETE ? "selected='selected' " : "")." value='".QUIZ_EMAIL_ON_COMPLETE."'>sent when user attempts all questions</option>".
+									"<option ".($this->email_mode == QUIZ_EMAIL_ON_CORRECT_OR_NO_MORE_ATTEMPTS ? "selected='selected' " : "")." value='".QUIZ_EMAIL_ON_CORRECT_OR_NO_MORE_ATTEMPTS."'>sent when every question is either correct or has no more attempts</option>".
 									"</select>"
 		);
 		$settings[] = array(
@@ -314,7 +329,7 @@ class Quiz
 		);
 		$settings[] = array(
 			"label"				=> "Email Message",
-			"description"		=> "The main message of the email. You may use any ExpressionEngine tags here, and there are three additional variables provided for you: quiz_id, member_id, and anonymous (true if the user is an anonymous user). <br />Example: <br />".
+			"description"		=> "The main message of the email. You may use any ExpressionEngine tags here, and there are some additional variables provided for you: quiz_id, member_id, screen_name, username, and anonymous (true if the user is an anonymous user). <br />Example: <br />".
 									"{exp:eequiz:quizzes quiz_id='{quiz_id}'}<br / >{quiz_title} was just completed with a score of: {grade_score}<br / >{/exp:eequiz:quizzes}",
 			"content"			=> "<textarea name='email_message' style='height: 200px;'>".$this->email_message."</textarea>"
 		);
@@ -369,6 +384,7 @@ EOT;
 			'title'					=> $this->title,
 			'url_title'				=> $this->url_title,
 			'description'			=> $this->description,
+			'tags'					=> $this->tags,
 			'quiz_template_id'		=> $this->quiz_template_id,
 			
 			'disabled'				=> ($this->disabled) ? 1 : 0,

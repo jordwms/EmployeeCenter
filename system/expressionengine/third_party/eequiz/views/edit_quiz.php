@@ -32,7 +32,6 @@
 	<tr class="odd">
 		<td style="width: 50%; vertical-align: top;">
 			<label>Questions In This Quiz</label>
-			<div id="question_list_removeAll" onclick="editQuiz.removeAll()">Remove All &rarr;</div>
 			<ul id='question_list'>
 				<?php foreach ($mappings as $k => $m) { ?>
 					<li id='quiz_question_<?=$m['question_id']?>_<?=$m['mapping_id']?>' class='<?=$m['tags']?> <?=""/*($m['question_id'>=$recent_id_limit)?"recent":""*/?>'>
@@ -47,10 +46,9 @@
 			<input class="remove_filter_btn" type="button" onclick='editQuiz.clearFilter();' style=""></div>
 			</div>
 			<label>Unused Questions</label>
-			<div id="question_list_addAll" onclick="editQuiz.addAll()">&larr; Add All</div>
 			<ul id='unused_question_list'>
 				<?php foreach ($unused_questions as $k => $uq) { ?>
-					<li id='quiz_question_<?=$uq['question_id']?>_0' class="<?=$uq['tags']?> <?=$uq['question_id']>=$recent_id_limit?"recent":""?>">
+					<li id='quiz_question_<?=$uq['question_id']?>_0' class="<?=$uq['tags']?> <?=$uq['question_id'] >= $recent_id_limit?"recent":""?> <?= !in_array($uq['question_id'], $used_by_other) ? "unused" : "" ?>">
 						<?=$uq['title']?> (<?=$uq['question_shortname']?>)
 					</li>
 				<?php } ?>

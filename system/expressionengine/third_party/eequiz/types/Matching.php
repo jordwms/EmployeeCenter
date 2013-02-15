@@ -99,14 +99,14 @@ class Matching extends Question
 			
 			// correctness
 			$this->correctness_class = "incorrect_mark";
-			$correctness_message = "incorrect";
+			$correctness_message = $this->EE->lang->line("incorrect");
 			if ($num_correct > 0 && $num_correct < count($this->problems)) {
 				$this->correctness_class = "partially_correct_mark";
-				$correctness_message = "{$num_correct} of ".count($this->problems)." correct";
+				$correctness_message = "{$num_correct} of ".count($this->problems)." ".$this->EE->lang->line("correct");
 			}
 			elseif ($num_correct == count($this->problems)) {
 				$this->correctness_class = "correct_mark";
-				$correctness_message = "correct";
+				$correctness_message = $this->EE->lang->line("correct");
 			}
 			
 			$this->correctness = "<div class='{$this->correctness_class}'><span class='mark_text'>{$correctness_message}</span></div>";

@@ -28,15 +28,16 @@ class FillInTheBlank extends Question
 		
 		if ($this->attempts > 0)
 		{
-			$this->score = ($this->last_answer == $this->answer) ? $this->weight : 0;
+			$this->score = 0;
 			
 			$this->correctness_class = "incorrect_mark";
-			$correctness_message = "incorrect";
+			$correctness_message = $this->EE->lang->line("incorrect");
 			if ((strcasecmp($this->last_answer, $this->answer) == 0) ||
 				(is_numeric($this->last_answer) && is_numeric($this->answer) && $this->last_answer == $this->answer))
 			{
 				$this->correctness_class = "correct_mark";
-				$correctness_message = "correct";
+				$correctness_message = $this->EE->lang->line("correct");
+				$this->score = $this->weight;
 			}
 			$this->correctness = "<div class='{$this->correctness_class}'><span class='mark_text'>{$correctness_message}</span></div>";
 		}

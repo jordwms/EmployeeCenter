@@ -180,12 +180,17 @@ class MultipleChoice extends Question
 			$prefix = str_replace("{#}", $displayed_order+1, $this->feedback_prefix);
 			$prefix = str_replace("{a}", chr(97+$displayed_order), $prefix);
 			$prefix = str_replace("{A}", chr(65+$displayed_order), $prefix);
-			if ($selected && strlen($o['feedback']) > 0) $second_feedback .= "<li>{$prefix}{$o['feedback']}</li>";
+			if ($selected && strlen($o['feedback']) > 0) {
+				$second_feedback .= "<li>{$prefix}{$o['feedback']}</li>";
+				if ($this->explanation_extra != "") $this->explanation_extra .= ", ";
+				$this->explanation_extra .= "{$prefix}{$o['feedback']}";
+			}
 		}
 		if ($second_feedback != "") $second_feedback = "<ul>{$second_feedback}</ul>";
 		
 		$this->feedback_section = "";
 		if ($first_feedback != "" || $second_feedback != "") $this->feedback_section = "<div class='feedback_section'>{$first_feedback}{$second_feedback}</div>";
+		
 		
 		if ($this->attempts > 0)
 		{
@@ -198,17 +203,17 @@ class MultipleChoice extends Question
 				if ($this->score == $this->max_weight) {
 					
 					$this->correctness_class = "correct_mark";
-					$correctness_message = "correct";
+					$correctness_message = $this->EE->lang->line("correct");
 				}
 				elseif ($this->score > 0) {
 					
 					$this->correctness_class = "partially_correct_mark";
-					$correctness_message = "partially correct";
+					$correctness_message = $this->EE->lang->line("partially_correct");
 				}
 				else {
 					
 					$this->correctness_class = "incorrect_mark";
-					$correctness_message = "incorrect";
+					$correctness_message = $this->EE->lang->line("incorrect");
 				}
 			}
 			else {
@@ -217,11 +222,11 @@ class MultipleChoice extends Question
 				
 				// correctness
 				$this->correctness_class = "incorrect_mark";
-				$correctness_message = "incorrect";
+				$correctness_message = $this->EE->lang->line("incorrect");
 				
 				if ($this->answer == $this->last_answer || $this->answer_type == MC_NO_ANSWER) {
 					$this->correctness_class = "correct_mark";
-					$correctness_message = "correct";
+					$correctness_message = $this->EE->lang->line("correct");
 				}
 				elseif ($this->answer_type == MC_MULTIPLE_ANSWERS) {
 					//check for partially correct
@@ -232,7 +237,7 @@ class MultipleChoice extends Question
 					}
 					if ($num_correct > 0) {
 						$this->correctness_class = "partially_correct_mark";
-						$correctness_message = "{$num_correct} of your answers are correct";
+						$correctness_message = "{$num_correct} ".$this->EE->lang->line("correct");
 					}
 				}
 			}

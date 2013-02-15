@@ -11,6 +11,7 @@ class Question
 	var $title					= "";
 	var $text					= "";
 	var $explanation			= "";
+	var $explanation_extra		= "";
 	
 	var $optional				= FALSE;
 	var $settings				= array();
@@ -120,11 +121,11 @@ class Question
 			$this->score = ($this->last_answer == $this->answer) ? $this->weight : 0;
 			
 			$this->correctness_class = "incorrect_mark";
-			$correctness_message = "incorrect";
+			$correctness_message = $this->EE->lang->line("incorrect");
 			if ($this->last_answer === $this->answer)
 			{
 				$this->correctness_class = "correct_mark";
-				$correctness_message = "correct";
+				$correctness_message = $this->EE->lang->line("correct");
 			}
 			$this->correctness = "<div class='{$this->correctness_class}'><span class='mark_text'>{$correctness_message}</span></div>";
 		}

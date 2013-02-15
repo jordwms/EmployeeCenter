@@ -36,6 +36,10 @@
 				<dd>Optional. The id of a specific quiz to get data for. Will iterate through all quizzes if not specified.</dd>
 				<dt>url_title</dt>
 				<dd>Optional. The url_title of a specific quiz to get data for. Will iterate through all quizzes if not specified.</dd>
+				<dt>tags</dt> 
+				<dd>Optional. Use this to only show quizzes of certain tags, separated by "|". ex: math|science</dd>
+				<dt>member_id</dt>
+				<dd>Optional. If specified, the quiz will use results for that member, instead of the currently logged in member (currently logged in member is default).</dd>
 				<dt>disable="grades"</dt>
 				<dd>Optional. Will speed up the tag by disabling any variables and conditionals relating to user scores and progress.</dd>
 			</dl>
@@ -48,8 +52,12 @@
 				<dd>The title of this quiz.</dd>
 				<dt>quiz_description</dt> 
 				<dd>The description of this quiz.</dd>
+				<dt>tags</dt> 
+				<dd>The tags for this quiz.</dd>
 				<dt>passing_grade</dt> 
 				<dd>The passing grade for this quiz.</dd>
+				<dt>num_questions</dt> 
+				<dd>The number of questions contained in this quiz.</dd>
 				<dt><b>--- grades tag option must NOT be disabled for the following conditionals ---</b></dt>
 				<dd></dd>
 				<dt>grade_score</dt> 
@@ -80,6 +88,8 @@
 				<dd>TRUE if the quiz displays all questions at the same time.</dd>
 				<dt>anonymous</dt>
 				<dd>TRUE if the quiz is set to anonymous.</dd>
+				<dt>num_questions</dt> 
+				<dd>The number of questions contained in this quiz.</dd>
 				<dt><b>--- grades tag option must NOT be disabled for the following conditionals ---</b></dt>
 				<dd></dd>
 				<dt>attempted_all</dt>
@@ -134,6 +144,8 @@
 				<dd>Required if quiz_id is not set. The url_title of a specific quiz to get data for.</dd>
 				<dt>continue</dt>
 				<dd>Optional. If this is set to "yes","true", or "retake" and the quiz is sequential, then the quiz will start after the user's last answered question.</dd>
+				<dt>include_js</dt>
+				<dd>Optional. Defaults to "yes". If set to "no", you must include the {exp:eequiz:javascript} tag in your page.</dd>
 				<dt>retake</dt>
 				<dd>Optional. If this is set to "yes","true", or "retake", the quiz answers for the current user will be erased when starting the quiz. Use this when you want to automate user retakes. WARNING: if you have the questions tag with retake="yes" anywhere on the page, even if guarded with conditional template logic, it will still parse and therefore clear the current user's answers. See the following example for correct way to use this tag.
 					<p class='doc_example'>
@@ -156,10 +168,13 @@
 				The json sent to the callback has the following properties:<br />
 					<ul>
 					<li><span>json.updated_answer :</span> true if the user submitted an answer, false if the user changed to a different question</li>
+					<li><span>json.quiz_id :</span> the quiz id</li>
 					<li><span>json.question_number :</span> the question number</li>
 					<li><span>json.num_questions :</span> the number of questions in this quiz</li>
 					<li><span>json.attempted_all :</span> true if the user has attempted all questions in the quiz</li>
 					<li><span>json.attempted_all_mandatory :</span> true if the user has attempted all mandatory questions in the quiz</li>
+					<li><span>json.all_correct_or_no_more_attempts :</span> true if the user has gotten every question right and/or has no more attempts</li>
+					<li><span>json.quiz_passing_grade :</span> the passing grade for this quiz</li>
 					<li><span>json.quiz_max_score :</span> the max possible score possible for this quiz</li>
 					<li><span>json.quiz_score :</span> the user's current quiz score, as the number of earned points</li>
 					<li><span>json.quiz_percent :</span> the user's current quiz score, as a number between 0 and 100</li>
@@ -224,7 +239,7 @@
 		</div>
 		
 		<div class="subsection">
-			<h2>Variables/Conditionals:</h2>
+			<h2>Variables:</h2>
 			<dl>
 				<dt>max_score</dt>
 				<dd>The max possible total score of the specified quizzes.</dd>
@@ -244,7 +259,16 @@
 		</div>
 		
 		<div class="subsection">
-			<h2>Variables/Conditionals:</h2>
+			<h2>Conditionals:</h2>
+			<dl>
+				<dt>***</dt>
+				<dd>All the variables listed above can be used with conditionals.</dd>
+				<dt>passing_all</dt>
+				<dd>TRUE if the current user is passing all the quizzes specified with the quiz_id parameter.</dd>
+			</dl>
+		</div>
+		
+		<div class="subsection">
 			<h2>Examples:</h2>
 			<dl>
 				<dt>a simple results page</dt>
@@ -260,6 +284,8 @@ percentile: {user_percentile}%&lt;br /&gt;<br />
 {exp:eequiz:answer_data}<br />
 score: {user_percent}%&lt;br /&gt;<br />
 percentile: {user_percentile}%&lt;br /&gt;<br />
+{if passing_all}You are passing every quiz! Congrats!&lt;br /&gt;<br />
+{if:else}You are not yet passing every quiz... keep trying!&lt;br /&gt;{/if}<br />
 {/exp:eequiz:answer_data}<br />
 					</p>
 				</dd>
@@ -326,6 +352,8 @@ percentile: {user_percentile}%&lt;br /&gt;<br />
 				<dd>* Only applies to matching questions; use conditional "type" to verify *<br />Tag pair. Contains variables: problem_number, problem_text, problem_answer, problem_selection. Contains conditionals: problem_number, problem_answer, problem_selection.</dd>
 				<dt>matching_choices</dt> 
 				<dd>* Only applies to matching questions; use conditional "type" to verify *<br />Tag pair. Contains variables: choice_number, choice_text. Contains conditionals: choice_number.</dd>
+				<dt>num_questions</dt> 
+				<dd>The number of questions contained in this quiz.<br />NOTE: this is unaffected by the "unrolled" parameter.</dd>
 				
 				
 			</dl>
@@ -356,7 +384,9 @@ percentile: {user_percentile}%&lt;br /&gt;<br />
 				<dt>incorrect</dt> 
 				<dd>True if the user's answer is incorrect.</dd>	
 				<dt>partially_correct</dt> 
-				<dd>True if the user's answer is partially correct.</dd>	
+				<dd>True if the user's answer is partially correct.</dd>
+				<dt>num_questions</dt> 
+				<dd>The number of questions contained in this quiz.<br />NOTE: this is unaffected by the "unrolled" parameter.</dd>	
 			</dl>
 		</div>
 		
@@ -411,6 +441,30 @@ percentile: {user_percentile}%&lt;br /&gt;<br />
 	</div>
 	
 	
+	<h3>Javascript Tag</h3>
+	<div class="doc_section">
+		
+		<div class="subsection">
+			<h2>Overview:</h2>
+			<p>This is a single tag. Add it to your page if you did include_js="no" on your {exp:eequiz:questions} tag. Note: if you use any of the options below, you MUST define the javascript functions before you insert this tag!</p>
+		</div>
+		
+		<div class="subsection">
+			<h2>Options:</h2>
+			<dl>
+				<dt>js_on_load_start</dt>
+				<dd>Optional. Provide the name of a javascript function to add custom behavior for when loading begins.</dd>
+				<dt>js_on_load_end</dt>
+				<dd>Optional. Provide the name of a javascript function to add custom behavior for when loading ends.</dd>
+				<dt>js_on_update</dt>
+				<dd>Optional. An optional javascript callback when a question is updated on the page. Must receive one parameter (ex: onQuestionUpdate(json){} ). Refer to the questions tag for more information.</dd>
+			</dl>
+		</div>
+		
+	</div>
+	
+	
+	
 	
 	<h3>Quiz Template Reference</h3>
 	<div class="doc_section">
@@ -432,6 +486,8 @@ percentile: {user_percentile}%&lt;br /&gt;<br />
 			<li>{score} : The user's earned score for this question</li>
 			<li>{weight} : The amount of points this question is worth</li>
 			<li>{correctness} : Will be either "correct", "incorrect", "partially_correct", depending on the user's answer.</li>
+			<li>{feedback_explanation} : This is the overall question explanation, with no extra html. Use this if you want to get at what's inside {feedback_section}</li>
+			<li>{feedback_extra} : This is question-specific extra feedback, with no html. Use this if you want to get at what's inside {feedback_section}</li>
 			<li>{quiz_title}</li>
 			<li>{quiz_id}</li>
 			<li>{quiz_description}</li>
@@ -451,17 +507,17 @@ percentile: {user_percentile}%&lt;br /&gt;<br />
 			<dd>The section where feedback is provided to the user</dd>
 			<dt>{correctness}</dt>
 			<dd>The section that tells whether the user got the problem right or wrong (ex: &lt;div class='correct_mark'&gt;&lt;span&gt;correct&lt;/span&gt;&lt;div&gt;). If used within a conditional, it will evaluate to "", "correct", "incorrect", or "partially_correct".</dd>
-			<dt>{previous}</dt>
-			<dd>The button to go to the previous question. Will automatically evaluate to nothing if quiz display is set to 'view all at once'.</dd>
-			<dt>{next}</dt>
-			<dd>The button to go to the next question. Will automatically evaluate to nothing if quiz display is set to 'view all at once'.</dd>
-			<dt>{submit}</dt>
-			<dd>The button to submit the user's answer.</dd>
-			<dt>{submit_and_advance}</dt>
-			<dd>This button will submit the user's answer and automatically advance to the next question. If this is on an all-at-once quiz, it will revert to a regular submit button.</dd>
+			<dt>{previous label="optional label"}</dt>
+			<dd>The button to go to the previous question. Will automatically evaluate to nothing if quiz display is set to 'view all at once'. Use the optional label param to customize the button.</dd>
+			<dt>{next label="optional label"}</dt>
+			<dd>The button to go to the next question. Will automatically evaluate to nothing if quiz display is set to 'view all at once'. Use the optional label param to customize the button.</dd>
+			<dt>{submit label="optional label"}</dt>
+			<dd>The button to submit the user's answer. Use the optional label param to customize the button.</dd>
+			<dt>{submit_and_advance label="optional label"}</dt>
+			<dd>This button will submit the user's answer and automatically advance to the next question. If this is on an all-at-once quiz, it will revert to a regular submit button. Use the optional label param to customize the button.</dd>
 			</dl>
 		</div>
-		
+
 	</div>
 	
 	

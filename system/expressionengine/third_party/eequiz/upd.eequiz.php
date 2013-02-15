@@ -12,7 +12,7 @@ require_once("common.php");
 
 class Eequiz_upd { 
 	
-    var $version = '1.9.2';
+    var $version = '2.1.0';
 	var $system_name = "Eequiz";
 	
     function Eequiz_upd() 
@@ -72,6 +72,7 @@ class Eequiz_upd {
 			'title'				=> array('type' => 'text'),
 			'url_title'			=> array('type' => 'varchar', 'constraint' => '50'),
 			'description'		=> array('type' => 'text'),
+			'tags'				=> array('type' => 'varchar', 'constraint' => '255'),
 			'quiz_template_id'	=> array('type' => 'int', 'constraint' => '10', 'unsigned' => TRUE, 'null' => FALSE),
 			'disabled'			=> array('type' => 'tinyint'),
 			'feedback_mode'		=> array('type' => 'int', 'constraint' => '2'),
@@ -403,6 +404,12 @@ EOT;
 		{
 			// add 'url_title' to quizzes
 			$this->EE->db->query("ALTER TABLE exp_eequiz_quizzes ADD COLUMN url_title VARCHAR(50)");
+		}
+		
+		if ($current < '1.9.4')
+		{
+			// add 'tags' to quizzes
+			$this->EE->db->query("ALTER TABLE exp_eequiz_quizzes ADD COLUMN tags VARCHAR(255)");
 		}
 		
 		return TRUE;

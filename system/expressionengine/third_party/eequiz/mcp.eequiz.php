@@ -23,7 +23,7 @@ class Eequiz_mcp {
     // --------------------------------
 	
     function Eequiz_mcp() 
-    {
+    { 
         $this->EE =& get_instance();
 		$this->EE->load->library('javascript');
 		$this->EE->load->helper('form'); 
@@ -466,6 +466,10 @@ EOT;
 			$rows = $recent_id_limit->result_array();
 			$view_data['recent_id_limit'] = $rows[$number_of_recent-1]["question_id"];
 		}
+		
+		$view_data['used_by_other'] = array();
+		$used_by_other_query = $this->EE->db->query("SELECT DISTINCT question_id FROM exp_eequiz_mappings");
+		foreach ($used_by_other_query->result_array() as $row) $view_data['used_by_other'][] = $row["question_id"];
 		
 		//-------------------------------
 		// Render page
@@ -1282,31 +1286,62 @@ EOT;
 		));
 		$profile_string = "<table><tbody>";$profile_total = 0;$profile_time = microtime(TRUE);*/
 		
+		$quiz_id = $this->EE->input->get_post('quiz_id');
+		
 		$this->EE->load->helper('download');
 		
-		$answers = $this->EE->db->query("
-			SELECT p.user_answer, p.member_id, m.`order`, m.quiz_id, m.question_id, qt.classname, qt.answer, mem.username
-			FROM 
-				(SELECT MAX(inner_p.progress_id) AS the_progress_id
-				 FROM exp_eequiz_progress AS inner_p 
-				 GROUP BY member_id, mapping_id) AS left_p
-				INNER JOIN exp_eequiz_progress AS p ON left_p.the_progress_id=p.progress_id
-				INNER JOIN exp_eequiz_mappings AS m ON p.mapping_id=m.mapping_id
-				INNER JOIN exp_eequiz_questions AS qt ON m.question_id=qt.question_id
-				INNER JOIN exp_members AS mem ON p.member_id=mem.member_id
-			ORDER BY m.quiz_id, p.member_id, m.`order` ASC");
-		
-		$anon_answers = $this->EE->db->query("
-			SELECT p.user_answer, p.anonymous_member_id AS member_id, m.`order`, m.quiz_id, m.question_id, qt.classname, qt.answer
-			FROM 
-				(SELECT MAX(inner_p.anonymous_progress_id) AS the_progress_id 
-				 FROM exp_eequiz_anonymous_progress AS inner_p 
-				 GROUP BY anonymous_member_id, mapping_id) AS left_p
-				INNER JOIN exp_eequiz_anonymous_progress AS p ON left_p.the_progress_id=p.anonymous_progress_id
-				INNER JOIN exp_eequiz_mappings AS m ON p.mapping_id=m.mapping_id
-				INNER JOIN exp_eequiz_questions AS qt ON m.question_id=qt.question_id
-			ORDER BY m.quiz_id, p.anonymous_member_id, m.`order` ASC");
-		
+		if ($quiz_id)
+		{
+			$answers = $this->EE->db->query("
+				SELECT p.user_answer, p.member_id, m.`order`, m.quiz_id, m.question_id, qt.classname, qt.answer, mem.username
+				FROM 
+					(SELECT MAX(inner_p.progress_id) AS the_progress_id
+					 FROM exp_eequiz_progress AS inner_p 
+					 GROUP BY member_id, mapping_id) AS left_p
+					INNER JOIN exp_eequiz_progress AS p ON left_p.the_progress_id=p.progress_id
+					INNER JOIN 
+						(SELECT * FROM exp_eequiz_mappings WHERE quiz_id={$quiz_id}) AS m ON p.mapping_id=m.mapping_id
+					INNER JOIN exp_eequiz_questions AS qt ON m.question_id=qt.question_id
+					INNER JOIN exp_members AS mem ON p.member_id=mem.member_id
+				ORDER BY m.quiz_id, p.member_id, m.`order` ASC");
+			
+			$anon_answers = $this->EE->db->query("
+				SELECT p.user_answer, p.anonymous_member_id AS member_id, m.`order`, m.quiz_id, m.question_id, qt.classname, qt.answer
+				FROM 
+					(SELECT MAX(inner_p.anonymous_progress_id) AS the_progress_id 
+					 FROM exp_eequiz_anonymous_progress AS inner_p 
+					 GROUP BY anonymous_member_id, mapping_id) AS left_p
+					INNER JOIN exp_eequiz_anonymous_progress AS p ON left_p.the_progress_id=p.anonymous_progress_id
+					INNER JOIN 
+						(SELECT * FROM exp_eequiz_mappings WHERE quiz_id={$quiz_id}) AS m ON p.mapping_id=m.mapping_id
+					INNER JOIN exp_eequiz_questions AS qt ON m.question_id=qt.question_id
+				ORDER BY m.quiz_id, p.anonymous_member_id, m.`order` ASC");
+		}
+		else
+		{
+			$answers = $this->EE->db->query("
+				SELECT p.user_answer, p.member_id, m.`order`, m.quiz_id, m.question_id, qt.classname, qt.answer, mem.username
+				FROM 
+					(SELECT MAX(inner_p.progress_id) AS the_progress_id
+					 FROM exp_eequiz_progress AS inner_p 
+					 GROUP BY member_id, mapping_id) AS left_p
+					INNER JOIN exp_eequiz_progress AS p ON left_p.the_progress_id=p.progress_id
+					INNER JOIN exp_eequiz_mappings AS m ON p.mapping_id=m.mapping_id
+					INNER JOIN exp_eequiz_questions AS qt ON m.question_id=qt.question_id
+					INNER JOIN exp_members AS mem ON p.member_id=mem.member_id
+				ORDER BY m.quiz_id, p.member_id, m.`order` ASC");
+			
+			$anon_answers = $this->EE->db->query("
+				SELECT p.user_answer, p.anonymous_member_id AS member_id, m.`order`, m.quiz_id, m.question_id, qt.classname, qt.answer
+				FROM 
+					(SELECT MAX(inner_p.anonymous_progress_id) AS the_progress_id 
+					 FROM exp_eequiz_anonymous_progress AS inner_p 
+					 GROUP BY anonymous_member_id, mapping_id) AS left_p
+					INNER JOIN exp_eequiz_anonymous_progress AS p ON left_p.the_progress_id=p.anonymous_progress_id
+					INNER JOIN exp_eequiz_mappings AS m ON p.mapping_id=m.mapping_id
+					INNER JOIN exp_eequiz_questions AS qt ON m.question_id=qt.question_id
+				ORDER BY m.quiz_id, p.anonymous_member_id, m.`order` ASC");
+		}
 		//$profile_time = (microtime(TRUE)- $profile_time);$profile_total += $profile_time;$profile_string .= "<tr><td>query time</td><td>{$profile_time}</td></tr>";$profile_time = microtime(TRUE);
 		
 		$all_answers = array_merge($answers->result_array(), $anon_answers->result_array());
@@ -1408,7 +1443,12 @@ EOT;
 		//$data = str_replace("\r\n", "<br />", $data);$data = str_replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;", $data);return $data;
 		// ---------------------------------------------------------------------------------
 		
-		force_download("all_answers.".date("Y-m-d").".txt", $data);
+		$filename = "";
+		if ($quiz_id) $filename = "quiz{$quiz_id}answers";
+		else $filename = "all_answers";
+		$filename .= ".".date("Y-m-d").".txt";
+		
+		force_download($filename, $data);
 	}
 	
 	// --------------------------------
@@ -1419,13 +1459,30 @@ EOT;
 	{
 		$this->EE->load->helper('download');
 		
-		$query = $this->EE->db->query("
-			SELECT cs.*, m.username, q.title 
-			FROM exp_eequiz_cached_scores AS cs
-			LEFT JOIN exp_members AS m ON cs.member_id=m.member_id
-			LEFT JOIN exp_eequiz_quizzes AS q ON cs.quiz_id=q.quiz_id
-			ORDER BY cs.quiz_id, cs.score DESC
-			");
+		$quiz_id = $this->EE->input->get_post('quiz_id');
+		
+		if ($quiz_id)
+		{
+			$query = $this->EE->db->query("
+				SELECT cs.*, m.username, q.title 
+				FROM exp_eequiz_cached_scores AS cs
+				LEFT JOIN exp_members AS m ON cs.member_id=m.member_id
+				LEFT JOIN exp_eequiz_quizzes AS q ON cs.quiz_id=q.quiz_id
+				WHERE cs.quiz_id={$quiz_id}
+				ORDER BY cs.quiz_id, cs.score DESC
+				");
+		}
+		else
+		{
+			$query = $this->EE->db->query("
+				SELECT cs.*, m.username, q.title 
+				FROM exp_eequiz_cached_scores AS cs
+				LEFT JOIN exp_members AS m ON cs.member_id=m.member_id
+				LEFT JOIN exp_eequiz_quizzes AS q ON cs.quiz_id=q.quiz_id
+				ORDER BY cs.quiz_id, cs.score DESC
+				");
+		}
+		
 		$del = "\t";
 		
 		$export_row = array("quiz (quiz_id)", "username (member_id)", "score", "percent");
@@ -1449,7 +1506,12 @@ EOT;
 		//return $data;
 		// ---------------------------------------------------------------------------------
 		
-		force_download("all_scores.".date("Y-m-d").".txt", $data);
+		$filename = "";
+		if ($quiz_id) $filename = "quiz{$quiz_id}scores";
+		else $filename = "all_scores";
+		$filename .= ".".date("Y-m-d").".txt";
+		
+		force_download($filename, $data);
 	}
 	
 	

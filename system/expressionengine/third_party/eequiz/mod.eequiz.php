@@ -11,7 +11,9 @@ Purpose: eeQuiz Module Class
 require_once("common.php");
 
 class Eequiz {
-
+	
+	var $front_end_messages = array();
+	
     var $return_data = '';
 	var $submit_answer_url = FALSE;
 	var $get_question_url = FALSE;
@@ -22,209 +24,17 @@ class Eequiz {
     // -------------------------------------
     //  Constructor
     // -------------------------------------
+
     function Eequiz()
-    {
+    {   
         $this->EE =& get_instance();
+		
+		require("front_end_messages.php");
     }
 
-	/*
-	 *	Added by Robert McCann
-	 *	4-ee guys need to rethink their shit
-	 *
-	 *	I'm using the poormans hack to provide quiz grouping
-	 *	A prefix can be used on the title of the quiz, and be provided to the score card functions
-	 *	This should be implemented into the database at some point
-	 *	
-	 *	This one is probably a little faster, but not as accurate as it relies on the cached_quizzes table
-	 *	Also, this doesn't show if the users has completed all questions required (is quiz complete?)
-	 *	
-	 *	{quiz_id}
-	 *	{quiz_title}
-	 *	{grade_percent}
-	 *	{date_completed}
-	 *	{passing}
-	 *	
-	 */
-	function score_card() {
-		$tagdata = $this->EE->TMPL->tagdata;
-
-		$prefix = $this->EE->db->escape_str( $this->EE->TMPL->fetch_param('prefix') );
-		$active_member_id = $this->_get_active_member_id($quiz);
-
-		//mmm chunky SQL
-		$scores = $this->EE->db->query(
-			"SELECT exp_eequiz_quizzes.quiz_id AS quiz_id,
-				exp_eequiz_quizzes.title AS quiz_title,
-				ROUND(scores.percent*100) AS grade_percent,
-				quiz_progress.last_answer_time AS last_answer_time,
-				exp_eequiz_quizzes.passing_grade AS passing_grade, 
-				IF (scores.percent*100 > exp_eequiz_quizzes.passing_grade, 'TRUE', 'FALSE') AS passing,
-				DATEDIFF(NOW(), FROM_UNIXTIME(last_answer_time)) AS days_since_last_answer
-			FROM exp_eequiz_quizzes
-			LEFT JOIN (
-				SELECT quiz_id, MAX(time) AS last_answer_time FROM exp_eequiz_mappings
-				INNER JOIN exp_eequiz_progress ON exp_eequiz_progress.mapping_id=exp_eequiz_mappings.mapping_id
-				WHERE member_id = $active_member_id
-				GROUP BY exp_eequiz_mappings.quiz_id
-			) AS quiz_progress ON exp_eequiz_quizzes.quiz_id=quiz_progress.quiz_id
-			LEFT JOIN (
-				SELECT * FROM exp_eequiz_cached_scores WHERE member_id=$active_member_id
-			) AS scores ON scores.quiz_id=exp_eequiz_quizzes.quiz_id
-			WHERE exp_eequiz_quizzes.title LIKE '$prefix%' AND exp_eequiz_quizzes.disabled=0
-			ORDER by exp_eequiz_quizzes.title"
-		);
-
-		$this->return_data = $this->EE->TMPL->parse_variables( $tagdata, $scores->result_array() );
-		return $this->return_data;
-	}
 	
-	function score_card2($prefix=NULL) {
-		if(is_null($prefix)){
-			$prefix = $this->EE->db->escape_str( $this->EE->TMPL->fetch_param('prefix') );
-		}
-		$active_member_id = $this->_get_active_member_id($quiz);
-
-		$tagdata = $this->EE->TMPL->tagdata;
-
-		//Extra Chunky SQL...
-		//I don't really trust the "cached_answers" table, so I'm pulling the full results from progress
-		//I'd Imagine this could be a little less crazy (fewer sub queries anyone?), but it gets the job done accurately with all the data you'd want
-		//Also, I'd reason that the .0019 seconds this takes on my server is better than the 4+ second page render time the normal quiz tag takes
-		$scores = $this->EE->db->query(
-			"SELECT 
-				exp_eequiz_quizzes.quiz_id AS quiz_id,
-				exp_eequiz_quizzes.title AS quiz_title,
-				user_grade,
-				passing_grade,
-				num_correct,
-				num_required,
-				last_answer_time,
-				days_since_last_answer,
-				attempted_all_required
-			FROM 
-			exp_eequiz_quizzes
-			LEFT JOIN (
-				SELECT 
-					exp_eequiz_mappings.quiz_id,
-					ROUND((SUM(exp_eequiz_questions.weight)/min_passing_score)*100) AS user_grade,
-					COUNT(*) AS num_correct,
-					num_required,
-					MAX(exp_eequiz_progress.time) AS last_answer_time,
-					DATEDIFF(NOW(), FROM_UNIXTIME(exp_eequiz_progress.time)) AS days_since_last_answer,
-					IF (quiz_progress.num_attempted >= quiz_progress.num_required, 'TRUE', 'FALSE') AS attempted_all_required
-				FROM exp_eequiz_progress
-				INNER JOIN exp_eequiz_mappings ON exp_eequiz_mappings.mapping_id = exp_eequiz_progress.mapping_id
-				INNER JOIN exp_eequiz_questions ON exp_eequiz_questions.question_id = exp_eequiz_mappings.question_id
-				INNER JOIN exp_eequiz_quizzes ON exp_eequiz_quizzes.quiz_id = exp_eequiz_mappings.quiz_id
-				INNER JOIN (
-					SELECT quiz_id, SUM(weight) as min_passing_score
-					FROM exp_eequiz_mappings
-					INNER JOIN exp_eequiz_questions ON exp_eequiz_questions.question_id = exp_eequiz_mappings.question_id
-					WHERE optional = 0
-					GROUP BY quiz_id
-				) AS quiz_required_scores ON quiz_required_scores.quiz_id = exp_eequiz_mappings.quiz_id
-				INNER JOIN (
-					SELECT exp_eequiz_mappings.quiz_id, COUNT(*) AS num_attempted, num_required
-					FROM exp_eequiz_progress
-					INNER JOIN exp_eequiz_mappings ON exp_eequiz_mappings.mapping_id = exp_eequiz_progress.mapping_id
-					INNER JOIN exp_eequiz_questions ON exp_eequiz_questions.question_id = exp_eequiz_mappings.question_id
-					INNER JOIN (
-						SELECT quiz_id, COUNT(*) AS num_required
-						FROM exp_eequiz_questions
-						INNER JOIN exp_eequiz_mappings ON exp_eequiz_mappings.question_id = exp_eequiz_questions.question_id
-						WHERE optional=0
-						GROUP BY quiz_id
-					) AS required ON required.quiz_id = exp_eequiz_mappings.quiz_id
-					WHERE optional=0 AND member_id=$active_member_id
-					GROUP BY exp_eequiz_mappings.quiz_id
-				) AS quiz_progress ON quiz_progress.quiz_id = exp_eequiz_mappings.quiz_id
-				WHERE 
-					member_id=$active_member_id
-					AND user_answer=answer
-				GROUP BY exp_eequiz_mappings.quiz_id
-			) AS user_quiz_results ON user_quiz_results.quiz_id = exp_eequiz_quizzes.quiz_id
-			WHERE exp_eequiz_quizzes.title LIKE '$prefix%'"
-		);
-
-		$this->return_data = $this->EE->TMPL->parse_variables( $tagdata, $scores->result_array() );
-		return $this->return_data;
-	}
 	
-	//Returns the number of quizzes that a user is passing in a group
-	//If I trusted the cached_scores table, this would be simpler.
-	//The group is defined as the template tag parameter: prefix
-	//Default behavior is current user
-	function number_passing_in_group($prefix=NULL, $member_id=NULL) {
-		if(is_null($prefix)){
-			$prefix = $this->EE->db->escape_str( $this->EE->TMPL->fetch_param('prefix') );
-		}
-
-		if(is_null($member_id)) { $member_id = $this->_get_active_member_id($quiz); };
-
-		$active_member_id = $member_id;
-
-		//mmm chunky SQL
-		$number_passing_in_group = $this->EE->db->query(
-			"SELECT COUNT(*) AS number_passing
-			FROM exp_eequiz_quizzes
-			INNER JOIN 
-			(
-			SELECT exp_eequiz_mappings.quiz_id, ROUND((SUM(weight) / min_passing_score)*100) AS user_grade
-			FROM exp_eequiz_progress
-			INNER JOIN exp_eequiz_mappings ON exp_eequiz_mappings.mapping_id = exp_eequiz_progress.mapping_id
-			INNER JOIN exp_eequiz_questions ON exp_eequiz_questions.question_id = exp_eequiz_mappings.question_id
-			RIGHT JOIN (
-				SELECT quiz_id, SUM(weight) as min_passing_score
-				FROM exp_eequiz_mappings
-				INNER JOIN exp_eequiz_questions ON exp_eequiz_questions.question_id=exp_eequiz_mappings.question_id
-				WHERE optional = 0
-				GROUP BY quiz_id
-			) AS quiz_required_scores ON quiz_required_scores.quiz_id = exp_eequiz_mappings.quiz_id
-			WHERE 
-				user_answer=answer 
-				AND member_id = $active_member_id
-			GROUP BY exp_eequiz_mappings.quiz_id
-			) AS user_grades
-			ON user_grades.quiz_id=exp_eequiz_quizzes.quiz_id
-			WHERE title LIKE '$prefix%' AND user_grade>=passing_grade"
-		);
-		
-		return $number_passing_in_group->row('number_passing');
-	}
-
-	//Returns the number of quizzes in a "group"
-	//The group is defined as the template tag parameter: prefix
-	function number_in_group($prefix=NULL, $member_id=NULL) {
-		$prefix = $this->EE->db->escape_str( $this->EE->TMPL->fetch_param('prefix') );
-
-		//mmm chunky SQL
-		$number_in_group = $this->EE->db->query(
-			"SELECT COUNT(*) AS number_in_group
-			FROM exp_eequiz_quizzes
-			WHERE title LIKE '$prefix%'"
-		);
-		
-		return $number_in_group->row('number_in_group');
-	}
-
-	function passing_all_in_group($prefix=NULL, $member_id=NULL){
-		$prefix = $this->EE->db->escape_str( $this->EE->TMPL->fetch_param('prefix') );
-
-		if(is_null($member_id)) { $member_id = $this->_get_active_member_id($quiz); };
-		
-		$active_member_id = $member_id;
-
-		if($this->number_passing_in_group($prefix, $active_member_id)==$this->number_in_group($prefix)){
-			return true;
-		} else {
-			return false;
-		}
-	}
 	
-	/*
-	 *	END of section added by Robert McCann
-	 */
-
 	// -------------------------------------
     //  quizzes
 	//  Display quiz info
@@ -238,17 +48,51 @@ class Eequiz {
 		$quiz_id = $this->EE->TMPL->fetch_param('quiz_id');
 		$url_title = $this->EE->TMPL->fetch_param('url_title');
 		if (!$quiz_id && $url_title) $quiz_id = $this->_get_quiz_id($url_title);
+		$forced_member_id = $this->EE->TMPL->fetch_param('member_id');
+		$tags = $this->EE->TMPL->fetch_param('tags');
 		
 		$disable_grades = (strstr("grades", $disabled) !== FALSE);
 		
-		$quizzes = $this->EE->db->query("SELECT * FROM exp_eequiz_quizzes ".(($quiz_id) ? "WHERE quiz_id={$quiz_id}" : ""));
+		// build query
+		
+		$wheres = array();
+		
+		$tag_where = "";
+		if ($tags) {
+			$template_tags_array = explode("|", $tags);
+			$tag_inner_wheres = array();
+			foreach ($template_tags_array as $t) $tag_inner_wheres[] = " tags LIKE '%{$t}%' ";
+			$tag_where = " (".implode(" OR ", $tag_inner_wheres).") ";
+			$wheres[] = $tag_where;
+		}
+		
+		if ($quiz_id) $wheres[] = "quiz_id={$quiz_id}";
+		
+		$quizzes = $this->EE->db->query("SELECT * FROM exp_eequiz_quizzes ".
+			(count($wheres) > 0 ? "WHERE ".implode(" AND ", $wheres) : ""));
+		
+		// build tag data
+		
+		$repeat_tagdata = $this->EE->TMPL->tagdata;
 		
 		foreach ($quizzes->result_array() as $q_data)
 		{
 			$quiz = new Quiz();
 			$quiz->initFromDB($q_data['quiz_id'], $q_data);
 			
-			$tagdata = $this->EE->TMPL->tagdata;
+			if ($tags) {
+				
+				// first, double check tags, because there might be false positives (ex, if tag is "mathlete", it would've matched "math")
+				$good_tag_match = FALSE;
+				$template_tags_array = explode("|", $tags);
+				$test_tags = explode(" ", $quiz->tags);
+				foreach ($test_tags as $t) {
+					if (in_array($t, $template_tags_array)) $good_tag_match = TRUE;
+				}
+				if (!$good_tag_match) continue;
+			}
+			
+			$tagdata = $repeat_tagdata;
 			
 			$cond = array();
 			$cond['quiz_title'] = $quiz->title;
@@ -258,13 +102,15 @@ class Eequiz {
 			$cond['all_at_once'] = !$quiz->one_at_a_time;
 			$cond['anonymous'] = $quiz->anonymous;
 			$cond['enabled'] = !$quiz->disabled;
+			$cond['num_questions'] = $quiz->num_questions;
 			
 			if (!$disable_grades)
 			{
-				$quiz->initUserData($this->_get_active_member_id($quiz), $this->_do_anonymous());
+				$quiz->initUserData($forced_member_id ? $forced_member_id : $this->_get_active_member_id($quiz), $this->_do_anonymous());
 				
 				$cond['attempted_all'] = $quiz->attempted_all;
 				$cond['attempted_all_mandatory'] = $quiz->attempted_all_mandatory;
+				$cond['all_correct_or_no_more_attempts'] = $quiz->correct_or_no_more_attempts;
 				$cond['passing'] = ($quiz->percent >= $quiz->passing_grade);
 				$cond['failing'] = !$cond['passing'];
 				$cond['grade_score'] = $quiz->score;
@@ -281,7 +127,9 @@ class Eequiz {
 					case 'quiz_id':				$tagdata = $this->EE->TMPL->swap_var_single($key, $quiz->quiz_id, $tagdata); break;
 					case 'quiz_title':			$tagdata = $this->EE->TMPL->swap_var_single($key, $quiz->title, $tagdata); break;
 					case 'quiz_description':	$tagdata = $this->EE->TMPL->swap_var_single($key, $quiz->description, $tagdata); break;
+					case 'quiz_tags':			$tagdata = $this->EE->TMPL->swap_var_single($key, $quiz->tags, $tagdata); break;
 					case 'passing_grade':		$tagdata = $this->EE->TMPL->swap_var_single($key, $quiz->passing_grade, $tagdata); break;
+					case 'num_questions':		$tagdata = $this->EE->TMPL->swap_var_single($key, $quiz->num_questions, $tagdata); break;
 					
 					case 'grade_percent':		if (!$disable_grades) $tagdata = $this->EE->TMPL->swap_var_single($key, $quiz->percent, $tagdata); break;
 					case 'grade_score':			if (!$disable_grades) $tagdata = $this->EE->TMPL->swap_var_single($key, $quiz->score, $tagdata); break;
@@ -303,6 +151,8 @@ class Eequiz {
 	}
 	
 	
+	
+	
 	// -------------------------------------
     //  questions
 	//  Display the questions in a specified quiz
@@ -315,6 +165,8 @@ class Eequiz {
 		if (!$quiz_id && $url_title) $quiz_id = $this->_get_quiz_id($url_title);
 		$retake = strtolower($this->EE->TMPL->fetch_param('retake'));
 		$retake = ($retake == "yes" || $retake == "true" || $retake == "retake");
+		$include_js = !(	strcasecmp($this->EE->TMPL->fetch_param('include_js'), "no") == 0 || 
+							strcasecmp($this->EE->TMPL->fetch_param('include_js'), "false") == 0);
 		$js_on_update = $this->EE->TMPL->fetch_param('js_on_update') ? $this->EE->TMPL->fetch_param('js_on_update') : "false";
 		$js_on_load_start = $this->EE->TMPL->fetch_param('js_on_load_start') ? $this->EE->TMPL->fetch_param('js_on_load_start')."()" : "";
 		$js_on_load_end = $this->EE->TMPL->fetch_param('js_on_load_end') ? $this->EE->TMPL->fetch_param('js_on_load_end')."()" : "";
@@ -343,6 +195,101 @@ class Eequiz {
 			else 
 				$this->EE->db->query("DELETE FROM exp_eequiz_progress WHERE member_id={$active_member_id} AND mapping_id IN (".implode(", ", $retake_mappings).")");
 		}
+		
+		
+		
+		// Set up start and end info
+		
+		$start = 0;
+		$end = 1000;
+		
+		if (!$quiz->randomize)
+		{
+			if ($section)
+			{
+				if (preg_match('/^(\d+)\-(\d+)$/', $section, $matches))
+				{
+					if (count($matches) == 3)
+					{
+						if ($matches['1'] > $start) $start = $matches['1']-1;
+						if ($matches['2'] < $end) $end = $matches['2']-1;
+					}
+				}
+			}
+			
+			$limit = ($end - $start + 1)*1;
+			if ($quiz->one_at_a_time) $limit = 1;
+		}
+		
+		// Obtain all question information
+		
+		$active_member_id = $this->_get_active_member_id($quiz);
+		
+		$num_questions = $quiz->num_questions;
+		
+		if ($continue && $quiz->one_at_a_time) {
+		
+			$prefix = $this->_do_anonymous() ? "anonymous_" : "";
+			$last_answered = $this->EE->db->query("
+				SELECT p.*, m.*
+				FROM exp_eequiz_{$prefix}progress AS p INNER JOIN exp_eequiz_mappings AS m ON p.mapping_id=m.mapping_id
+				WHERE m.quiz_id={$quiz->quiz_id} AND p.{$prefix}member_id={$active_member_id}
+				ORDER BY m.`order` DESC LIMIT 1
+			");
+			
+			if ($last_answered->num_rows() > 0) {
+				
+				$last_answered = $last_answered->row_array();
+				
+				$start = $last_answered["order"];
+				if ($start >= $quiz->num_questions) $start = $quiz->num_questions-1;
+				$limit = 1;
+			}
+		}
+		
+		$questions = $this->EE->db->query("SELECT m.*, q.* FROM exp_eequiz_mappings AS m INNER JOIN exp_eequiz_questions AS q ON m.question_id=q.question_id
+										WHERE m.quiz_id={$quiz->quiz_id} 
+										ORDER BY m.`order` LIMIT {$start},{$limit}");
+		
+		//if ($quiz->randomize) $questions->result = $this->_randomize_mappings($questions->result, $quiz_id);
+		
+		// --------------------------------
+		//  Tag Parsing
+		// --------------------------------
+		
+		$r = "";
+		
+		if ($include_js) $r .= $this->javascript($js_on_update, $js_on_load_start, $js_on_load_end);
+		
+		$quiz->initUserData($active_member_id, $this->_do_anonymous());
+		
+		foreach ($questions->result_array() as $q)
+		{
+			require_once(QUESTION_TYPES_PATH.$q['classname'].".php");
+			$question = new $q['classname']();
+			$question->initFromDB($q['question_id'], $q);
+			$question->initUserData($q['mapping_id'], $active_member_id, $this->_do_anonymous());
+			
+			$r .= $this->_construct_question_html($quiz, $question);
+		}
+		
+		if (!$quiz->one_at_a_time && $quiz->show_submit_all) {
+			
+			$r .= "<input class='eequiz_submit_all_button' type='button' value='Submit All Answers' onclick='eequiz.submitAllQuestions()' />";
+		}
+		
+		return $this->return_data = $r;
+	}
+	
+	
+	function javascript($js_on_update="", $js_on_load_start="", $js_on_load_end="")
+	{
+		if ($js_on_update==="")
+			$js_on_update = $this->EE->TMPL->fetch_param('js_on_update') ? $this->EE->TMPL->fetch_param('js_on_update') : "false";
+		if ($js_on_load_start==="")
+			$js_on_load_start = $this->EE->TMPL->fetch_param('js_on_load_start') ? $this->EE->TMPL->fetch_param('js_on_load_start')."()" : "";
+		if ($js_on_load_end==="")
+			$js_on_load_end = $this->EE->TMPL->fetch_param('js_on_load_end') ? $this->EE->TMPL->fetch_param('js_on_load_end')."()" : "";
 		
 		$this->_set_action_urls();
 		
@@ -496,89 +443,9 @@ var eequiz = {
 //]]>
 </script>
 EOT;
-		
-		
-		
-		// Set up start and end info
-		
-		$start = 0;
-		$end = 1000;
-		
-		if (!$quiz->randomize)
-		{
-			if ($section)
-			{
-				if (preg_match('/^(\d+)\-(\d+)$/', $section, $matches))
-				{
-					if (count($matches) == 3)
-					{
-						if ($matches['1'] > $start) $start = $matches['1']-1;
-						if ($matches['2'] < $end) $end = $matches['2']-1;
-					}
-				}
-			}
-			
-			$limit = ($end - $start + 1)*1;
-			if ($quiz->one_at_a_time) $limit = 1;
-		}
-		
-		// Obtain all question information
-		
-		$active_member_id = $this->_get_active_member_id($quiz);
-		
-		$num_questions = $quiz->num_questions;
-		
-		if ($continue && $quiz->one_at_a_time) {
-		
-			$prefix = $this->_do_anonymous() ? "anonymous_" : "";
-			$last_answered = $this->EE->db->query("
-				SELECT p.*, m.*
-				FROM exp_eequiz_{$prefix}progress AS p INNER JOIN exp_eequiz_mappings AS m ON p.mapping_id=m.mapping_id
-				WHERE m.quiz_id={$quiz->quiz_id} AND p.{$prefix}member_id={$active_member_id}
-				ORDER BY m.`order` DESC LIMIT 1
-			");
-			
-			if ($last_answered->num_rows() > 0) {
-				
-				$last_answered = $last_answered->row_array();
-				
-				$start = $last_answered["order"];
-				if ($start >= $quiz->num_questions) $start = $quiz->num_questions-1;
-				$limit = 1;
-			}
-		}
-		
-		$questions = $this->EE->db->query("SELECT m.*, q.* FROM exp_eequiz_mappings AS m INNER JOIN exp_eequiz_questions AS q ON m.question_id=q.question_id
-										WHERE m.quiz_id={$quiz->quiz_id} 
-										ORDER BY m.`order` LIMIT {$start},{$limit}");
-		
-		//if ($quiz->randomize) $questions->result = $this->_randomize_mappings($questions->result, $quiz_id);
-		
-		// --------------------------------
-		//  Tag Parsing
-		// --------------------------------
-		
-		
-		$quiz->initUserData($active_member_id, $this->_do_anonymous());
-		
-		foreach ($questions->result_array() as $q)
-		{
-			require_once(QUESTION_TYPES_PATH.$q['classname'].".php");
-			$question = new $q['classname']();
-			$question->initFromDB($q['question_id'], $q);
-			$question->initUserData($q['mapping_id'], $active_member_id, $this->_do_anonymous());
-			
-			$r .= $this->_construct_question_html($quiz, $question);
-		}
-		
-		if (!$quiz->one_at_a_time && $quiz->show_submit_all) {
-			
-			$r .= "<input class='eequiz_submit_all_button' type='button' value='Submit All Answers' onclick='eequiz.submitAllQuestions()' />";
-		}
-		
+
 		return $this->return_data = $r;
 	}
-	
 	
 	
 	
@@ -717,6 +584,9 @@ EOT;
 				$tagdata = preg_replace("/".LD."{$prefix}matching_choices".RD."(.*?)".LD."\/{$prefix}matching_choices".RD."/sm", "", $tagdata);
 			}
 			
+			$cond["num_questions"] = $quiz->num_questions;
+			
+			$cond["{$prefix}question_id"] = $question->question_id;
 			$cond["{$prefix}number"] = $order;
 			$cond["{$prefix}type"] = substr(strtolower(preg_replace("/([A-Z])/", '_\1', $question->classname)), 1);
 			$cond["{$prefix}user_answer"] = $question->last_answer;
@@ -735,6 +605,9 @@ EOT;
 			{
 				switch ($key)
 				{
+					case "num_questions":				$tagdata = $this->EE->TMPL->swap_var_single($key, $quiz->num_questions, $tagdata); break;
+					
+					case "{$prefix}question_id":		$tagdata = $this->EE->TMPL->swap_var_single($key, $question->question_id, $tagdata); break;
 					case "{$prefix}number":				$tagdata = $this->EE->TMPL->swap_var_single($key, $order, $tagdata); break;
 					case "{$prefix}title":				$tagdata = $this->EE->TMPL->swap_var_single($key, $question->title, $tagdata); break;
 					case "{$prefix}text":				$tagdata = $this->EE->TMPL->swap_var_single($key, $question->text, $tagdata); break;
@@ -789,6 +662,7 @@ EOT;
 		$user_score = 0;
 		$max_score = 0;
 		$avg_scores = array();
+		$passing_all = TRUE;
 		
 		$quizzes = $this->EE->db->query("SELECT * FROM exp_eequiz_quizzes {$quiz_id_where}");
 		foreach ($quizzes->result_array() as $q_data)
@@ -796,6 +670,8 @@ EOT;
 			$quiz = new Quiz();
 			$quiz->initFromDB($q_data['quiz_id'], $q_data);
 			$quiz->initUserData($this->_get_active_member_id($quiz), $this->_do_anonymous());
+			
+			if ($quiz->percent < $quiz->passing_grade) $passing_all = FALSE;
 			
 			if (!$quiz->attempted_any) continue;
 			
@@ -838,7 +714,10 @@ EOT;
 			"average_score"		=> number_format($avg_score, 1, ".", "")
 		);
 		
-		$tagdata = $this->_standalone_parse_tagdata($base_tagdata, $vars, $vars); // conditionals same as vars
+		$conds = $vars;
+		$conds["passing_all"] = $passing_all;
+		
+		$tagdata = $this->_standalone_parse_tagdata($base_tagdata, $conds, $vars);
 		
 		// done
 		
@@ -897,14 +776,14 @@ EOT;
 		
 		// make sure quiz is enabled
 		if ($quiz->disabled) {
-			$json['message'] = "Error: this quiz is currently disabled.";
+			$json['message'] = $this->front_end_messages["error_disabled"];//"Error: this quiz is currently disabled.";
 			echo json_encode($json);
 			exit();
 		}
 		
 		// make sure member is logged in if tracking answers
 		if (!$member_id) {
-			$json['message'] = "Error: you must be logged in to take this quiz.";
+			$json['message'] = $this->front_end_messages["error_logged_out"];//"Error: you must be logged in to take this quiz.";
 			echo json_encode($json);
 			exit();
 		}
@@ -916,7 +795,7 @@ EOT;
 		
 		// make sure user has entered an answer
 		if ($answer === NULL) {
-			$json['message'] = "Error: you must enter an answer before submitting.";
+			$json['message'] = $this->front_end_messages["error_need_answer"];//"Error: you must enter an answer before submitting.";
 			echo json_encode($json);
 			exit();
 		}
@@ -925,14 +804,14 @@ EOT;
 		
 		// make sure user has attempts left
 		if ($question->attempts >= $question->max_attempts && $question->max_attempts > 0) {
-			$json['message'] = "Error, you have no attempts left for that question.";
+			$json['message'] = $this->front_end_messages["error_no_attempts_left"];//"Error, you have no attempts left for that question.";
 			echo json_encode($json);
 			exit();
 		}
 		
 		// cancel if same as last submitted answer, only if not auto-advancing
 		if (!$auto_advance && $answer === $question->last_answer) {
-			$json['message'] = "Error, please enter a different answer before submitting.";
+			$json['message'] = $this->front_end_messages["error_same_answer"];//"Error, please enter a different answer before submitting.";
 			echo json_encode($json);
 			exit();
 		}
@@ -942,6 +821,7 @@ EOT;
 		$quiz->initUserData($member_id, $this->_do_anonymous());
 		$previous_passing = ($quiz->percent >= $quiz->passing_grade);
 		$previous_completed = ($quiz->attempted_all_mandatory);
+		$previous_correct_or_no_more_attempts = ($quiz->correct_or_no_more_attempts);
 		
 		// finally, insert answer into db or cookie
 		
@@ -968,8 +848,11 @@ EOT;
 		// check if email notifications should be sent
 		$new_passing = ($quiz->percent >= $quiz->passing_grade);
 		$new_completed = ($quiz->attempted_all_mandatory);
+		$new_correct_or_no_more_attempts = ($quiz->correct_or_no_more_attempts);
 		if (($quiz->email_mode == QUIZ_EMAIL_ON_PASS && !$previous_passing && $new_passing) || 
-			 ($quiz->email_mode == QUIZ_EMAIL_ON_COMPLETE && !$previous_completed && $new_completed)) $this->_send_email($quiz);
+			 ($quiz->email_mode == QUIZ_EMAIL_ON_COMPLETE && !$previous_completed && $new_completed) ||
+			 ($quiz->email_mode == QUIZ_EMAIL_ON_CORRECT_OR_NO_MORE_ATTEMPTS && !$previous_correct_or_no_more_attempts && $new_correct_or_no_more_attempts)) 
+			 $this->_send_email($quiz);
 		
 		// refresh cached answer data
 		ModUtil::refresh_cached_answer_data($quiz, $member_id, $this->_do_anonymous());
@@ -1051,14 +934,14 @@ EOT;
 		
 		// make sure quiz is enabled
 		if ($quiz->disabled) {
-			$json['message'] = "Error: this quiz is currently disabled.";
+			$json['message'] = $this->front_end_messages["error_disabled"];//"Error: this quiz is currently disabled.";
 			echo json_encode($json);
 			exit();
 		}
 		
 		// make sure member is logged in if tracking answers
 		if (!$member_id) {
-			$json['message'] = "Error: you must be logged in to take this quiz.";
+			$json['message'] = $this->front_end_messages["error_logged_out"];//"Error: you must be logged in to take this quiz.";
 			echo json_encode($json);
 			exit();
 		}
@@ -1123,14 +1006,14 @@ EOT;
 		
 		// make sure member is logged in if tracking answers
 		if (!$member_id) {
-			$json['message'] = "Error: nobody is logged in.";
+			$json['message'] = $this->front_end_messages["error_logged_out"];//"Error: nobody is logged in.";
 			echo json_encode($json);
 			exit();
 		}
 		
 		// make sure quiz is enabled
 		if ($quiz->disabled) {
-			$json['message'] = "Error: this quiz is currently disabled.";
+			$json['message'] = $this->front_end_messages["error_disabled"];//"Error: this quiz is currently disabled.";
 			echo json_encode($json);
 			exit();
 		}
@@ -1138,6 +1021,7 @@ EOT;
 		$quiz->initUserData($member_id, $this->_do_anonymous());
 		$previous_passing = ($quiz->percent >= $quiz->passing_grade);
 		$previous_completed = ($quiz->attempted_all_mandatory);
+		$previous_correct_or_no_more_attempts = ($quiz->correct_or_no_more_attempts);
 		
 		$questions_array = array();
 		$mappings = explode("_", $this->EE->input->get_post('all_mappings'));
@@ -1218,8 +1102,11 @@ EOT;
 		// check if email notifications should be sent
 		$new_passing = ($quiz->percent >= $quiz->passing_grade);
 		$new_completed = ($quiz->attempted_all_mandatory);
+		$new_correct_or_no_more_attempts = ($quiz->correct_or_no_more_attempts);
 		if (($quiz->email_mode == QUIZ_EMAIL_ON_PASS && !$previous_passing && $new_passing) || 
-			 ($quiz->email_mode == QUIZ_EMAIL_ON_COMPLETE && !$previous_completed && $new_completed)) $this->_send_email($quiz);
+			 ($quiz->email_mode == QUIZ_EMAIL_ON_COMPLETE && !$previous_completed && $new_completed) ||
+			 ($quiz->email_mode == QUIZ_EMAIL_ON_CORRECT_OR_NO_MORE_ATTEMPTS && !$previous_correct_or_no_more_attempts && $new_correct_or_no_more_attempts)) 
+			 $this->_send_email($quiz);
 		
 		foreach ($questions_array as $k => $v) $json['assets'][$k] = $this->_construct_question_html($quiz, $v);
 		
@@ -1229,9 +1116,12 @@ EOT;
 		$json['message'] = "Success.";
 		$json['attempted_all'] = $quiz->attempted_all;
 		$json['attempted_all_mandatory'] = $quiz->attempted_all_mandatory;
+		$json['all_correct_or_no_more_attempts'] = $quiz->correct_or_no_more_attempts;
+		$json['quiz_id'] = $quiz->quiz_id;
 		$json['quiz_max_score'] = $quiz->max_score;
 		$json['quiz_score'] = $quiz->score;
 		$json['quiz_percent'] = $quiz->percent;
+		$json['quiz_passing_grade'] = $quiz->passing_grade;
 		$json['num_questions'] = $quiz->num_questions;
 		$json['submitted_all'] = TRUE;
 		echo json_encode($json);
@@ -1256,9 +1146,12 @@ EOT;
 		$json['assets'] = $this->_construct_question_html($quiz, $question);
 		$json['attempted_all'] = $quiz->attempted_all;
 		$json['attempted_all_mandatory'] = $quiz->attempted_all_mandatory;
+		$json['all_correct_or_no_more_attempts'] = $quiz->correct_or_no_more_attempts;
+		$json['quiz_id'] = $quiz->quiz_id;
 		$json['quiz_max_score'] = $quiz->max_score;
 		$json['quiz_score'] = $quiz->score;
 		$json['quiz_percent'] = $quiz->percent;
+		$json['quiz_passing_grade'] = $quiz->passing_grade;
 		
 		$json['question_number'] = $quiz->mappings_to_orders[$question->mapping_id];
 		$json['num_questions'] = $quiz->num_questions;
@@ -1366,6 +1259,8 @@ EOT;
 			"weight"				=> $question->max_weight,
 			"answer_section"		=> $question->answer_section,
 			"feedback_section"		=> $show_feedback ? $question->feedback_section : "",
+			"feedback_explanation"	=> $show_feedback ? $question->explanation : "",
+			"feedback_extra"		=> $show_feedback ? $question->explanation_extra : "",
 			
 			"answer_time"			=> ($question->attempts == 0) ? "not answered yet" : $question->last_time_formatted,
 			"attempts"				=> $question->attempts,
@@ -1384,16 +1279,16 @@ EOT;
 		$start = 1;
 		$end = $quiz->num_questions;
 		
-		$class = ($order <= $start) ? "class='previous_link disabled' " : "class='previous_link' ";
-		$onclick = ($order <= $start) ? "" : "onclick='eequiz.gotoQuestion({$question->mapping_id}, ".max($start, $order-1).")' ";
-		$vars["previous"] = ($quiz->one_at_a_time ? "<a {$class} href='javascript:void(0)' {$onclick}>Previous</a>":"");
+		$prev_class = ($order <= $start) ? "class='previous_link disabled' " : "class='previous_link' ";
+		$prev_onclick = ($order <= $start) ? "" : "onclick='eequiz.gotoQuestion({$question->mapping_id}, ".max($start, $order-1).")' ";
+		$vars["previous"] = ($quiz->one_at_a_time ? "<a {$prev_class} href='javascript:void(0)' {$prev_onclick}>".$this->front_end_messages["previous"]."</a>":"");
 		
-		$class = ($order >= $end || ($question->attempts <= 0 && !$question->optional)) ? "class='next_link disabled' " : "class='next_link' ";
-		$onclick = ($order >= $end || ($question->attempts <= 0 && !$question->optional)) ? "" : "onclick='eequiz.gotoQuestion({$question->mapping_id}, ".min($end, $order+1).")' ";
-		$vars["next"] = ($quiz->one_at_a_time ? "<a {$class} href='javascript:void(0)' {$onclick}>Next</a>":"");
+		$next_class = ($order >= $end || ($question->attempts <= 0 && !$question->optional)) ? "class='next_link disabled' " : "class='next_link' ";
+		$next_onclick = ($order >= $end || ($question->attempts <= 0 && !$question->optional)) ? "" : "onclick='eequiz.gotoQuestion({$question->mapping_id}, ".min($end, $order+1).")' ";
+		$vars["next"] = ($quiz->one_at_a_time ? "<a {$next_class} href='javascript:void(0)' {$next_onclick}>".$this->front_end_messages["next"]."</a>":"");
 		
 		$submit_disabled = ($quiz->disabled || ($question->max_attempts > 0 && $question->attempts >= $question->max_attempts));
-		$submit_btn_html = "<input id='eequiz_submit_{$question->mapping_id}' class='submit_answer_button' type='submit' ".($submit_disabled ? "disabled='disabled' " : "")."value='Submit Answer' />";
+		$submit_btn_html = "<input id='eequiz_submit_{$question->mapping_id}' class='submit_answer_button' type='submit' ".($submit_disabled ? "disabled='disabled' " : "")."value='".$this->front_end_messages["submit_answer"]."' />";
 		$vars["submit"] = $submit_btn_html;
 		
 		if ($quiz->one_at_a_time) {
@@ -1411,7 +1306,42 @@ EOT;
 		
 		if (preg_match_all("/".LD."answer_time\s+format=([\"'])([^\\1]*?)\\1".RD."/s", $tagdata, $matches)) {
 			for ($j = 0; $j < count($matches[0]); $j++)
-				$tagdata = str_replace($matches[0][$j], ($question->attempts == 0) ? "not answered yet" : gmdate($matches[2][$j], $question->last_time), $tagdata);
+				$tagdata = str_replace(
+					$matches[0][$j], 
+					($question->attempts == 0) ? "not answered yet" : gmdate($matches[2][$j], $question->last_time), 
+					$tagdata);
+		}
+
+		if (preg_match_all("/".LD."submit\s+label=([\"'])([^\\1]*?)\\1".RD."/s", $tagdata, $matches)) {
+			for ($j = 0; $j < count($matches[0]); $j++)
+				$tagdata = str_replace(
+					$matches[0][$j],
+					"<input id='eequiz_submit_{$question->mapping_id}' class='submit_answer_button' type='submit' ".($submit_disabled ? "disabled='disabled' " : "")."value='".$matches[2][$j]."' />",
+					$tagdata);
+		}
+
+		if (preg_match_all("/".LD."submit_and_advance\s+label=([\"'])([^\\1]*?)\\1".RD."/s", $tagdata, $matches)) {
+			for ($j = 0; $j < count($matches[0]); $j++)
+				$tagdata = str_replace(
+					$matches[0][$j], 
+					"<input id='eequiz_submit_{$question->mapping_id}' class='submit_answer_button' type='submit' ".($submit_disabled ? "disabled='disabled' " : "")."value='".$matches[2][$j]."' />".($quiz->one_at_a_time ? "<input type='hidden' name='auto_advance' value='1' />" : ""), 
+					$tagdata);
+		}
+
+		if (preg_match_all("/".LD."next\s+label=([\"'])([^\\1]*?)\\1".RD."/s", $tagdata, $matches)) {
+			for ($j = 0; $j < count($matches[0]); $j++)
+				$tagdata = str_replace(
+					$matches[0][$j], 
+					($quiz->one_at_a_time ? "<a {$next_class} href='javascript:void(0)' {$next_onclick}>".$matches[2][$j]."</a>":""),
+					$tagdata);
+		}
+
+		if (preg_match_all("/".LD."previous\s+label=([\"'])([^\\1]*?)\\1".RD."/s", $tagdata, $matches)) {
+			for ($j = 0; $j < count($matches[0]); $j++)
+				$tagdata = str_replace(
+					$matches[0][$j], 
+					($quiz->one_at_a_time ? "<a {$prev_class} href='javascript:void(0)' {$prev_onclick}>".$matches[2][$j]."</a>":""),
+					$tagdata);
 		}
 		
 		
@@ -1706,12 +1636,16 @@ EOT;
 		$conds = array(
 			"quiz_id"	=> $quiz->quiz_id,
 			"member_id"	=> $member_id,
-			"anonymous"	=> $is_anonymous
+			"anonymous"	=> $is_anonymous,
+			"screen_name"	=> $is_anonymous ? "anonymous member" : $this->EE->session->userdata['screen_name'],
+			"username"		=> $is_anonymous ? "anonymous member" : $this->EE->session->userdata['username']
 		);
 		$vars = array(
 			"quiz_id"	=> $quiz->quiz_id,
 			"member_id"	=> $member_id,
-			"anonymous"	=> $is_anonymous
+			"anonymous"	=> $is_anonymous,
+			"screen_name"	=> $is_anonymous ? "anonymous member" : $this->EE->session->userdata['screen_name'],
+			"username"		=> $is_anonymous ? "anonymous member" : $this->EE->session->userdata['username']
 		);
 		
 		$message = $this->_standalone_parse_tagdata($message, $conds, $vars);

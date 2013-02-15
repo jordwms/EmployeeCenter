@@ -86,6 +86,7 @@ var eequiz = {
 			newText = newText.replace(/\//g, separator);
 			newText = newText.replace(/[^a-z0-9\-\._]/g,'');
 			newText = newText.replace(/\+/g, separator);
+			newText = newText.replace(/\./g, separator);
 			newText = newText.replace(multiReg, separator);
 			newText = newText.replace(/-$/g,'');
 			newText = newText.replace(/_$/g,'');
@@ -352,7 +353,8 @@ var editQuiz = {
 		if (filter == "") {
 		
 			$("#unused_question_list li").show();
-		} else {
+		}
+		else {
 			
 			var filters = filter.split(" ");
 			
@@ -372,16 +374,6 @@ var editQuiz = {
 		
 		$("#tags_filter").val("");
 		editQuiz.filterQuestions();
-	},
-	
-	addAll : function() {
-		
-		$('#unused_question_list').children(':visible').appendTo($('#question_list'));
-	},
-	
-	removeAll : function() {
-		
-		$('#question_list').children(':visible').appendTo($('#unused_question_list'));
 	},
 	
 	confirmQuestionRemove : function() {
