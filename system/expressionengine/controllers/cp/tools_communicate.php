@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -19,8 +19,8 @@
  * @package		ExpressionEngine
  * @subpackage	Control Panel
  * @category	Control Panel
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 class Tools_communicate extends CI_Controller {
 
@@ -214,7 +214,9 @@ class Tools_communicate extends CI_Controller {
 					'5'  => lang('lowest')
 				);
 
-		if ( ! $this->cp->allowed_group('can_email_mailinglist') OR ! isset($this->mailinglist_exists) OR $this->mailinglist_exists == FALSE)
+		if ( ! $this->cp->allowed_group('can_email_mailinglist')
+			OR ! isset($this->mailinglist_exists)
+			OR $this->mailinglist_exists == FALSE)
 		{
 			$vars['mailing_lists'] = FALSE;
 		}  
@@ -229,6 +231,10 @@ class Tools_communicate extends CI_Controller {
 					$checked = ($this->input->post('list_'.$row->list_id) !== FALSE OR in_array($row->list_id, $mailing_lists));
 					$vars['mailing_lists'][$row->list_title] = array('name' => 'list_'.$row->list_id, 'value' => $row->list_id, 'checked' => $checked);
 				}
+			}
+			else
+			{
+				$vars['mailing_lists'] = FALSE;
 			}
 		}
 		
@@ -592,8 +598,13 @@ class Tools_communicate extends CI_Controller {
 			{
 				$error = TRUE;
 			}
-
-			$this->_delete_attachments(); // Remove attachments now
+			
+			// Remove attachments only if member groups or mailing lists
+			// don't need them
+			if (empty($emails))
+			{
+				$this->_delete_attachments();
+			}
 
 			if ($error == TRUE)
 			{
@@ -1318,7 +1329,10 @@ class Tools_communicate extends CI_Controller {
 	{
 		foreach ($this->attachments as $file)
 		{
-			unlink($file);
+			if (file_exists($file))
+			{
+				unlink($file);
+			}
 		}
 	}
 

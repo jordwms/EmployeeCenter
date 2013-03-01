@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -19,8 +19,8 @@
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Core
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 class EE_Javascript extends CI_Javascript {
 
@@ -65,7 +65,7 @@ class EE_Javascript extends CI_Javascript {
 		
 		if (is_array($val) && isset($current[$var_name]) && is_array($current[$var_name]))
 		{
-			$current[$var_name] = array_unique(array_merge($current[$var_name], $val));
+			$current[$var_name] = ee_array_unique(array_merge($current[$var_name], $val), SORT_STRING);
 		}
 		else
 		{
@@ -111,7 +111,7 @@ class EE_Javascript extends CI_Javascript {
 			}
 			
 			if (typeof EE === "undefined" || ! EE) {
-				var EE = '.$this->generate_json($this->global_vars).';
+				var EE = '.$this->generate_json($this->global_vars, TRUE).';
 			}
 		');
 

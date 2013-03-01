@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -19,8 +19,8 @@
  * @package		ExpressionEngine
  * @subpackage	Control Panel
  * @category	Control Panel
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 class Admin_content extends CI_Controller {
 
@@ -28,10 +28,6 @@ class Admin_content extends CI_Controller {
 					'random', 'date', 'title', 'url_title', 'edit_date', 
 					'comment_total', 'username', 'screen_name', 
 					'most_recent_comment', 'expiration_date');
-
-	// Default "open" and "closed" status colors
-	var $status_color_open	= '009933';
-	var $status_color_closed = '990000';
 
 	// Category arrays
 	var $categories = array();
@@ -157,7 +153,7 @@ class Admin_content extends CI_Controller {
 
 		$vars['duplicate_channel_prefs_options'][''] = lang('do_not_duplicate');
 
-		if ($channels->num_rows() > 0)
+		if ($channels != FALSE && $channels->num_rows() > 0)
 		{
 			foreach($channels->result() as $channel)
 			{
@@ -512,7 +508,7 @@ class Admin_content extends CI_Controller {
 
 		if ($edit == FALSE)
 		{
-			$create_templates	= $this->input->get_post('create_templates');
+			$create_templates	= ($this->input->get_post('create_templates') == FALSE OR $this->input->get_post('create_templates') == 'no') ? 'no' : $this->input->get_post('create_templates');
 			$old_group_id		= $this->input->get_post('old_group_id');
 			$group_name			= $this->input->post('group_name');
 
@@ -634,6 +630,12 @@ class Admin_content extends CI_Controller {
 			// Insert data
 
 			$_POST['site_id'] = $this->config->item('site_id');
+			$_POST['status_group'] = ($this->input->post('status_group') !== FALSE &&
+				$this->input->post('status_group') != '')
+				? $this->input->post('status_group') : NULL;
+			$_POST['field_group'] = ($this->input->post('field_group') !== FALSE &&
+				$this->input->post('field_group') != '')
+				? $this->input->post('field_group') : NULL;
 
 			// duplicating preferences?
 			if ($dupe_id !== FALSE AND is_numeric($dupe_id))
@@ -733,10 +735,25 @@ class Admin_content extends CI_Controller {
 			$insert_id = $this->db->insert_id();
 			$channel_id = $insert_id;
 			
+			// If they made the channel?  Give access to that channel to the member group?
+
+
 			if ($dupe_id !== FALSE AND is_numeric($dupe_id) && $edit_group_prefs == FALSE)
 			{
 				// Duplicate layouts
 				$this->layout->duplicate_layout($dupe_id, $channel_id);
+			}
+			
+			// If member group has ability to create the channel, they should be
+			// able to access it as well
+			if ($this->session->userdata('group_id') != 1) 
+			{
+				$data = array(
+					'group_id'		=> $this->session->userdata('group_id'),
+					'channel_id'	=> $channel_id
+				);
+				
+				$this->db->insert('channel_member_groups', $data); 
 			}
 
 			$success_msg = lang('channel_created');
@@ -970,7 +987,7 @@ class Admin_content extends CI_Controller {
 		
 		if ( ! isset($data['cat_group']) OR $data['cat_group'] == '')
 		{
-			$data['cat_group'] = NULL;
+			$data['cat_group'] = '';
 		}
 		
 
@@ -1906,8 +1923,7 @@ class Admin_content extends CI_Controller {
 			
 			// Load in necessary js files
 			$this->cp->add_js_script(array(
-				'file'		=> array('cp/global'),
-				'plugin'	=> array('ee_url_title'),
+				'plugin'	=> array('ee_url_title')
 			));
 			
 			$this->javascript->keyup('#cat_name', '$("#cat_name").ee_url_title($("#cat_url_title"));');
@@ -1959,12 +1975,12 @@ class Admin_content extends CI_Controller {
 			$dq_row = $data_query->row_array();
 			$this->load->model('addons_model');
 			$plugins = $this->addons_model->get_plugin_formatting();
-			
+            
+            $vars['custom_format_options']['none'] = 'None';
 			foreach ($plugins as $k=>$v)
 			{
 				$vars['custom_format_options'][$k] = $v;
-			}			
-
+			}
 			foreach ($field_query->result_array() as $row)
 			{
 				$vars['cat_custom_fields'][$row['field_id']]['field_content'] = ( ! isset($dq_row['field_id_'.$row['field_id']])) ? '' : $dq_row['field_id_'.$row['field_id']];
@@ -2202,10 +2218,9 @@ class Admin_content extends CI_Controller {
 			$this->input->post('cat_image'), 
 			'cat_image'
 		);
-		// var_dump($cat_image);
+		
 		$_POST['cat_image'] = $this->file_field->format_data(
-			$cat_image['value'],
-			$this->input->post('cat_image_directory')
+			$cat_image['value']
 		);
 		
 		// Finish data prep for insertion
@@ -2342,7 +2357,11 @@ class Admin_content extends CI_Controller {
 				{
 					if (($key = array_search($this->input->get_post('parent_id'), $children)) !== FALSE)
 					{
-						$this->db->query($this->db->update_string('exp_categories', array('parent_id' => $query->row('parent_id') ), "cat_id = '".$children[$key]."'"));
+						$this->db->update(
+							'categories',
+							array('parent_id' => $query->row('parent_id')),
+							array('cat_id' => $children[$key])
+						);
 					}
 					else	// Find All Descendants
 					{
@@ -2356,7 +2375,11 @@ class Admin_content extends CI_Controller {
 								{
 									if ($key == $this->input->get_post('parent_id'))
 									{
-										$this->db->query($this->db->update_string('exp_categories', array('parent_id' => $query->row('parent_id') ), "cat_id = '".$key."'"));
+										$this->db->update(
+											'categories',
+											array('parent_id' => $query->row('parent_id')),
+											array('cat_id' => $key)
+										);
 										break 2;
 									}
 
@@ -2369,21 +2392,19 @@ class Admin_content extends CI_Controller {
 			}
 
 			$sql = $this->db->update_string(
-										'exp_categories',
-
-										array(
-												'cat_name'  		=> $this->input->post('cat_name'),
-												'cat_url_title'		=> $this->input->post('cat_url_title'),
-												'cat_description'	=> $this->input->post('cat_description'),
-												'cat_image' 		=> $this->input->post('cat_image'),
-												'parent_id' 		=> $this->input->post('parent_id')
-											 ),
-
-										array(
-												'cat_id'	=> $this->input->post('cat_id'),
-												'group_id'  => $this->input->post('group_id')
-											  )
-									 );
+				'exp_categories',
+				array(
+					'cat_name'  		=> $this->input->post('cat_name'),
+					'cat_url_title'		=> $this->input->post('cat_url_title'),
+					'cat_description'	=> $this->input->post('cat_description'),
+					'cat_image' 		=> $this->input->post('cat_image'),
+					'parent_id' 		=> $this->input->post('parent_id')
+				),
+				array(
+					'cat_id'	=> $this->input->post('cat_id'),
+					'group_id'  => $this->input->post('group_id')
+				)
+			);
 
 			$this->db->query($sql);
 			$update = TRUE;
@@ -2595,68 +2616,39 @@ class Admin_content extends CI_Controller {
 		{
 			$this->_restrict_prefs_access();
 		}
-
-		$sql = "SELECT cat_name, cat_id, parent_id FROM exp_categories WHERE group_id ='$group_id' ORDER BY parent_id, cat_name";
 		
-		$query = $this->db->query($sql);
+		$this->db->select('cat_name, cat_id, parent_id');
+		$this->db->where('group_id', $group_id);
+		$this->db->order_by('parent_id, cat_name');
+		$categories = $this->db->get('categories');
 			  
-		if ($query->num_rows() == 0)
+		if ($categories->num_rows() == 0)
 		{
 			return FALSE;
 		}
-							
-		foreach($query->result_array() as $row)
-		{		
-			$this->cat_update[$row['cat_id']]  = array($row['parent_id'], '1', $row['cat_name']);
-		}
-	 	
-		$order = 0;
 		
-		foreach($this->cat_update as $key => $val) 
+		$order = 0;
+		$parent = 0;
+		
+		foreach($categories->result_array() as $category)
 		{
-			if (0 == $val['0'])
-			{	
-				$order++;
-				$this->cat_update[$key]['1'] = $order;
-				$this->process_subcategories($key);  // Sends parent_id
+			// Once we're on a new parent, reset the ordering
+			if ($category['parent_id'] != $parent)
+			{
+				$order = 0;
+				$parent = $category['parent_id'];
 			}
-		} 
+			
+			$order++;
+			
+			$this->cat_update[$category['cat_id']] = array(
+				$category['parent_id'],
+				$order,
+				$category['cat_name']
+			);
+		}
 		
 		return $this->cat_update;
-	}
-
-	
-	
-	
-	/** --------------------------------
-	/**  Process Subcategories
-	/** --------------------------------*/
-		
-	function process_subcategories($parent_id)
-	{		
-		if (AJAX_REQUEST)
-		{
-			if ( ! $this->cp->allowed_group('can_edit_categories'))
-			{
-				show_error(lang('unauthorized_access'));
-			}
-		}
-		else
-		{
-			$this->_restrict_prefs_access();
-		}
-		
-		$order = 0;
-		
-		foreach($this->cat_update as $key => $val) 
-		{
-			if ($parent_id == $val['0'])
-			{
-				$order++;
-				$this->cat_update[$key]['1'] = $order;												
-				$this->process_subcategories($key);
-			}
-		}
 	}
 
 	// ------------------------------------------------------------------------
@@ -3722,7 +3714,7 @@ class Admin_content extends CI_Controller {
 		}
 		
 		$vars = $this->api_channel_fields->field_edit_vars($group_id, $field_id);
-		
+
 		if ($vars === FALSE)
 		{
 			show_error(lang('unauthorized_access'));
@@ -4284,7 +4276,7 @@ class Admin_content extends CI_Controller {
 		// Construct the query based on whether we are updating or inserting
 		if ($edit == FALSE)
 		{
-			$this->status_model->insert_statuses($group_name, $this->status_color_open, $this->status_color_closed);
+			$this->status_model->insert_statuses($group_name);
 
 			$cp_message = lang('status_group_created').NBS.$group_name;
 
@@ -4313,7 +4305,7 @@ class Admin_content extends CI_Controller {
 		}
 		else
 		{
-			$this->status_model->update_statuses($group_name, $group_id, $this->status_color_open, $this->status_color_closed);
+			$this->status_model->update_statuses($group_name, $group_id);
 
 			$cp_message = lang('status_group_updated').NBS.$group_name;
 		}

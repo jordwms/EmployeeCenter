@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -19,8 +19,8 @@
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Model
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 class Admin_model extends CI_Model {
 	
@@ -214,7 +214,7 @@ class Admin_model extends CI_Model {
 			unset($f_data['general_cfg']['cp_url']);
 		}
 
-		if ( ! file_exists(APPPATH.'libraries/Sites.php') OR IS_FREELANCER)
+		if ( ! file_exists(APPPATH.'libraries/Sites.php') OR IS_CORE)
 		{
 			unset($f_data['general_cfg']['multiple_sites_enabled']);	
 		}
@@ -226,6 +226,11 @@ class Admin_model extends CI_Model {
 		else
 		{
 			unset($f_data['general_cfg']['is_site_on']);
+		}
+
+		if ( ! $this->db->table_exists('referrers'))
+		{
+			unset($f_data['tracking_cfg']['log_referrers']);
 		}
 
 		return $f_data[$type];

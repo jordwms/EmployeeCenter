@@ -11,12 +11,12 @@
 |
 */
 
-$config['app_version'] = "240";
+$config['app_version'] = "255";
 $config['install_lock'] = "";
 $config['license_number'] = "69508-74962-03122-47529";
 $config['debug'] = "1";
 $config['cp_url'] = 'https://ec.applusrtd.com/admin.php';
-$config['doc_url'] = "http://expressionengine.com/user_guide/";
+$config['doc_url'] = "http://ellislab.com/expressionengine/user-guide/";
 $config['is_system_on'] = "y";
 $config['allow_extensions'] = 'y';
 $config['site_label'] = 'Employee Center';

@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -19,8 +19,8 @@
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Core
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 
 // ------------------------------------------------------------------------
@@ -143,7 +143,17 @@ class Auth {
 
 		$not_allowed_groups = array_merge($not_allowed_groups, $always_disallowed);
 
-		if ( ! $this->_retrieve_http_basic())
+		$authed = $this->_retrieve_http_basic();
+
+		if ($authed !== FALSE)
+		{
+			if (in_array($authed->member('group_id'), $not_allowed_groups))
+			{
+				$authed = FALSE;
+			}
+		}
+
+		if ($authed === FALSE)
 		{
 			@header('WWW-Authenticate: Basic realm="'.$realm.'"');
 			$this->EE->output->set_status_header(401);
@@ -570,7 +580,7 @@ class Auth {
 			return FALSE;	
 		}
 
-		return ($this->authenticate_username($user, $pass)) ? TRUE : FALSE;
+		return $this->authenticate_username($user, $pass);
 	}
 }
 // END Auth class
@@ -788,6 +798,13 @@ class Auth_result {
 		
 		if ($cp_sess === TRUE)
 		{
+			// Log the login
+
+			// We'll manually add the username to the Session array so
+			// the logger class can use it.
+			$this->EE->session->userdata['username'] = $this->member('username');
+			$this->EE->logger->log_action(lang('member_logged_in'));
+
 			// -------------------------------------------
 			// 'cp_member_login' hook.
 			//  - Additional processing when a member is logging into CP
@@ -796,13 +813,6 @@ class Auth_result {
 				if ($this->EE->extensions->end_script === TRUE) return;
 			//
 			// -------------------------------------------
-			
-			// Log the login
-
-			// We'll manually add the username to the Session array so
-			// the logger class can use it.
-			$this->EE->session->userdata['username'] = $this->member('username');
-			$this->EE->logger->log_action(lang('member_logged_in'));
 		}
 		elseif ($multi)
 		{

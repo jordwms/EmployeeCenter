@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -19,8 +19,8 @@
  * @package		ExpressionEngine
  * @subpackage	Control Panel
  * @category	Control Panel
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 class Homepage extends CI_Controller {
 
@@ -284,7 +284,7 @@ class Homepage extends CI_Controller {
 	 */	
 	function _version_check()
 	{	
-		$download_url = $this->cp->masked_url('https://secure.expressionengine.com/download.php');
+		$download_url = $this->cp->masked_url('https://store.ellislab.com/manage');
 		
 		$this->load->helper('version_helper');
 			

@@ -2,10 +2,10 @@
 /**
  * CodeIgniter
  *
- * An open source application development framework for PHP 5.1.6 or newer
+ * An open source application development framework for PHP 5.2.4 or newer
  *
  * @package		CodeIgniter
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2008 - 2012, EllisLab, Inc.
  * @license		http://codeigniter.com/user_guide/license.html
  * @link		http://codeigniter.com
@@ -23,7 +23,7 @@
  * @package		CodeIgniter
  * @subpackage	Libraries
  * @category	Libraries
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://codeigniter.com/user_guide/libraries/email.html
  */
 class CI_Email {
@@ -360,7 +360,12 @@ class CI_Email {
 	 */
 	function subject($subject)
 	{
-		$subject = $this->_prep_q_encoding($subject);
+		// Only use Q encoding if there are characters that would require it
+		if (preg_match('/[\200-\377]/', $subject))
+		{
+			$subject = $this->_prep_q_encoding($subject);
+		}
+		
 		$this->_set_header('Subject', $subject);
 		return $this;
 	}

@@ -6,10 +6,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -22,8 +22,8 @@
  * @package		ExpressionEngine
  * @subpackage	Control Panel
  * @category	Control Panel
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 class Content_publish extends CI_Controller {
 
@@ -45,7 +45,7 @@ class Content_publish extends CI_Controller {
 	{
 		parent::__construct();
 
-		if ( ! $this->cp->allowed_group('can_access_content'))
+		if ( ! $this->cp->allowed_group('can_access_content', 'can_access_publish'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -126,7 +126,17 @@ class Content_publish extends CI_Controller {
 	public function entry_form()
 	{
 		$this->load->library('form_validation');
-		
+
+        // Needed for custom tabs loaded by layout_model from the db table
+        // exp_layout_publish where the whole layout (fields and tabs) are
+        // stored in serialized form.  This language file contains the
+        // localized names for the fields and tabs.  We may want to push
+        // this call deeper down the rabbit hole so that it is simply
+        // always available whenever we load the layout_model.  Or this
+        // may be the only spot we use it.  Not sure, so sticking it
+        // here for now.  -Daniel B.
+        $this->lang->loadfile('publish_tabs_custom');		
+
 		$entry_id	= (int) $this->input->get_post('entry_id');
 		$channel_id	= (int) $this->input->get_post('channel_id');
 		
@@ -266,11 +276,11 @@ class Content_publish extends CI_Controller {
 		$this->file_field->browser();
 		
 		$this->cp->add_js_script(array(
-			'ui'		=> array('datepicker', 'resizable', 'draggable', 'droppable'),
-			'plugin'	=> array('markitup', 'toolbox.expose', 'overlay', 'tmpl', 'ee_url_title'),
-			'file'		=> array('json2', 'cp/publish', 'cp/publish_tabs', 'cp/global')
+			'ui'	 => array('datepicker', 'resizable', 'draggable', 'droppable'),
+			'plugin' => array('markitup', 'toolbox.expose', 'overlay', 'tmpl', 'ee_url_title'),
+			'file'	=> array('json2', 'cp/publish', 'cp/publish_tabs')
 		));
-		
+
 		if ($this->session->userdata('group_id') == 1)
 		{
 			$this->cp->add_js_script(array('file' => 'cp/publish_admin'));
@@ -309,6 +319,8 @@ class Content_publish extends CI_Controller {
 			'field_list'		=> $field_list,
 			'layout_styles'		=> $layout_styles,
 			'field_output'		=> $field_output,
+			'layout_group'	=> (is_numeric($this->input->get_post('layout_preview'))) ?
+				$this->input->get_post('layout_preview') : $this->session->userdata('group_id'),
 			
 			'spell_enabled'		=> TRUE,
 			'smileys_enabled'	=> $this->_smileys_enabled,
@@ -329,7 +341,7 @@ class Content_publish extends CI_Controller {
 				'filter'			=> $this->input->get_post('filter')
 			),
 			
-			'preview_url' => $preview_url
+			'preview_url'	=> $preview_url
 		);
 
 		$this->cp->set_breadcrumb(BASE.AMP.'C=content_publish', lang('publish'));
@@ -642,7 +654,7 @@ class Content_publish extends CI_Controller {
 		
 		$r = '';
 
-		$entry_title = $this->typography->format_characters(stripslashes($resrow['title']));
+		$entry_title = $this->typography->format_characters($resrow['title']);
 
 		foreach ($fields as $key => $val)
 		{
@@ -667,7 +679,7 @@ class Content_publish extends CI_Controller {
 				}
 				else
 				{
-					$r .= $this->typography->parse_type(stripslashes($resrow[$key]),
+					$r .= $this->typography->parse_type($resrow[$key],
 											 array(
 														'text_format'	=> $resrow['field_ft_'.$expl['1']],
 														'html_format'	=> $channel_info->channel_html_formatting,
@@ -2033,9 +2045,12 @@ class Content_publish extends CI_Controller {
 		
 		$qry = $this->db->select('username, screen_name')
 						->get_where('members', array('member_id' => (int) $author_id));
-			
-		$author = ($qry->row('screen_name')  == '') ? $qry->row('username') : $qry->row('screen_name');
-		$menu_author_options[$author_id] = $author;
+		
+		if ($qry->num_rows() > 0)
+		{
+			$menu_author_options[$author_id] = ($qry->row('screen_name')  == '')
+				? $qry->row('username') : $qry->row('screen_name');
+		}
 		
 		// Next we'll gather all the authors that are allowed to be in this list
 		$author_list = $this->member_model->get_authors();
@@ -2358,6 +2373,13 @@ class Content_publish extends CI_Controller {
 				foreach ($v as $val)
 				{
 					$settings[$val['field_id']] = $val;
+
+					// So 3rd party module tab fields get their data on autosave
+					if (isset($entry_data[$val['field_id']]))
+					{
+						$settings[$val['field_id']]['field_data'] = $entry_data[$val['field_id']];
+					}
+				    	
 					$this->_tab_labels[$tab]	= lang($tab);
 					$this->_module_tabs[$tab][] = array(
 													'id' 	=> $val['field_id'],
@@ -2524,8 +2546,13 @@ class Content_publish extends CI_Controller {
 				
 				if (count($this->_file_manager['file_list']))
 				{
-					$button_js[] = array('name' => $button->tag_name, 'key' => $button->accesskey, 'replaceWith' => '', 'className' => $button->classname);
-					$this->javascript->set_global('filebrowser.image_tag', $button->tag_open);
+					$button_js[] = array(
+						'name'			=> $button->tag_name,
+						'key'			=> $button->accesskey,
+						'replaceWith'	=> '',
+						'className'		=> $button->classname.' id'.$button->id
+					);
+					$this->javascript->set_global('filebrowser.image_tag_'.$button->id, $button->tag_open);
 				}
 			}
 			elseif(strpos($button->classname, 'markItUpSeparator') !== FALSE)
@@ -2535,19 +2562,22 @@ class Content_publish extends CI_Controller {
 			}
 			else
 			{
-				$button_js[] = array('name' => $button->tag_name, 'key' => strtoupper($button->accesskey), 'openWith' => $button->tag_open, 'closeWith' => $button->tag_close, 'className' => $button->classname);
+				$button_js[] = array(
+					'name'		=> $button->tag_name,
+					'key'		=> strtoupper($button->accesskey),
+					'openWith'	=> $button->tag_open,
+					'closeWith'	=> $button->tag_close,
+					'className'	=> $button->classname.' id'.$button->id
+				);
 			}
 		}
 		
-		// We force an image button if it doesn't already exist
-		if ($has_image == FALSE && count($this->_file_manager['file_list']))
-		{
-					$button_js[] = array('name' => 'img', 'key' => '', 'replaceWith' => '', 'className' => 'btn_img');
-					$this->javascript->set_global('filebrowser.image_tag', '<img src="[![Link:!:http://]!]" alt="[![Alternative text]!]" />');			
-		}
+		// Set global variable for optional file browser button
+		$this->javascript->set_global(
+			'filebrowser.image_tag',
+			'<img src="[![Link:!:http://]!]" alt="[![Alternative text]!]" />'
+		);
 		
-		$this->javascript->set_global('p.image_tag', 'foo you!');
-
 		$markItUp = $markItUp_writemode = array(
 			'nameSpace'		=> "html",
 			'onShiftEnter'	=> array('keepDefault' => FALSE, 'replaceWith' => "<br />\n"),

@@ -2,10 +2,10 @@
 /**
  * CodeIgniter
  *
- * An open source application development framework for PHP 5.1.6 or newer
+ * An open source application development framework for PHP 5.2.4 or newer
  *
  * @package		CodeIgniter
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2008 - 2012, EllisLab, Inc.
  * @license		http://codeigniter.com/user_guide/license.html
  * @link		http://codeigniter.com
@@ -21,7 +21,7 @@
  * @package		CodeIgniter
  * @subpackage	Libraries
  * @category	Pagination
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://codeigniter.com/user_guide/libraries/pagination.html
  */
 class CI_Pagination {
@@ -380,6 +380,8 @@ class CI_Pagination {
 	 */
 	private function _remove_double_slashes(&$array)
 	{
+		$this->CI->load->helper('string_helper');
+
 		foreach ($array as $key => &$value)
 		{
 			if (isset($value[0]) AND is_array($value[0]))
@@ -388,7 +390,7 @@ class CI_Pagination {
 			}
 			else if ( ! empty($value['pagination_url']))
 			{
-				$value['pagination_url'] = preg_replace("#([^:])//+#", "\\1/", $value['pagination_url']);
+				$value['pagination_url'] = reduce_double_slashes($value['pagination_url']);
 			}
 		}
 	}

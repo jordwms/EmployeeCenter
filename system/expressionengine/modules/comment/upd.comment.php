@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -19,13 +19,13 @@
  * @package		ExpressionEngine
  * @subpackage	Modules
  * @category	Modules
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 
 class Comment_upd {
 
-	var $version = '2.2';
+	var $version = '2.3';
 
 	function Comment_upd()
 	{
@@ -123,7 +123,7 @@ class Comment_upd {
 						'email'				 => array('type' => 'varchar' , 'constraint' => '50'),
 						'url'				 => array('type' => 'varchar' , 'constraint' => '75'),
 						'location'			 => array('type' => 'varchar' , 'constraint' => '50'),
-						'ip_address'		 => array('type' => 'varchar' , 'constraint' => '16'),
+						'ip_address'		 => array('type' => 'varchar' , 'constraint' => '45'),
 						'comment_date'		 => array('type'	=> 'int'  , 'constraint' => '10'),
 						'edit_date'			 => array('type'	=> 'int'  , 'constraint' => '10'),
 						'comment'			 => array('type'	=> 'text')
@@ -256,6 +256,23 @@ class Comment_upd {
 				$this->EE->db->query("ALTER TABLE `exp_comments` ADD KEY (`channel_id`)");				
 			}
 		}	
+
+		if (version_compare($current, '2.3', '<'))
+		{
+			// Update ip_address column
+			$this->EE->load->dbforge();
+
+			$this->EE->dbforge->modify_column(
+				'comments',
+				array(
+					'ip_address' => array(
+						'name' 			=> 'ip_address',
+						'type' 			=> 'varchar',
+						'constraint'	=> '45'
+					)
+				)
+			);
+		}
 
 		return TRUE;
 	}

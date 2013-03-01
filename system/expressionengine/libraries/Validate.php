@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -19,8 +19,8 @@
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Core
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 class EE_Validate {
 
@@ -78,11 +78,6 @@ class EE_Validate {
 	 */
 	function password_safety_check()
 	{
-		if ($this->EE->session->userdata('group_id') == 1)
-		{
-			return;
-		}
-			
 		if ($this->cur_password == '')
 		{
 			return $this->errors[] = $this->EE->lang->line('missing_current_password');
@@ -92,9 +87,9 @@ class EE_Validate {
 		
 		// Get the users current password
 		$pq = $this->EE->db->select('password, salt')
-							->get_where('members', array(
-								'member_id' => (int) $this->EE->session->userdata('member_id'))
-							);
+			->get_where('members', array(
+				'member_id' => (int) $this->EE->session->userdata('member_id')
+			));
 		
 		if ( ! $pq->num_rows())
 		{
@@ -169,9 +164,12 @@ class EE_Validate {
 			}
 		
 			// Is username taken?
-			$query = $this->EE->db->query("SELECT COUNT(*) as count FROM exp_members WHERE username = '".$this->EE->db->escape_str($this->username)."'");
-							  
-			if ($query->row('count')  > 0)
+			$this->EE->db->from('members');
+			$this->EE->db->where('username = LOWER('.$this->EE->db->escape($this->username).')', NULL, FALSE);
+			$this->EE->db->where('LOWER(username) = '.$this->EE->db->escape(strtolower($this->username)), NULL, FALSE); 
+			$count = $this->EE->db->count_all_results();
+
+			if ($count  > 0)
 			{
 				$this->errors[] = $this->EE->lang->line('username_taken');
 			}
@@ -191,7 +189,7 @@ class EE_Validate {
 		{
 			if ($this->username == '')
 			{
-				return $this->errors[] = $this->EE->lang->line('disallowed_screen_chars');
+				return $this->errors[] = $this->EE->lang->line('missing_username');
 			}
 			
 			return $this->screen_name = $this->username;

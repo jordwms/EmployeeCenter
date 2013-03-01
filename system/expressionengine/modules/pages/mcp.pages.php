@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -19,8 +19,8 @@
  * @package		ExpressionEngine
  * @subpackage	Modules
  * @category	Modules
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 class Pages_mcp {
 
@@ -121,7 +121,7 @@ class Pages_mcp {
 
 		foreach($pages[$this->EE->config->item('site_id')]['uris'] as $entry_id => $url)
 		{
-			$url = ($url == '/') ? '/' : '/'.trim($url, '/').'/';
+			$url = ($url == '/') ? '/' : '/'.trim($url, '/');
 
 			$vars['pages'][$entry_id]['entry_id'] = $entry_id;
 			$vars['pages'][$entry_id]['entry_id'] = $entry_id;

@@ -4,11 +4,11 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team, 
+ * @author		EllisLab Dev Team, 
  * 		- Original Development by Barrett Newton -- http://barrettnewton.com
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -21,8 +21,8 @@
  * @package		ExpressionEngine
  * @subpackage	Extensions
  * @category	Extensions
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 
 class Safecracker_ext
@@ -32,7 +32,7 @@ class Safecracker_ext
 	public $version = '2.1';
 	public $description = 'A replacement and enchancement of the Stand-Alone Entry Form';
 	public $settings_exist = 'y';
-	public $docs_url = 'http://expressionengine.com/user_guide/modules/safecracker/index.html';
+	public $docs_url = 'http://ellislab.com/expressionengine/user-guide/modules/safecracker/index.html';
 	public $classname = 'Safecracker_ext';
 	public $required_by = array('module');
 	
@@ -59,31 +59,6 @@ class Safecracker_ext
 	public function activate_extension()
 	{
 		return TRUE;
-		
-		//show_error('This extension is automatically installed with the Safecracker module');
-		
-		
-		/*
-		$hook_defaults = array(
-			'class' => $this->classname,
-			'settings' => '',
-			'version' => $this->version,
-			'enabled' => 'y',
-			'priority' => 10
-		);
-		
-		$hooks[] = array(
-			'method' => 'form_declaration_modify_data',
-			'hook' => 'form_declaration_modify_data'
-		);
-		
-		foreach ($hooks as $hook)
-		{
-			$this->EE->db->insert('extensions', array_merge($hook_defaults, $hook));
-		}
-		
-		*/
-
 	}
 
 	// --------------------------------------------------------------------
@@ -97,18 +72,6 @@ class Safecracker_ext
 	public function update_extension($current = '')
 	{
 		return TRUE;
-		
-		//show_error('This extension is automatically updated with the Safecracker module');
-
-		/*
-		if ($current == '' OR version_compare($current, $this->version, '=='))
-		{
-			return FALSE;
-		}
-		
-		$this->EE->db->update('extensions', array('version' => $this->version), array('class' => $this->classname));
-		*/
-
 	}
 
 	// --------------------------------------------------------------------
@@ -121,12 +84,6 @@ class Safecracker_ext
 	public function disable_extension()
 	{
 		return TRUE;
-		
-		//show_error('This extension is automatically deleted with the Safecracker module');
-		
-		/*
-		$this->EE->db->delete('extensions', array('class' => $this->classname));
-		*/
 	}
 
 	// --------------------------------------------------------------------
@@ -247,32 +204,69 @@ class Safecracker_ext
 	 */
 	public function save_settings()
 	{
-		$this->EE->load->helper('security');
-		
 		$this->fetch_channels();
-		
+		$this->fetch_settings();
+
+		$site_id = $this->EE->config->item('site_id');
+
+		// We should be able to just check override_status in order
+		// to determine whether we've initialized the settings for
+		// the entire site.
+		if( ! isset($this->settings['override_status'][$site_id]))
+		{
+			$this->settings['override_status'][$site_id] = array();
+			$this->settings['allow_guests'][$site_id] = array();
+			$this->settings['logged_out_member_id'][$site_id] = array();
+			$this->settings['require_captcha'][$site_id] = array();
+		}
+
+		$post = $this->EE->security->xss_clean($_POST);
 		foreach ($this->channels as $row)
 		{
-			if ( ! empty($_POST['allow_guests'][$this->EE->config->item('site_id')][$row['channel_id']]) && ! empty($_POST['logged_out_member_id'][$this->EE->config->item('site_id')][$row['channel_id']]))
+			// Just make things a little clearer.
+			$channel_id = $row['channel_id'];
+
+			if(isset($post['override_status'][$site_id][$channel_id]))
 			{
-				$this->settings['allow_guests'][$this->EE->config->item('site_id')][$row['channel_id']] = xss_clean($_POST['allow_guests'][$this->EE->config->item('site_id')][$row['channel_id']]);
-				$this->settings['logged_out_member_id'][$this->EE->config->item('site_id')][$row['channel_id']] = xss_clean($_POST['logged_out_member_id'][$this->EE->config->item('site_id')][$row['channel_id']]);
-				if (isset($_POST['require_captcha'][$this->EE->config->item('site_id')][$row['channel_id']]))
-				{
-					$this->settings['require_captcha'][$this->EE->config->item('site_id')][$row['channel_id']] = xss_clean($_POST['require_captcha'][$this->EE->config->item('site_id')][$row['channel_id']]);
-				}
+				$this->settings['override_status'][$site_id][$channel_id] = $post['override_status'][$site_id][$channel_id];
 			}
-			if (isset($_POST['override_status'][$this->EE->config->item('site_id')][$row['channel_id']]))
+
+			$allow_guests = isset($post['allow_guests'][$site_id][$channel_id]) ? $post['allow_guests'][$site_id][$channel_id] : false;
+			if ( ! $allow_guests) 
 			{
-				$this->settings['override_status'][$this->EE->config->item('site_id')][$row['channel_id']] = xss_clean($_POST['override_status'][$this->EE->config->item('site_id')][$row['channel_id']]);
+				unset($this->settings['allow_guests'][$site_id][$channel_id]);
+				unset($this->settings['logged_out_member_id'][$site_id][$channel_id]);
+				unset($this->settings['require_captcha'][$site_id][$channel_id]);
+			} 
+			else 
+			{
+				$this->settings['allow_guests'][$site_id][$channel_id] = $allow_guests;
+				if ( ! empty($post['logged_out_member_id'][$site_id][$channel_id]))
+				{
+					$this->settings['logged_out_member_id'][$site_id][$channel_id] = $post['logged_out_member_id'][$site_id][$channel_id];
+				}
+				elseif (isset($this->settings['logged_out_member_id'][$site_id][$channel_id])) 
+				{
+					unset($this->settings['logged_out_member_id'][$site_id][$channel_id]);
+				}
+			
+				if ( ! empty($post['require_captcha'][$site_id][$channel_id])) 
+				{
+					$this->settings['require_captcha'][$site_id][$channel_id] = $post['require_captcha'][$site_id][$channel_id];
+				}
+				elseif (isset($this->settings['require_captcha'][$site_id][$channel_id]))
+				{
+					unset($this->settings['require_captcha'][$site_id][$channel_id]);
+				}
 			}
 		}
 		
-		$this->settings['license_number'] = $this->EE->input->post('license_number', TRUE);
-		
-		$this->EE->db->where('class', 'Safecracker_ext');
-		
-		$this->EE->db->update('extensions', array('settings' => serialize($this->settings)));
+
+		$this->EE->db->update(
+			'extensions',
+			array('settings' => serialize($this->settings)),
+			array('class' => 'Safecracker_ext')
+		);
 		
 		$this->EE->functions->redirect(BASE.AMP.'C=addons_extensions'.AMP.'M=extension_settings'.AMP.'file=safecracker');
 	}
@@ -297,7 +291,20 @@ class Safecracker_ext
 		
 		$query = $this->EE->db->get('extensions');
 		
-		$this->settings = ($query->row('settings')) ? $this->unserialize($query->row('settings')) : array();
+		$this->settings = ($query->row('settings')) ? $this->unserialize($query->row('settings')) : NULL;
+
+		// If we don't have settings to load, then initialize the
+		// settings array.
+		if ($this->settings === NULL)
+		{
+			$this->settings = array(
+				'override_status'	=>	array(),
+				'allow_guests'		=>	array(),
+				'logged_out_member_id'=>array(),
+				'require_captcha'	=>	array()
+			);
+		}
+		
 	}
 
 	// --------------------------------------------------------------------
@@ -501,7 +508,10 @@ class Safecracker_ext
 			$data = $this->EE->extensions->last_call;
 		}
 		
-		if (isset($this->EE->TMPL) && is_object($this->EE->TMPL) && ! empty($this->EE->session->cache['safecracker']['form_declaration']))
+		if (isset($this->EE->TMPL)
+			AND is_object($this->EE->TMPL)
+			AND ! empty($this->EE->session->cache['safecracker']['form_declaration'])
+			AND $this->EE->safecracker->form_loaded)
 		{
 			unset($this->EE->session->cache['safecracker']['form_declaration']);
 			

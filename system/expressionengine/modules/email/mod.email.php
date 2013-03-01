@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -19,8 +19,8 @@
  * @package		ExpressionEngine
  * @subpackage	Modules
  * @category	Update File
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 
 class Email {
@@ -173,7 +173,7 @@ class Email {
 	 * Tell a friend form
 	 *
 	 * {exp:email:tell_a_friend charset="utf-8" allow_html='n'}
-	 * {exp:email:tell_a_friend charset="utf-8" allow_html='<p>,<a>' recipients='sales@expressionengine.com'}
+	 * {exp:email:tell_a_friend charset="utf-8" allow_html='<p>,<a>' recipients='sales@ellislab.com'}
 	 * {member_email}, {member_name}, {current_time format="%Y %d %m"}
 	 */
 	public function tell_a_friend()
@@ -349,8 +349,6 @@ class Email {
 		);
 
 		$tagdata = str_replace($LB, "\n", $tagdata);
-
-		$recipients = $this->_encrypt_recipients($recipients);
 
 		$allow = ($allow_html !== FALSE) ? TRUE : FALSE;
 		
@@ -535,7 +533,7 @@ class Email {
 		}
 
 		// Check Form Hash
-		if ( ! $this->EE->security->check_xid($this->EE->input->post('XID')))
+		if ( ! $this->EE->security->secure_forms_check($this->EE->input->post('XID')))
 		{
 			return $this->EE->output->show_user_error('general', array(lang('not_authorized')));
 		}
@@ -777,12 +775,6 @@ class Email {
 
 		$this->EE->db->query($this->EE->db->insert_string('exp_email_tracker', $data));
 
-		// Delete spam hashes
-		if (isset($_POST['XID']))
-		{
-			$this->EE->db->query("DELETE FROM exp_security_hashes WHERE (hash='".$this->EE->db->escape_str($_POST['XID'])."' AND ip_address = '".$this->EE->input->ip_address()."') OR date < UNIX_TIMESTAMP()-7200");
-		}
-
 		/* -------------------------------------
 		/*  'email_module_send_email_end' hook.
 		/*  - After emails are sent, do some additional processing
@@ -892,7 +884,7 @@ class Email {
 		$recipients = $this->_encrypt_recipients($recipients);
 
 		$data = array(
-			'id'			=> ($this->EE->TMPL->form_id == '') ? 'contact_form' : $this->EE->TMPL->form_id,
+			'id'			=> ($this->EE->TMPL->form_id == '') ? $form_id : $this->EE->TMPL->form_id,
 			'class'			=> $this->EE->TMPL->form_class,
 			'hidden_fields'	=> array(
 				'ACT'				=> $this->EE->functions->fetch_action_id('Email', 'send_email'),

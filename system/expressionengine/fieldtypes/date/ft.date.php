@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -19,8 +19,8 @@
  * @package		ExpressionEngine
  * @subpackage	Fieldtypes
  * @category	Fieldtypes
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 class Date_ft extends EE_Fieldtype {
 
@@ -57,7 +57,7 @@ class Date_ft extends EE_Fieldtype {
 			$data = $this->EE->localize->string_to_timestamp($data);
 		}
 
-		if ($data === FALSE)
+		if ( ! is_numeric($data) && $data != '')
 		{
 			return lang('invalid_date');
 		}
@@ -132,6 +132,8 @@ class Date_ft extends EE_Fieldtype {
 
 			$date = $this->EE->localize->set_localized_time($field_data);
 		}
+		
+		$this->EE->javascript->set_global('date.include_seconds', $this->EE->config->item('include_seconds'));
 		
 		// Note- the JS will automatically localize the default date- but not necessarily in a way we want
 		// Hence we adjust default date to compensate for the coming localization

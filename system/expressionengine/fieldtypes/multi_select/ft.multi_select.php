@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -19,8 +19,8 @@
  * @package		ExpressionEngine
  * @subpackage	Fieldtypes
  * @category	Fieldtypes
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 class Multi_select_ft extends EE_Fieldtype {
 
@@ -90,6 +90,12 @@ class Multi_select_ft extends EE_Fieldtype {
 			$entry = implode(', ', $data);
 		}
 
+		// Experimental parameter, do not use
+		if (isset($params['raw_output']) && $params['raw_output'] == 'yes')
+		{
+			return $this->EE->functions->encode_ee_tags($entry);
+		}
+
 		return $this->EE->typography->parse_type(
 				$this->EE->functions->encode_ee_tags($entry),
 				array(
@@ -134,6 +140,12 @@ class Multi_select_ft extends EE_Fieldtype {
 		if (isset($params['backspace']))
 		{
 			$chunk = substr($chunk, 0, - $params['backspace']);
+		}
+		
+		// Experimental parameter, do not use
+		if (isset($params['raw_output']) && $params['raw_output'] == 'yes')
+		{
+			return $this->EE->functions->encode_ee_tags($chunk);
 		}
 		
 		// Typography!

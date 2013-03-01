@@ -4,10 +4,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,8 +20,8 @@
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Core
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 class EE_Core {
 	
@@ -69,6 +69,7 @@ class EE_Core {
 		define('PATH_EXT',		APPPATH.'extensions/');
 		define('PATH_ACC',		APPPATH.'accessories/');
 		define('PATH_FT',		APPPATH.'fieldtypes/');
+		define('PATH_RTE',		APPPATH.'rte_tools/');
 		if ($this->EE->config->item('third_party_path'))
 		{
 			define(
@@ -82,10 +83,10 @@ class EE_Core {
 		}
 		
 		// application constants
-		define('IS_FREELANCER',	FALSE);
-		define('APP_NAME',		'ExpressionEngine'.(IS_FREELANCER ? ' Freelancer' : ''));
-		define('APP_BUILD',		'20120123');
-		define('APP_VER',		'2.4.0');
+		define('IS_CORE',		FALSE);
+		define('APP_NAME',		'ExpressionEngine'.(IS_CORE ? ' Core' : ''));
+		define('APP_BUILD',		'20121220');
+		define('APP_VER',		'2.5.5');
 		define('SLASH',			'&#47;');
 		define('LD',			'{');
 		define('RD',			'}');
@@ -101,12 +102,14 @@ class EE_Core {
 		$this->native_modules = array(
 			'blacklist', 'channel', 'comment', 'commerce', 'email', 'emoticon',
 			'file', 'forum', 'ip_to_nation', 'jquery', 'mailinglist', 'member',
-			'metaweblog_api', 'moblog', 'pages', 'query', 'referrer', 'rss',
+			'metaweblog_api', 'moblog', 'pages', 'query', 'referrer', 'rss', 'rte',
 			'safecracker', 'search', 'simple_commerce', 'stats',
 			'updated_sites', 'wiki'
 		);
-		
-		
+		$this->standard_modules = array('blacklist', 'email', 'forum', 'ip_to_nation',
+			'mailinglist', 'member', 'moblog', 'query', 'simple_commerce',
+			'updated_sites', 'wiki');
+
 		// Set a liberal script execution time limit, making it shorter for front-end requests than CI's default
 		if (function_exists("set_time_limit") == TRUE AND @ini_get("safe_mode") == 0)
 		{
@@ -222,8 +225,29 @@ class EE_Core {
 		unset($theme_path);
 		
 		// Define Third Party Theme Path and URL
-		define('PATH_THIRD_THEMES',	PATH_THEMES.'third_party/');
-		define('URL_THIRD_THEMES',	$this->EE->config->slash_item('theme_folder_url').'third_party/');
+		if ($this->EE->config->item('path_third_themes'))
+		{
+			define(
+				'PATH_THIRD_THEMES',
+				rtrim(realpath($this->EE->config->item('path_third_themes')), '/').'/'
+			);
+		}
+		else
+		{
+			define('PATH_THIRD_THEMES',	PATH_THEMES.'third_party/');
+		}
+		
+		if ($this->EE->config->item('url_third_themes'))
+		{
+			define(
+				'URL_THIRD_THEMES',
+				rtrim($this->EE->config->item('url_third_themes'), '/').'/'
+			);
+		}
+		else
+		{
+			define('URL_THIRD_THEMES',	$this->EE->config->slash_item('theme_folder_url').'third_party/');
+		}
 		
 		// Is this a stylesheet request?  If so, we're done.
 		if (isset($_GET['css']) OR (isset($_GET['ACT']) && $_GET['ACT'] == 'css')) 
@@ -261,6 +285,9 @@ class EE_Core {
 
 		// Load the "core" language file - must happen after the session is loaded
 		$this->EE->lang->loadfile('core');
+
+		// Compat helper, for those times where php doesn't quite cut it
+		$this->EE->load->helper('compat');
 
 		// Now that we have a session we'll enable debugging if the user is a super admin
 		if ($this->EE->config->item('debug') == 1 AND $this->EE->session->userdata('group_id') == 1)
@@ -473,7 +500,7 @@ class EE_Core {
 		// @todo remove after 2.1.1's release, move to the update script
 		if (strncmp($this->EE->config->item('doc_url'), 'http://expressionengine.com/docs', 32) == 0)
 		{
-			$this->EE->config->update_site_prefs(array('doc_url' => 'http://expressionengine.com/user_guide/'));
+			$this->EE->config->update_site_prefs(array('doc_url' => 'http://ellislab.com/expressionengine/user-guide/'));
 		}
 	}
 	
@@ -537,7 +564,7 @@ class EE_Core {
 		$profile_trigger = $this->EE->config->item('profile_trigger');
 		
 		
-		if ( ! IS_FREELANCER && $forum_trigger && 
+		if ( ! IS_CORE && $forum_trigger && 
 			in_array($this->EE->uri->segment(1), preg_split('/\|/', $forum_trigger, -1, PREG_SPLIT_NO_EMPTY)))
 		{
 			require PATH_MOD.'forum/mod.forum.php';
@@ -545,7 +572,7 @@ class EE_Core {
 			return;
 		}
 		
-		if ( ! IS_FREELANCER && $profile_trigger && $profile_trigger == $this->EE->uri->segment(1))
+		if ( ! IS_CORE && $profile_trigger && $profile_trigger == $this->EE->uri->segment(1))
 		{
 			// We do the same thing with the member profile area.  
 		
@@ -591,7 +618,14 @@ class EE_Core {
 				$match_uri = '/'.trim($this->EE->uri->uri_string, '/');	// will result in '/' if uri_string is blank
 				$page_uris = $pages[$site_id]['uris'];
 				
-				$entry_id = array_search($match_uri, $page_uris);
+				// trim page uris in case there's a trailing slash on any of them
+				foreach ($page_uris as $index => $value)
+				{
+					$page_uris[$index] = '/'.trim($value, '/');
+				}
+
+				// case insensitive URI comparison
+				$entry_id = array_search(strtolower($match_uri), array_map('strtolower', $page_uris));
 				
 				if ( ! $entry_id AND $match_uri != '/')
 				{
@@ -625,9 +659,7 @@ class EE_Core {
 			}
 		}
 
-		require APPPATH.'libraries/Template.php';
-
-		$this->EE->TMPL = new EE_Template();
+		$this->EE->load->library('template', NULL, 'TMPL');
 
 		// Parse the template
 		$this->EE->TMPL->run_template_engine($template_group, $template);
@@ -656,7 +688,7 @@ class EE_Core {
 			}
 		}
 	
-		if ( ! isset($last_clear) && $this->EE->config->item('enable_online_user_tracking') != 'n')
+		if ( ! isset($last_clear))
 		{
 			$this->EE->db->select('last_cache_clear');
 			$this->EE->db->where('site_id', $this->EE->config->item('site_id'));

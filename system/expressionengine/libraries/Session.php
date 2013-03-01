@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -19,8 +19,8 @@
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Core
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
  
 // ------------------------------------------------------------------------
@@ -292,14 +292,18 @@ class EE_Session {
 	{
 		switch ($type)
 		{
-			case 'ip'			: $ban = $this->EE->config->item('banned_ips');
-								  $match = $this->EE->input->ip_address();
+			case 'ip':
+				$ban = $this->EE->config->item('banned_ips');
+				$match = $this->EE->input->ip_address();
 				break;
-			case 'email'		: $ban = $this->EE->config->item('banned_emails');
+			case 'email':
+				$ban = $this->EE->config->item('banned_emails');
 				break;
-			case 'username'		: $ban = $this->EE->config->item('banned_usernames');
+			case 'username':
+				$ban = $this->EE->config->item('banned_usernames');
 				break;
-			case 'screen_name'	: $ban = $this->EE->config->item('banned_screen_names');
+			case 'screen_name':
+				$ban = $this->EE->config->item('banned_screen_names');
 				break;
 		}
 		
@@ -371,17 +375,12 @@ class EE_Session {
 		} 
 		
 		$interval = $this->EE->config->item('password_lockout_interval') * 60;
-		
-		$expire = time() - $interval;
-		$p_where = "(user_agent ='{$this->EE->db->escape_str($this->userdata['user_agent'])}' OR username='{$this->EE->db->escape_str($username)}')";
 
 		$lockout = $this->EE->db->select("COUNT(*) as count")
-								->where('login_date > ', $expire)
-								->where('ip_address', $this->EE->input->ip_address())
-								->where($p_where)
-								->get('password_lockout');
-		
-								
+			->where('login_date > ', time() - $interval)
+			->where('ip_address', $this->EE->input->ip_address())
+			->where('username', $username)
+			->get('password_lockout');
 		
 		return ($lockout->row('count') >= 4) ? TRUE : FALSE;
 	}
@@ -612,7 +611,7 @@ class EE_Session {
 		$this->userdata['total_forum_posts'] = $member_query->row('total_forum_topics')  + $member_query->row('total_forum_posts') ;
 		$this->userdata['total_forum_replies'] = $member_query->row('total_forum_posts') ;
 		
-		$this->userdata['display_photos'] = $this->userdata['display_avatars'];
+		$this->userdata['display_photos'] = $this->EE->config->item('enable_photos');
 		
 		//  Are users allowed to localize?
 		if ($this->EE->config->item('allow_member_localization') == 'n')
@@ -700,12 +699,14 @@ class EE_Session {
 	public function fetch_session_data()
 	{
 		// Look for session.  Match the user's IP address and browser for added security.
-		$this->EE->db->select('member_id, admin_sess, last_activity')
-			->where('session_id', (string) $this->sdata['session_id'])
-			->where('ip_address', $this->sdata['ip_address'])
-			->where('user_agent', $this->sdata['user_agent']);
-
-		$query = $this->EE->db->get('sessions');
+		$query = $this->EE->db->select('member_id, admin_sess, last_activity')
+			->get_where(
+				'sessions',
+				array(
+					'session_id' => (string) $this->sdata['session_id'],
+					'user_agent' => $this->sdata['user_agent']
+				)
+			);
 		
 		if ($query->num_rows() == 0 OR $query->row('member_id') == 0)
 		{
@@ -765,7 +766,23 @@ class EE_Session {
 			return FALSE;
 		}
 
-		$query = $this->EE->db->query("SELECT country FROM exp_ip2nation WHERE ip < INET_ATON('".$this->EE->db->escape_str($this->EE->input->ip_address())."') ORDER BY ip DESC LIMIT 0,1");
+		// all IPv4 go to IPv6 mapped
+		$addr = $this->EE->input->ip_address();
+
+		if (strpos($addr, ':') === FALSE && strpos($addr, '.') !== FALSE)
+		{
+			$addr = '::'.$addr;
+		}
+		
+		$addr = inet_pton($addr);
+
+		$query = $this->EE->db
+			->select('country')
+			->where("ip_range_low <= '".$addr."'", '', FALSE)
+			->where("ip_range_high >= '".$addr."'", '', FALSE)
+			->order_by('ip_range_low', 'desc')
+			->limit(1, 0)
+			->get('ip2nation');
 				
 		if ($query->num_rows() == 1)
 		{
@@ -928,7 +945,7 @@ class EE_Session {
 		
 		if (REQ == 'PAGE')
 		{		
-			$this->EE->functions->set_cookie('tracker', serialize($tracker), '0'); 
+			$this->EE->functions->set_cookie('tracker', serialize($tracker), '0');
 		}
 		
 		return $tracker;

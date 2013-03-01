@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -19,8 +19,8 @@
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Core
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 class EE_Functions {  
 	
@@ -156,7 +156,7 @@ class EE_Functions {
 	 * @access	public
 	 * @return	string
 	 */
-	function create_page_url($base_url, $segment, $trailing_slash = true)
+	function create_page_url($base_url, $segment, $trailing_slash = FALSE)
 	{
 		// Load the string helper
 		$this->EE->load->helper('string');       
@@ -270,13 +270,16 @@ class EE_Functions {
 	 * With all the URL/URI parsing/building, there is the potential
 	 * to end up with double slashes.  This is a clean-up function.
 	 *
+	 * Will likely be deprecated in 2.6, use string helper instead
+	 *
 	 * @access	public
 	 * @param	string
 	 * @return	string
 	 */
 	function remove_double_slashes($str)
 	{
-		return preg_replace("#(^|[^:])//+#", "\\1/", $str);
+		$this->EE->load->helper('string_helper');
+		return reduce_double_slashes($str);
 	}
 	
 	// --------------------------------------------------------------------
@@ -363,6 +366,15 @@ class EE_Functions {
 	 */
 	function redirect($location, $method = FALSE)
 	{
+		// Remove hard line breaks and carriage returns
+		$location = str_replace(array("\n", "\r"), '', $location);
+
+		// Remove any and all line breaks
+		while (stripos($location, '%0d') !== FALSE OR stripos($location, '%0a') !== FALSE)
+		{
+			$location = str_ireplace(array('%0d', '%0a'), '', $location);
+		}
+
 		$location = str_replace('&amp;', '&', $this->insert_action_ids($location));
 
 		if (count($this->EE->session->flashdata))
@@ -480,20 +492,31 @@ class EE_Functions {
 			$data['hidden_fields'][$this->EE->security->get_csrf_token_name()] = $this->EE->security->get_csrf_hash();
 		}
 
+		// -------------------------------------------
 		// 'form_declaration_modify_data' hook.
 		//  - Modify the $data parameters before they are processed
+		//  - Added EE 1.4.0
+		//
 		if ($this->EE->extensions->active_hook('form_declaration_modify_data') === TRUE)
 		{
 			$data = $this->EE->extensions->call('form_declaration_modify_data', $data);
 		}
-		
+		//
+		// -------------------------------------------
+
+		// -------------------------------------------
 		// 'form_declaration_return' hook.
 		//  - Take control of the form_declaration function
+		//  - Added EE 1.4.0
+		//
 		if ($this->EE->extensions->active_hook('form_declaration_return') === TRUE)
 		{
 			$form = $this->EE->extensions->call('form_declaration_return', $data);
 			if ($this->EE->extensions->end_script === TRUE) return $form;
 		}
+		//
+		// -------------------------------------------		
+
 			
 		if ($data['action'] == '')
 		{
@@ -551,6 +574,7 @@ class EE_Functions {
 		return $form;
 	}
 	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -655,7 +679,7 @@ class EE_Functions {
 	 * @return	mixed
 	 */	
 	function evaluate($str)
-	{	
+	{
 		return eval('?'.'>'.$str.'<?php ');		
 	}
 	
@@ -708,7 +732,7 @@ class EE_Functions {
 	{	 
 		if ($this->EE->config->item('secure_forms') == 'y')
 		{
-			$this->EE->db->query("DELETE FROM exp_security_hashes WHERE date < UNIX_TIMESTAMP()-7200");
+			$this->EE->security->garbage_collect_xids();
 		}	
 	}
 	
@@ -725,39 +749,42 @@ class EE_Functions {
 	 */
 	function set_cookie($name = '', $value = '', $expire = '')
 	{
+
+		$data['name'] = $name;
+
 		if ( ! is_numeric($expire))
 		{
-			$expire = time() - 86500;
+			$data['expire'] = time() - 86500;
 		}
 		else
 		{
 			if ($expire > 0)
 			{
-				$expire = time() + $expire;
+				$data['expire'] = time() + $expire;
 			}
 			else
 			{
-				$expire = 0;
+				$data['expire'] = 0;
 			}
 		}
 					
-		$prefix = ( ! $this->EE->config->item('cookie_prefix')) ? 'exp_' : $this->EE->config->item('cookie_prefix').'_';
-		$path	= ( ! $this->EE->config->item('cookie_path'))	? '/'	: $this->EE->config->item('cookie_path');
+		$data['prefix'] = ( ! $this->EE->config->item('cookie_prefix')) ? 'exp_' : $this->EE->config->item('cookie_prefix').'_';
+		$data['path']	= ( ! $this->EE->config->item('cookie_path'))	? '/'	: $this->EE->config->item('cookie_path');
 		
 		if (REQ == 'CP' && $this->EE->config->item('multiple_sites_enabled') == 'y')
 		{
-			$domain = $this->EE->config->cp_cookie_domain;
+			$data['domain'] = $this->EE->config->cp_cookie_domain;
 		}
 		else
 		{
-			$domain = ( ! $this->EE->config->item('cookie_domain')) ? '' : $this->EE->config->item('cookie_domain');
+			$data['domain'] = ( ! $this->EE->config->item('cookie_domain')) ? '' : $this->EE->config->item('cookie_domain');
 		}
 		
-		$value = stripslashes($value);
+		$data['value'] = stripslashes($value);
 		
-		$secure_cookie = ($this->EE->config->item('cookie_secure') === TRUE) ? 1 : 0;
+		$data['secure_cookie'] = ($this->EE->config->item('cookie_secure') === TRUE) ? 1 : 0;
 
-		if ($secure_cookie)
+		if ($data['secure_cookie'])
 		{
 			$req = isset($_SERVER['HTTPS']) ? $_SERVER['HTTPS'] : FALSE;
 
@@ -766,8 +793,20 @@ class EE_Functions {
 				return FALSE;
 			}
 		}
+
+		/* -------------------------------------------
+		/* 'set_cookie_end' hook.
+		/*  - Take control of Cookie setting routine
+		/*  - Added EE 2.5.0
+		*/
+			$this->EE->extensions->call('set_cookie_end', $data);
+			if ($this->EE->extensions->end_script === TRUE) return;
+		/*
+		/* -------------------------------------------*/
+
 					
-		setcookie($prefix.$name, $value, $expire, $path, $domain, $secure_cookie);
+		setcookie($data['prefix'].$data['name'], $data['value'], $data['expire'], 
+			$data['path'], $data['domain'], $data['secure_cookie']);
 	}
 
 	// --------------------------------------------------------------------
@@ -1182,14 +1221,21 @@ class EE_Functions {
 	function delete_directory($path, $del_root = FALSE)
 	{
 		$path = rtrim($path, '/');
-
+		$path_delete = $path.'_delete';
+		
 		if ( ! is_dir($path))
 		{
 			return FALSE;
 		}
 		
+		// Delete temporary directory if it happens to exist from a previous attempt
+		if (is_dir($path_delete))
+		{
+			@exec("rm -r -f {$path_delete}");
+		}
+		
 		// let's try this the sane way first
-		@exec("mv {$path} {$path}_delete", $out, $ret);
+		@exec("mv {$path} {$path_delete}", $out, $ret);
 
 		if (isset($ret) && $ret == 0)
 		{
@@ -1203,7 +1249,7 @@ class EE_Functions {
 				}				
 			}
 
-			@exec("rm -r -f {$path}_delete");
+			@exec("rm -r -f {$path_delete}");
 		}
 		else
 		{
@@ -1620,20 +1666,14 @@ class EE_Functions {
 				}
 			
 				// Add security hashes
+				$hashes = $this->EE->security->generate_xid(count($matches[1]), TRUE);
 				
-				$sql = "INSERT INTO exp_security_hashes (date, ip_address, hash) VALUES";
-				
-				foreach ($matches[1] as $val)
+				foreach ($hashes as $hash)
 				{
-					$hash = $this->random('encrypt');
 					$str = preg_replace("/{XID_HASH}/", $hash, $str, 1);
-					$sql .= "(UNIX_TIMESTAMP(), '".$this->EE->input->ip_address()."', '".$hash."'),";
 				}
-				
-				$this->EE->db->query(substr($sql,0,-1));
-				
+								
 				// Re-enable DB caching
-				
 				if ($db_reset == TRUE)
 				{
 					$this->EE->db->cache_on();			
@@ -2582,9 +2622,9 @@ class EE_Functions {
 			// aren't going to be available yet.  So this is a quick workaround
 			// to ensure advanced conditionals using embedded variables can do
 			// their thing in mod tags.
-			$vars = array_merge($vars, $this->EE->TMPL->embed_vars);			
+			$vars = array_merge($vars, $this->EE->TMPL->embed_vars);
 		}
-					
+		
 		if (count($vars) == 0) return $str;
 
 		$switch  = array();
@@ -2604,18 +2644,41 @@ class EE_Functions {
 		// as efficient as possible?  It also gives me a chance to catch some
 		// user error mistakes.
 
-		if (preg_match_all("/".preg_quote(LD)."((if:else)*if)\s+(.*?)".preg_quote(RD)."/", $str, $matches))
+		if (preg_match_all("/".preg_quote(LD)."((if:else)*if)\s+(.*?)".preg_quote(RD)."/s", $str, $matches))
 		{
 			// PROTECT QUOTED TEXT
-			//  That which is in quotes should be protected and ignored as it will screw
-			//  up the parsing if the variable is found within a string
+			// That which is in quotes should be protected and ignored as it will screw
+			// up the parsing if the variable is found within a string
 			
 			if (preg_match_all('/([\"\'])([^\\1]*?)\\1/s', implode(' ', $matches[3]), $quote_matches))
 			{
-				foreach($quote_matches[0] as $quote_match)
+				foreach($quote_matches[0] as $ii => $quote_match)
 				{
 					$md5_key = (string) hexdec($prep_id.md5($quote_match));
 					$protect[$quote_match] = $md5_key;
+					
+					// To better protect quotes inside conditional quotes, we need to
+					// determine which kind of quote to surround the newly-encoded string
+					$surrounding_quote = surrounding_character($quote_match);
+					
+					if (($surrounding_quote != '"' AND $surrounding_quote != "'")
+						OR $surrounding_quote === FALSE)
+					{
+						$surrounding_quote = '"';
+					}
+					
+					// We do these conversions on variables below, so we need
+					// to also do them on the hardcoded values to make sure
+					// the conditionals resolve as expected.
+					// e.g. {if location == "pony's house"}
+					$quote_match = $surrounding_quote.
+						str_replace(
+							array("'", '"', '(', ')', '$', '{', '}', "\n", "\r", '\\'), 
+							array('&#39;', '&#34;', '&#40;', '&#41;', '&#36;', '', '', '', '', '&#92;'), 
+							$quote_matches[2][$ii]
+						).
+						$surrounding_quote;
+					
 					$switch[$md5_key] = $quote_match;
 				}
 				
@@ -2629,11 +2692,8 @@ class EE_Functions {
 				$matches['t'] = str_replace($valid, ' ', $matches[3]);
 			}
 			
-			// FIND WHAT WE NEED, NOTHING MORE!
-			// On reedmaniac.com with no caching this code below knocked off, 
-			// on average, about .07 seconds on a .34 page load. Not too shabby.
-			// Sadly, its influence is far less on a cached page.  Ah well...			
-			$data		= array();
+			// Find what we need, nothing more!!
+			$data = array();
 
 			foreach($matches['t'] as $cond)
 			{
@@ -2645,7 +2705,7 @@ class EE_Functions {
 				{
 					if (array_key_exists($x[$i], $vars))
 					{
-						$data[$x[$i]] = $vars[$x[$i]];
+						$data[$x[$i]] = trim($vars[$x[$i]]);
 					}
 					elseif($embedded_tags === TRUE && ! is_numeric($x[$i]))
 					{
@@ -2693,11 +2753,6 @@ class EE_Functions {
 				
 				if ($data[$key] != 'TRUE' && $data[$key] != 'FALSE' && ($key != $data[$key] OR $embedded_tags !== TRUE))
 				{
-					if (stristr($data[$key], '<script'))
-					{
-						$data[$key] = preg_replace("/<script.*?".">.*?<\/script>/is", '', $data[$key]); // <? Fixes BBEdit display bug
-					}
-					
 					$data[$key] = '"'.
 								  str_replace(array("'", '"', '(', ')', '$', '{', '}', "\n", "\r", '\\'), 
 											  array('&#39;', '&#34;', '&#40;', '&#41;', '&#36;', '', '', '', '', '&#92;'), 
@@ -2718,7 +2773,28 @@ class EE_Functions {
 				}
 			}
 			
-			$matches[3] = str_replace(array_keys($protect), array_values($protect), $matches[3]);
+			// Example:
+			// 
+			//     {if entry_date < current_time}FUTURE{/if}
+			//     {if "{entry_date format='%Y%m%d'}" ==  "{current_time format='%Y%m%d'}"}Today{/if}
+			// 
+			// The above used to fail because the second conditional would turn into something like:
+			// 
+			//     {if "{"1343930801" format='%Y%m%d'}
+			//
+			// So here, we make sure the value we're replacing doesn't ALSO happen to appear in the
+			// middle of something that looks like a date field with a format parameter
+			foreach ($matches[3] as &$match)
+			{
+				foreach ($protect as $key => $value)
+				{
+					// Make sure $key doesn't appear as "{$key "
+					if ( ! strstr($match, LD.$key.' '))
+					{
+						$match = str_replace($key, $value, $match);
+					}
+				}
+			}
 			
 			if ($safety == 'y')
 			{
@@ -2729,7 +2805,7 @@ class EE_Functions {
 				$matches['s'] = preg_replace("/(^|\s+)[0-9]+(\s|$)/", ' ', $matches['s']); // Remove unquoted numbers
 				$done = array();
 			}
-			
+
 			for($i=0, $s = count($matches[0]); $i < $s; ++$i)
 			{	
 				if ($safety == 'y' && ! in_array($matches[0][$i], $done))
@@ -2810,14 +2886,14 @@ class EE_Functions {
 
 			$str = str_replace(array_keys($switch), array_values($switch), $str);
 		}
-		
+
 		unset($data);
 		unset($switch);
 		unset($matches);
 		unset($protect);
-		
+
 		$str = str_replace(unique_marker('if_else_safety'),LD.'if:else'.RD, $str);
-		
+
 		return $str;
 	}
 	
@@ -2844,7 +2920,7 @@ class EE_Functions {
 		}
 
 		$this->EE->load->model('file_upload_preferences_model');
-		$upload_prefs = $this->EE->file_upload_preferences_model->get_file_upload_preferences();
+		$upload_prefs = $this->EE->file_upload_preferences_model->get_file_upload_preferences(NULL, NULL, TRUE);
 
 		if (count($upload_prefs) == 0)
 		{

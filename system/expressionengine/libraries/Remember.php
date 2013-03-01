@@ -4,10 +4,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.4
  * @filesource
  */
@@ -20,8 +20,8 @@
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Core
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 class Remember {
 
@@ -240,10 +240,9 @@ class Remember {
 		
 		$rem_data = $rem_q->row_array();
 		$rem_q->free_result();
-		
+
 		// validate browser markers
-		if ($this->ip_address != $rem_data['ip_address'] OR
-			$this->user_agent != $rem_data['user_agent'])
+		if ($this->user_agent != $rem_data['user_agent'])
 		{
 			$this->_delete_cookie();
 			return FALSE;
@@ -252,7 +251,7 @@ class Remember {
 		// validate time
 		if ($rem_data['expiration'] < $this->EE->localize->now)
 		{
-			$this->_delete_remember_me();
+			$this->_delete_cookie();
 			return FALSE;			
 		}
 		

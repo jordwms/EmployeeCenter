@@ -6,7 +6,7 @@
  * An open source application development framework for PHP 4.3.2 or newer
  *
  * @package		CodeIgniter
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2008 - 2012, EllisLab, Inc.
  * @license		http://www.codeigniter.com/user_guide/license.html
  * @link		http://www.codeigniter.com
@@ -19,7 +19,7 @@
  *
  * @package		CodeIgniter
  * @subpackage	Libraries
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @category	Loader
  * @link		http://www.codeigniter.com/user_guide/libraries/javascript.html
  */

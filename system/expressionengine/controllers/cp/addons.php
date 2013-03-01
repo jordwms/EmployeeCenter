@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -19,8 +19,8 @@
  * @package		ExpressionEngine
  * @subpackage	Control Panel
  * @category	Control Panel
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 class Addons extends CI_Controller {
 
@@ -89,6 +89,13 @@ class Addons extends CI_Controller {
 		$this->cp->set_variable('cp_page_title', lang('package_settings'));
 		
 		$components = $this->addons->_packages[$package];
+
+		// Ignore RTE Tools if the module is not installed
+		$this->db->from('modules')->where('module_name', 'Rte');
+		if ($this->db->count_all_results() <= 0)
+		{
+			unset($components['rte_tool']);
+		}
 		
 		if (isset($components['plugin']))
 		{
@@ -142,12 +149,16 @@ class Addons extends CI_Controller {
 				include_once($info['path'].$info['file']);
 				$class = $info['class'];
 				
+				$this->load->add_package_path($info['path']);
+
 				$out = new $class;
 				
 				if (isset($out->required_by) && is_array($out->required_by))
 				{			
 					$required[$type] = $out->required_by;
 				}
+
+				$this->load->remove_package_path($info['path']);
 			}
 		}
 		

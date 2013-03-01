@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -19,8 +19,8 @@
  * @package		ExpressionEngine
  * @subpackage	Modules
  * @category	Modules
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 class Blacklist_mcp {
 
@@ -438,6 +438,15 @@ class Blacklist_mcp {
 						$this->EE->db->delete('referrers');
 					}
 				}
+
+				if ($val == 'ip')
+				{
+					// Collapse IPv6 addresses
+					if ($this->EE->input->valid_ip($this->value, 'ipv6'))
+					{
+						$new_values[$key] = inet_ntop(inet_pton($this->value));
+					}
+				}
 			 }
 
 			 sort($new_values);
@@ -526,6 +535,15 @@ class Blacklist_mcp {
 					if (trim($value) == "" OR trim($value) == NL)
 					{
 						unset($new_values[$key]);
+					}
+
+					if ($val == 'ip')
+					{
+						// Collapse IPv6 addresses
+						if ($this->EE->input->valid_ip($value, 'ipv6'))
+						{
+							$new_values[$key] = inet_ntop(inet_pton($value));
+						}
 					}
 				 }
 

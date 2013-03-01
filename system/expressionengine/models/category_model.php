@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -19,8 +19,8 @@
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Model
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 class Category_model extends CI_Model {
 
@@ -60,7 +60,7 @@ class Category_model extends CI_Model {
 	 *
 	 * So in the file upload preferences, we use:
 	 *			WHERE exclude_group = 0
-	 *			OR exclude_group != 1
+	 *			OR exclude_group = 1
 	 *
 	 * And basically the opposite on channel group assignment preferences.
 	 *
@@ -85,8 +85,7 @@ class Category_model extends CI_Model {
 		
 		if ($include !== 0)
 		{
-			$this->db->where('exclude_group', 0)
-					 ->or_where('exclude_group', (int) $include);
+			$this->db->where('(exclude_group = "0" OR exclude_group = "' . (int) $include . '")', NULL, FALSE);
 		}
 
 		return $this->db->select('group_id, group_name, sort_order')
@@ -389,7 +388,7 @@ class Category_model extends CI_Model {
 
 		if ($cat_id != '')
 		{
-			$this->db->where('cat_id != '.$cat_id);
+			$this->db->where('cat_id !=', $cat_id);
 		}
 
 		$count = $this->db->count_all_results();
@@ -414,7 +413,7 @@ class Category_model extends CI_Model {
 
 		if ($group_id != '')
 		{
-			$this->db->where('group_id != '.$group_id);
+			$this->db->where('group_id !=', $group_id);
 		}
 
 		$count = $this->db->count_all_results();

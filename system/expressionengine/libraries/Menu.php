@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -19,8 +19,8 @@
  * @package		ExpressionEngine
  * @subpackage	Control Panel
  * @category	Control Panel
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 class EE_Menu {
 
@@ -163,12 +163,18 @@ class EE_Menu {
 			),
 			'tools_logs'		=> array(
 				'view_cp_log'					=> BASE.AMP.'C=tools_logs'.AMP.'M=view_cp_log',
-				'view_search_log'				=> BASE.AMP.'C=tools_logs'.AMP.'M=view_search_log',
 				'view_throttle_log'				=> BASE.AMP.'C=tools_logs'.AMP.'M=view_throttle_log',
 				'view_email_log'				=> BASE.AMP.'C=tools_logs'.AMP.'M=view_email_log'
 			)
 		);
+
+		// Only show Search Log menu item if Search Module is installed
+		if ($this->EE->db->table_exists('search_log'))
+		{
+			$menu['tools']['tools_logs']['view_search_log'] = BASE.AMP.'C=tools_logs'.AMP.'M=view_search_log';
+		}
 		
+		// Show Developer Log for Super Admins only
 		if ($this->EE->session->userdata('group_id') == 1)
 		{
 			$menu['tools']['tools_logs']['view_developer_log'] = BASE.AMP.'C=tools_logs'.AMP.'M=view_developer_log';
@@ -272,7 +278,7 @@ class EE_Menu {
 			$menu['design']['themes']['wiki_themes'] = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=wiki'.AMP.'method=list_themes';
 		}
 		
-		if ( ! IS_FREELANCER)
+		if ( ! IS_CORE)
 		{
 			$menu['design']['themes']['member_profile_templates'] = BASE.AMP."C=design".AMP."M=member_profile_templates";
 		}
@@ -530,6 +536,8 @@ class EE_Menu {
 			if ( ! $this->EE->cp->allowed_group('can_admin_design'))
 			{
 				unset($menu['design']['message_pages']);
+				unset($menu['design']['templates']['template_preferences']);				
+				unset($menu['design']['templates']['global_preferences']);
 			}			
 
 			if ( ! $this->EE->cp->allowed_group('can_admin_templates'))
@@ -539,9 +547,7 @@ class EE_Menu {
 				unset($menu['design']['templates']['create_template']);
 				unset($menu['design']['templates']['snippets']);
 				unset($menu['design']['templates']['sync_templates']);
-				unset($menu['design']['templates']['template_preferences']);				
 				unset($menu['design']['templates']['global_variables']);
-				unset($menu['design']['templates']['global_preferences']);
 				unset($menu['design']['templates'][0]);	
 			}
 		}
@@ -730,6 +736,15 @@ class EE_Menu {
 
 				$title = (isset($x['0'])) ? $x['0'] : '';
 				$link  = (isset($x['1'])) ? $x['1'] : '';
+				
+				// Look to see if the session is in the link; if so, it was
+				// it was likely stored the old way which made for possibly
+				// broken links, like if it was saved with index.php but is
+				// being accessed through admin.php
+				if (strstr($link, '?S=') === FALSE)
+				{
+					$link = BASE.AMP.$link;
+				}
 
 				$tabs[$title] = $link;
 			}
@@ -754,7 +769,7 @@ class EE_Menu {
 		$this->EE->load->model('site_model');
 		
 		$site_list = $this->EE->session->userdata('assigned_sites'); 
-		$site_list = ($this->EE->config->item('multiple_sites_enabled') === 'y' && ! IS_FREELANCER) ? $site_list : FALSE;
+		$site_list = ($this->EE->config->item('multiple_sites_enabled') === 'y' && ! IS_CORE) ? $site_list : FALSE;
 
 		$menu = array();
 
@@ -1043,11 +1058,11 @@ class EE_Menu {
 				{
 					require_once PATH_THIRD.$module.'/config/help_menu.php';
 					$method = ($this->EE->input->get('method') !== FALSE) ? $this->EE->input->get('method') : 'index';
-					$page = (isset($help_menu[$method])) ? $help_menu[$method] : $help_map['addons_modules'];
+					$page = (isset($help_menu[$method])) ? $help_menu[$method] : $page.$help_map['addons_modules'];
 				}
 				else
 				{
-					$page = $help_map['addons_modules'];	
+					$page .= $help_map['addons_modules'];
 				}
 			}
 		}

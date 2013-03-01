@@ -4,10 +4,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,8 +20,8 @@
  * @package		ExpressionEngine
  * @subpackage	Modules
  * @category	Modules
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 
 class Channel_calendar extends Channel {
@@ -598,9 +598,9 @@ class Channel_calendar extends Channel {
 
 						if (strncmp($key, 'day_path', 8) == 0)
 						{
-							$d = date('d', $this->EE->localize->set_localized_time($row['entry_date']));
-							$m = date('m', $this->EE->localize->set_localized_time($row['entry_date']));
-							$y = date('Y', $this->EE->localize->set_localized_time($row['entry_date']));
+							$d = gmdate('d', $this->EE->localize->set_localized_time($row['entry_date']));
+							$m = gmdate('m', $this->EE->localize->set_localized_time($row['entry_date']));
+							$y = gmdate('Y', $this->EE->localize->set_localized_time($row['entry_date']));
 
 							if ($this->EE->functions->extract_path($key) != '' AND $this->EE->functions->extract_path($key) != 'SITE_INDEX')
 							{

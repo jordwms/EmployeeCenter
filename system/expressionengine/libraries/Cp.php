@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -19,8 +19,8 @@
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Core
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 class Cp {
 	
@@ -67,6 +67,9 @@ class Cp {
 				'cp_theme_url'	=> $this->cp_theme_url
 			));
 		}
+
+		// Make sure all requests to iframe the CP are denied
+		$this->EE->output->set_header('X-Frame-Options: SameOrigin');
 	}
 
 	
@@ -273,7 +276,7 @@ class Cp {
 			'plugin'	=> array('ee_focus', 'ee_interact.event', 'ee_notice', 'ee_txtarea', 'tablesorter', 'ee_toggle_all'),
 			'file'		=> 'cp/global_start'
 		);
-		
+
 		if ($this->cp_theme != 'mobile')
 		{
 			$js_scripts['plugin'][] = 'ee_navigation';
@@ -300,7 +303,7 @@ class Cp {
 	 */
 	function masked_url($url)
 	{
-		return $this->EE->functions->fetch_site_index(0,0).QUERY_MARKER.'URL='.$url;
+		return $this->EE->functions->fetch_site_index(0,0).QUERY_MARKER.'URL='.urlencode($url);
 	}
 
 	// --------------------------------------------------------------------
@@ -362,6 +365,7 @@ class Cp {
 	function render_footer_js()
 	{
 		// add global end file
+		$this->_seal_combo_loader();
 		$this->add_js_script('file', 'cp/global_end');
 		
 		$str = '';
@@ -395,7 +399,7 @@ class Cp {
 		
 		$this->js_files = array_map('array_unique', $this->js_files);
 		
-		foreach($this->js_files as $type => $files)
+		foreach ($this->js_files as $type => $files)
 		{
 			if (isset($this->loaded[$type]))
 			{
@@ -456,7 +460,7 @@ class Cp {
 		
 		switch($type)
 		{
-			case 'ui':			$file = PATH_THEMES.'javascript/'.$folder.'/jquery/ui/ui.'.$name.'.js';
+			case 'ui':			$file = PATH_THEMES.'javascript/'.$folder.'/jquery/ui/jquery.ui.'.$name.'.js';
 				break;
 			case 'plugin':		$file = PATH_THEMES.'javascript/'.$folder.'/jquery/plugins/'.$name.'.js';
 				break;
@@ -722,34 +726,16 @@ class Cp {
 		{
 			if (count($_POST) > 0)
 			{
-				if ( ! isset($_POST['XID']))
+				if ( ! isset($_POST['XID'])
+					OR ! $this->EE->security->secure_forms_check($_POST['XID']))
 				{
 					$this->EE->functions->redirect(BASE);
 				}
 				
-				$query = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_security_hashes 
-												 WHERE hash = '".$this->EE->db->escape_str($_POST['XID'])."' 
-												 AND ip_address = '".$this->EE->input->ip_address()."' 
-												 AND date > UNIX_TIMESTAMP()-".$this->xid_ttl);
-	
-				if ($query->row('count')  == 0)
-				{
-					$this->EE->functions->redirect(BASE);
-				}
-				else
-				{
-					$this->EE->db->query("DELETE FROM exp_security_hashes 
-											WHERE date < UNIX_TIMESTAMP()-{$this->xid_ttl}
-											AND ip_address = '".$this->EE->input->ip_address()."'");
-								
-					unset($_POST['XID']);
-				}
+				unset($_POST['XID']);
 			}
 			
-			$hash = $this->EE->functions->random('encrypt');
-			$this->EE->db->query("INSERT INTO exp_security_hashes (date, ip_address, hash)
-								VALUES 
-								(UNIX_TIMESTAMP(), '".$this->EE->input->ip_address()."', '".$hash."')");
+			$hash = $this->EE->security->generate_xid();
 		}
 		
 		define('XID_SECURE_HASH', $hash);
@@ -867,7 +853,7 @@ class Cp {
 		{
 			return TRUE;
 		}
-		
+	
 		foreach ($which as $w)
 		{
 			$k = $this->EE->session->userdata($w);

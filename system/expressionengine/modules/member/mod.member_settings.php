@@ -4,10 +4,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,8 +20,8 @@
  * @package		ExpressionEngine
  * @subpackage	Modules
  * @category	Modules
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 
 class Member_settings extends Member {
@@ -1352,14 +1352,18 @@ class Member_settings extends Member {
 	{
 		$query = $this->EE->db->query("SELECT username, screen_name FROM exp_members WHERE member_id = '".$this->EE->session->userdata('member_id')."'");
 
-		return $this->_var_swap($this->_load_element('username_password_form'),
-								array(
-										'row:username_form'				=>	($this->EE->session->userdata['group_id'] == 1 OR $this->EE->config->item('allow_username_change') == 'y') ? $this->_load_element('username_row') : $this->_load_element('username_change_disallowed'),
-										'path:update_username_password'	=>	$this->_member_path('update_userpass'),
-										'username'						=>	$query->row('username') ,
-										'screen_name'					=>	$this->_convert_special_chars($query->row('screen_name') )
-									 )
-								);
+		return $this->_var_swap(
+			$this->_load_element('username_password_form'),
+			array(
+				'row:username_form'				=>	
+					($this->EE->session->userdata['group_id'] == 1 OR $this->EE->config->item('allow_username_change') == 'y') ? 
+						$this->_load_element('username_row') : 
+						$this->_load_element('username_change_disallowed'),
+				'path:update_username_password'	=>	$this->_member_path('update_userpass'),
+				'username'						=>	$query->row('username') ,
+				'screen_name'					=>	$this->_convert_special_chars($query->row('screen_name') )
+			)
+		);
 	}
 
 	// --------------------------------------------------------------------
@@ -1369,14 +1373,15 @@ class Member_settings extends Member {
 	 */
 	function update_userpass()
 	{
-	  	// Safety.  Prevents accessing this function unless
-	  	// the requrest came from the form submission
+		$this->EE->load->library('auth');
 
+	  	// Safety. Prevents accessing this function unless
+	  	// the request came from the form submission
 		if ( ! $this->EE->input->post('current_password'))
 		{
-			return $this->EE->output->show_user_error('general', array($this->EE->lang->line('invalid_action')));
+			return $this->EE->output->show_user_error('general', array($this->EE->lang->line('current_password_required')));
 		}
-		
+
 		$query = $this->EE->db->select('username, screen_name, password')
 							  ->get_where('members', array(
 							  	'member_id'	=> (int) $this->EE->session->userdata('member_id')							
@@ -1392,7 +1397,7 @@ class Member_settings extends Member {
 			$_POST['username'] = $query->row('username');
 		}
 
-		// If the screen name field is empty, we'll assign is
+		// If the screen name field is empty, we'll assign it
 		// from the username field.
 
 		if ($_POST['screen_name'] == '')
@@ -1440,13 +1445,20 @@ class Member_settings extends Member {
 			$VAL->validate_password();
 		}
 
-		/** -------------------------------------
-		/**  Display errors if there are any
-		/** -------------------------------------*/
 
+		// Display validation errors if there are any
 		if (count($VAL->errors) > 0)
 		{
 			return $this->EE->output->show_user_error('submission', $VAL->errors);
+		}
+
+		// Finally, and most important of all, was their
+		// current password submitted correctly?
+		if ( ! $this->EE->auth->authenticate_id(
+			(int) $this->EE->session->userdata('member_id'),
+			$this->EE->input->post('current_password')))
+		{
+			return $this->EE->output->show_user_error('general', array($this->EE->lang->line('current_password_incorrect')));
 		}
 
 		/** -------------------------------------
@@ -1475,7 +1487,6 @@ class Member_settings extends Member {
 
 		if ($_POST['password'] != '')
 		{
-			$this->EE->load->library('auth');
 			$this->EE->auth->update_password($this->EE->session->userdata('member_id'),
 											 $this->EE->input->post('password'));
 
@@ -1499,7 +1510,6 @@ class Member_settings extends Member {
 		/** -------------------------------------
 		/**  Success message
 		/** -------------------------------------*/
-
 		return $this->_var_swap($this->_load_element('success'),
 								array(
 										'lang:heading'	=>	$this->EE->lang->line('username_and_password'),
@@ -2133,36 +2143,14 @@ UNGA;
 
 	function update_un_pw()
 	{
+		$this->EE->load->library('auth');
 
-		$missing = FALSE;
-		
-		if ( ! isset($_POST['new_username']) AND ! isset($_POST['new_password']))
-		{
-			$missing = TRUE;
-		}
-
-		if ((isset($_POST['new_username']) AND $_POST['new_username'] == '') OR (isset($_POST['new_password']) AND $_POST['new_password'] == ''))
-		{
-			$missing = TRUE;
-		}
-
-		if ($this->EE->input->post('username') == '' OR $this->EE->input->post('password') == '')
-		{
-			$missing = TRUE;
-		}
-		
-		if ($missing == TRUE)
-		{
-			return $this->EE->output->show_user_error('submission', $this->EE->lang->line('all_fields_required'));
-		}
-		
 		// Run through basic verifications: authenticate, username and 
 		// password both exist, not banned, IP checking is okay
-		$this->EE->load->library('auth');
 		if ( ! ($verify_result = $this->EE->auth->verify()))
 		{
 			// In the event it's a string, send it to show_user_error
-			return $this->EE->output->show_user_error('submission', implode(', ', $this->auth->errors));
+			return $this->EE->output->show_user_error('submission', implode(', ', $this->EE->auth->errors));
 		}
 
 		list($username, $password, $incoming) = $verify_result;
@@ -2205,7 +2193,7 @@ UNGA;
 		}
 
 		/** -------------------------------------
-		/**  Display error is there are any
+		/**  Display errors if there are any
 		/** -------------------------------------*/
 
 		if (count($VAL->errors) > 0)

@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -112,7 +112,7 @@ class EE extends CI_Controller {
 		{
 			if ($this->session->userdata['group_id'] == 1)
 			{		
-				$output .= '<div style="color: #333; background-color: #ededed; margin:10px; padding-bottom:10px;">';
+				$output .= '<div style="color: #333; background-color: #ededed; margin:10px; padding-bottom:10px;" id="expressionengine_template_debug">';
 				$output .= "<div style=\"text-align: left; font-family: Sans-serif; font-size: 11px; margin: 12px; padding: 6px\"><hr size='1'><b>TEMPLATE DEBUGGING</b><hr size='1'></div>";
 				
 				foreach ($this->TMPL->log as $val)

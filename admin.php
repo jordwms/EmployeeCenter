@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  */
 
@@ -21,11 +21,10 @@
  * Indicate the new name and/or path here. The path can be relative
  * or it can be a full server path.
  *
- * http://expressionengine.com/user_guide/installation/best_practices.html
+ * http://ellislab.com/expressionengine/user-guide/installation/best_practices.html
  * 
  */
 	$system_path = './system';
-
 
 /*
  * --------------------------------------------------------------------
@@ -33,14 +32,14 @@
  * --------------------------------------------------------------------
  *
  * Uncomment the following variables if you are using the Multiple
- * Site Manager: http://expressionengine.com/user_guide/cp/sites
+ * Site Manager: http://ellislab.com/expressionengine/user-guide/cp/sites
  *
  * The variables set the Short Name of the site this admin.php file
  * will log into, and its URL.
  *
  */
-//	$assign_to_config['site_name']  = 'domain2_short_name';
-//	$assign_to_config['cp_url'] = 'http://domain2.com/admin.php';
+//  $assign_to_config['site_name']  = 'domain2_short_name'; 
+//  $assign_to_config['cp_url'] = 'http://domain2.com/admin.php';
 
 
 /*
@@ -129,21 +128,21 @@
  *  EE Control Panel Constants
  * -------------------------------------------------------------------
  *
- * If the "installer" folder exists the $config['install_lock'] is off
- * we will load the installation wizard.  Otherwise we load the CP
+ * If the "installer" folder exists and $config['install_lock'] is off
+ * we'll load the installation wizard. Otherwise, we'll load the CP.
  *
  */ 
  	// Is the installation folder present?
 	if (is_dir($system_path.'installer/'))
 	{
-		// We need a different subclass prefix when we run the installer.
-		// The reason is because the installer has it's on Config class extension
-		// containing some specific functions needed by the installer.  By 
-		// setting a unique prefix we can also load the main Config class extension
-		// without a naming conflict
+		// We need a different subclass prefix when we run the installer,
+		// because it has its own Config class extension with some
+		// specific functions. Setting a unique prefix lets us load the
+		// main Config class extension without a naming conflict.
 		$assign_to_config['subclass_prefix']	= 'Installer_';
 		
-		// This allows the installer application to be inside our normal EE application directory
+		// This allows the installer application to be inside our normal
+		// EE application directory.
 		define('APPPATH', $system_path.'installer/');
 		define('EE_APPPATH', $system_path.'expressionengine/');
 	}
@@ -152,7 +151,7 @@
 		define('APPPATH', $system_path.'expressionengine/');
 	}
 
- 	// The control panel access constant.  Without this, the CP will not be invoked
+ 	// The control panel access constant ensures the CP will be invoked.
 	define('REQ', 'CP');
 
 /*
@@ -182,6 +181,7 @@
 	// Is the system path correct?
 	if ( ! file_exists(BASEPATH.'core/CodeIgniter'.EXT))
 	{
+		header('HTTP/1.1 503 Service Unavailable.', TRUE, '503');
 		exit("Your system folder path does not appear to be set correctly. Please open the following file and correct this: ".pathinfo(__FILE__, PATHINFO_BASENAME));	
 	}
 
