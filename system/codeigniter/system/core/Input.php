@@ -721,11 +721,11 @@ class CI_Input {
 	*/
 	function _clean_input_keys($str)
 	{
-		if ( ! preg_match("/^[a-z0-9:_\/-]+$/i", $str))
-		{
-			set_status_header(503);
-			exit('Disallowed Key Characters.');
-		}
+		// if ( ! preg_match("/^[a-z0-9:_\/-]+$/i", $str))
+		// {
+		// 	set_status_header(503);
+		// 	exit('Disallowed Key Characters: '.$str);
+		// }
 
 		// Clean UTF-8 if supported
 		if (UTF8_ENABLED === TRUE)
