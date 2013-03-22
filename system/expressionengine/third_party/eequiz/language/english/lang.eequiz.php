@@ -231,9 +231,16 @@ $lang = array(
 
 
 
-
-
-
+//---------------------------------------- 
+// APPLUS RTD CUSTOM VALUES
+'manage_quiz_groups_tip'	=> 'Click on group name to manage quizzes in group.',
+'overview'					=> 'Overview',
+'manage_quiz_groups'		=> 'Manage Quiz Groups',
+'overview_tip'				=> 'Click on group results to view score card.',
+'overview_tip2'				=> 'Use Ctrl+F to find username on page.',
+'quiz_group_details'		=> 'Quiz Group Details',
+'add'						=> 'Add',
+'quizzes_for_group'			=> 'Quizzes for Group',
 
 
 
