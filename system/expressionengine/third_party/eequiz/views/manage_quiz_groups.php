@@ -1,15 +1,32 @@
 <div id="manage_quiz_groups" class="eequiz">
-	<?	$this->table->set_template($cp_table_template);
-		$this->table->set_heading('Quiz Group');
-		foreach($quiz_groups as $g) {
-			$this->table->add_row( '<a href="'.$g['id'].'">'.$g['name'].'</a>' );
-		}
+<?=lang('manage_quiz_groups_tip')?>
+<?
+	$this->table->set_heading(
+		'<input type="checkbox" name="ALL" value="ALL">',
+		lang('quiz_groups')
+	);
 
+	echo form_open($action_url_delete, $form_attributes, $form_hidden);
+
+	foreach($quiz_groups as $g) {
 		$this->table->add_row(
-			form_open($action_url, $form_attributes, $form_hidden).
-			'<input type=text name="new_quiz_group_name" size="50%"/>'.
-			'<button>Add</button>'
+			'<input type="checkbox" name="'.$g['id'].'" value="'.$g['id'].'">'.
+			'</td>'.
+			'<td>'.
+			'<a href="'.$group_url.$g['id'].'">'.$g['name'].'</a>'.
+			'</td>'
 			);
-		echo $this->table->generate();	
-	?>
+	}
+
+	$this->table->add_row(
+		form_submit(array('name'=>'submit', 'value' => lang('delete'), 'class' => 'submit')).
+		form_close().
+		'</td>'.
+		'<td>'.
+		form_open($action_url_create, $form_attributes, $form_hidden).
+		'<input type=text name="new_quiz_group_name" />'.
+		form_submit(array('value' => lang('add'), 'class' => 'submit'))
+		);
+	echo $this->table->generate();	
+?>
 </div>

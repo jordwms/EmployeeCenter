@@ -158,7 +158,10 @@ class score {
 
 	// Returns all quiz groups 
 	function get_quiz_groups() {
-		return $this->EE->db->get('eequiz_quiz_groups')
+		return $this->EE->db->select('*')
+							->from('eequiz_quiz_groups')
+							->order_by('name','ASC')
+							->get()
 							->result_array();
 	}
 

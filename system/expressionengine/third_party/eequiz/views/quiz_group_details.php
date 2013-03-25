@@ -1,17 +1,37 @@
 <div id="quiz_group_details" class="eequiz">
-	<?	$this->table->set_template($cp_table_template);
-	$this->table->set_heading('Quizzes of this quiz group');
+<?
+	$this->table->set_heading(
+		'<input type="checkbox" name="ALL" value="ALL">',
+		lang('quizzes_for_group').': '.$group_name
+	);
+
+	echo form_open($action_url_delete, $form_attributes, $form_hidden);
+
 	foreach($quizzes as $g) {
-		$this->table->add_row( '<a href="'.$quiz_details_uri.$g['id'].'">'.$g['title'].'</a>' );
+		$this->table->add_row(
+			'<input type="checkbox" name="'.$g['id'].'" value="'.$g['id'].'">'.
+			'</td>'.
+			'<td>'.
+			'<a href="'.$quiz_details_uri.$g['id'].'">'.$g['title'].'</a>'.
+			'</td>'
+		);
 	}
-// method=edit_quiz&quiz_id=1
+
+
 	$this->table->add_row(
-		form_open($action_url, $form_attributes, $form_hidden).
+		form_submit(array('value' => lang('delete'), 'class' => 'submit')).
+		form_close().
+		'</td>'.
+		'<td>'.
+		form_open($action_url_add, $form_attributes, $form_hidden).
 		'<select name="new_quiz">'.
 		$quiz_dropdown.
 		'</select>'.
-		'<button>Add</button>'
-		);
+		'&nbsp;'.
+		form_submit(array('value' => lang('add'), 'class' => 'submit')).
+		form_close().
+		'</td>'
+	);
 	echo $this->table->generate();	
 ?>
 </div>

@@ -1,15 +1,11 @@
 <div id="overview" class="eequiz">
-<?	// CompanyInfo
-    $this->table->set_template($cp_table_template);
-    $this->table->set_heading(
-    	'Employee Name'
-    );
+<p><?=lang('overview_tip')?></p>
+<p><?=lang('overview_tip2')?></p>
+<?php
+    $this->table->set_columns($headers);
+    $data = $this->table->datasource('overview_datasource', $defaults);
 
-    $this->table->add_row(
-    	'Jordan Williams'
-    );
-
-    echo $this->table->generate();	
-    echo form_close();
+    echo $data['table_html'];
+    // echo $data['pagination_html'];
 ?>
 </div>
