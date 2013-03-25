@@ -119,7 +119,7 @@ elseif(NSM_ENV == 'staging') {
     }
 
     $env_db_config = array(
-        'hostname' => 'localhost',
+        'hostname' => 'dc2-s-dev-01',
         'username' => 'employee_center',
         'password' => 'gi0kQ#vdmw7b',
         'database' => 'employee_center'
