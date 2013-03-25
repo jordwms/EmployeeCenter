@@ -24,7 +24,7 @@
 		'</td>'.
 		'<td>'.
 		form_open($action_url_create, $form_attributes, $form_hidden).
-		'<input type=text name="new_quiz_group_name" />'.
+		'<input type=text name="new_quiz_group_name" style="width:75%; margin-right:5px" />'.
 		form_submit(array('value' => lang('add'), 'class' => 'submit'))
 		);
 	echo $this->table->generate();	

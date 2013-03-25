@@ -24,10 +24,9 @@
 		'</td>'.
 		'<td>'.
 		form_open($action_url_add, $form_attributes, $form_hidden).
-		'<select name="new_quiz">'.
+		'<select name="new_quiz" style="margin-right:5px">'.
 		$quiz_dropdown.
 		'</select>'.
-		'&nbsp;'.
 		form_submit(array('value' => lang('add'), 'class' => 'submit')).
 		form_close().
 		'</td>'
