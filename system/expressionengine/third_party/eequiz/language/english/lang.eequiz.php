@@ -241,6 +241,8 @@ $lang = array(
 'quiz_group_details'		=> 'Quiz Group Details',
 'add'						=> 'Add',
 'quizzes_for_group'			=> 'Quizzes for Group',
+'quiz_groups'				=> 'Groups',
+'score_card'				=> 'Score Card',
 
 
 
