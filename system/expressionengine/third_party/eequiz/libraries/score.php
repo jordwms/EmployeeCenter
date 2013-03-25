@@ -155,4 +155,41 @@ class score {
 			return false;
 		}
 	}
+
+	// Returns all quiz groups 
+	function get_quiz_groups() {
+		return $this->EE->db->get('eequiz_quiz_groups')
+							->result_array();
+	}
+
+	// For a given quiz-group ID, returns all quizzes associated with that quiz.
+	function get_quizzes_in_group($group_id, $select='*') {
+		return $this->EE->db->select($select)
+							->from('eequiz_group_quizzes')
+							->where('quiz_group_id', $group_id)
+							->join('eequiz_quizzes', 'eequiz_group_quizzes.quiz_id = eequiz_quizzes.quiz_id')
+							->order_by('title', 'ASC')
+							->get()
+							->result_array();
+
+	}
+
+	/*
+	* For a given quiz-group ID, returns all quizzes not associated with that quiz-group.
+	*/
+	function get_quizzes_not_in_group($group_id) {
+		/* ---- STRONG QUERY ----
+		SELECT *
+		FROM `exp_eequiz_quizzes`
+		LEFT JOIN `exp_eequiz_group_quizzes` ON  `exp_eequiz_quizzes`.`quiz_id` = `exp_eequiz_group_quizzes`.`quiz_id`
+		WHERE COALESCE(`exp_eequiz_group_quizzes`.`quiz_group_id`,0) != 1
+		*/	
+		return $query = $this->EE->db->select('eequiz_quizzes.quiz_id, eequiz_quizzes.title')
+							->from('eequiz_quizzes')
+							->join('eequiz_group_quizzes', 'eequiz_quizzes.quiz_id = eequiz_group_quizzes.quiz_id', 'left')
+							->where("COALESCE(`exp_eequiz_group_quizzes`.`quiz_group_id`,0) != $group_id")
+							->order_by('title', 'ASC')
+							->get()
+							->result_array();
+	}
 } // END CLASS
