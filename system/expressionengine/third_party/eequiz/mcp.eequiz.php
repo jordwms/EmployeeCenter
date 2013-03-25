@@ -86,11 +86,280 @@ class Eequiz_mcp {
 		$questions = $this->EE->db->query("SELECT question_id FROM exp_eequiz_questions");
 		
 		if ($questions->num_rows() == 0) return $this->view_documentation();
-		else return $this->view_questions();
+		else return $this->overview();
 	}
-	
-	
-	
+
+	/*
+	* Gives a list all employees and the number of passing quizzes per quiz group
+	*/
+	function overview() {
+		$this->EE->load->library('table');
+		$this->EE->load->library('score');
+		$this->_breadcrumbs(array('overview'));
+
+		// Get all quiz groups
+		$vars['quiz_groups'] = $this->EE->db->get('eequiz_quiz_groups')->result_array();
+
+		// Assemble headers
+		$vars['headers'] = array('employee' => array('header' => "Employee Name"));
+		foreach($vars['quiz_groups'] as &$group) {
+			$vars['headers'] 	= array_merge( $vars['headers'], array($group['name'] => array('header' => $group['name']) ));
+		}
+		$vars['defaults'] = array(
+		    'sort' => array('employee' => 'asc')
+		);
+		
+		return $this->EE->load->view('overview', $vars, TRUE);
+	}
+
+	function overview_datasource($state) {
+		$limit = 5;
+		$offset = $state['offset'];
+		$this->sort = $state['sort'];
+
+		$quiz_details_uri 	= $this->module_url.AMP.'method=score_card'.AMP.'id=';
+		$member_uri 		= BASE.AMP.'C=myaccount'.AMP.'id=';
+		$method_url			= $this->module_url.AMP.'method=overview';
+
+		// Get all employees
+		$employees = $this->EE->db->select('member_id, username')
+										->from('members')
+										->order_by('username', 'ASC') // remove when paginating
+										// ->limit($limit, $offset)
+										->get()
+										->result_array();
+		// Get all quiz groups
+		$vars['quiz_groups'] = $this->EE->db->get('eequiz_quiz_groups')->result_array();
+		
+		foreach($vars['quiz_groups'] as &$group) {
+			// Total quizzes in each group
+			$group['total'] 	= $this->EE->score->number_in_group( $group['name'] );
+
+			foreach($employees as $user) {
+				// Match an employee ID with number of passing quizzes per group
+				$rows[$user['member_id']]['employee'] 		= '<a href="'.$member_uri.$user['member_id'].'">'. $user['username'] .'</a>';
+				$rows[$user['member_id']][$group['name']]	= '<a href="'.$quiz_details_uri.$user['member_id'].AMP.'prefix='.$group['name'].'">'
+																.$this->EE->score->number_passing_in_group( $group['name'], $user['member_id']).' / '.$group['total']
+																.'</a>';
+			}
+		}
+		#pagination related
+		// usort($rows, array($this, '_sort_rows'));
+
+		return array(
+			'rows'	=> $rows
+			);
+
+		# Pagination does not quite work...
+		// return array(
+		//     'rows' => array_slice($rows, $offset, $limit),
+		//     'pagination' => array(
+		//     	'page_query_string' => 	TRUE,
+		//     	'base_url'			=> $method_url,
+		//         'per_page'   		=> $limit,
+		//         'total_rows' 		=> count($rows)
+		//     )
+		// );
+	}
+
+	/*
+	* Sorting function meant to help with pagination when the datasource uses arrays (rathar than objects)
+	*/
+	function _sort_rows($a, $b)
+	{
+	    foreach ($this->sort as $key => $dir) {
+	        if ($a[$key] !== $b[$key]) {
+	            $ret = +1;
+
+	            if ($a[$key] < $b[$key] OR $dir == 'desc') {
+	                $ret = -1;
+	            }
+	            return $ret;
+	        }
+	    }
+	    return 0;
+	}
+
+	/*
+	* Shows an individual employee's scores on every quiz in a particular group.
+	*/
+	function score_card($prefix=NULL, $member_id=NULL) {
+		$this->EE->load->library('table');
+		$this->EE->load->library('score');
+		$this->_breadcrumbs(array('score_card'));
+
+		if( is_null($prefix) ) {
+			$vars['prefix'] 	= $this->EE->input->get('prefix');
+			$vars['member_id'] 	= $this->EE->input->get('id');
+		}
+
+		$vars['headers'] = array(
+							'name' 	=> array('header' => "Quiz Name"),
+							'score' => array('header' => "Score"),
+							'date' 	=> array('header' => "Date Completed")
+							);
+
+		// $vars['quizzes'] = $this->EE->score->score_card2($prefix, $member_id);
+
+		$vars['defaults'] = array(
+		    'sort' => array('name' => 'asc')
+		);
+
+		return $this->EE->load->view('score_card', $vars, TRUE);
+	}
+
+	function score_card_datasource($state, $params) {
+		$quizzes = $this->EE->score->score_card2($params['prefix'], $params['member_id']);
+		$rows = array();
+		foreach($quizzes as $quiz) {
+			if(is_null($quiz['user_grade'])) {
+				$quiz['user_grade'] = 0;
+			}
+			$rows[ $quiz['quiz_id'] ]['name'] 	= $quiz['quiz_title'];
+			$rows[ $quiz['quiz_id'] ]['score'] 	= $quiz['user_grade'].'%';
+
+			// Handler for incomplete quizzes
+			if(is_null($quiz['last_answer_time'])) {
+				$rows[ $quiz['quiz_id'] ]['date'] = 'Incomplete';
+			} else {
+				$rows[ $quiz['quiz_id'] ]['date'] 	= date('F d Y', $quiz['last_answer_time']); 
+			}
+		}
+
+		return array(
+			'rows'	=> $rows
+			);
+	}
+
+	/*
+	* Lists all current quiz types, and has a form for creating a new quiz type.
+	* Clicking a current type navigates to a "list" pg for all quizzes of that group.
+	*/
+	function manage_quiz_groups() {
+		$this->EE->load->library('table');
+		$this->EE->load->library('score');
+
+
+		$this->_breadcrumbs(array('manage_quiz_groups'));
+
+		// Retrieve all quiz groups in the db
+		$vars['quiz_groups'] = $this->EE->score->get_quiz_groups();
+		
+		$vars['group_url'] 					= $this->module_url.AMP.'method=quiz_group_details'.AMP.'id=';
+		$vars['action_url_delete'] 			= $this->module_url.AMP.'method=delete_quiz_group';
+		$vars['action_url_create'] 			= $this->module_url.AMP.'method=create_quiz_group';
+		$vars['form_hidden'] 				= FALSE;
+		$vars['form_attributes'] 			= FALSE;
+
+
+		return $this->EE->load->view('manage_quiz_groups', $vars, TRUE);
+	}
+
+	/*
+	* Insert a new quiz group to the table and return to manage_quiz_groups()
+	*/
+	function create_quiz_group() {
+		$data = array( 'name' => $this->EE->input->post('new_quiz_group_name'));
+		$this->EE->db->insert('eequiz_quiz_groups', $data);
+
+		return $this->manage_quiz_groups();
+	}
+
+	function delete_quiz_group() {
+		// Delete all rows
+		if($this->EE->input->post('ALL')) {
+			$this->EE->db->empty_table('eequiz_quiz_groups');
+		}
+		else {
+			foreach($_POST as $element => $value) {
+			   	// name of checkboxes = eequiz_quiz_groups.id
+			    if(is_numeric($element)) {
+			        $this->EE->db->where( array('id' => $this->EE->input->post($element)) )
+								->delete('eequiz_quiz_groups');
+			    }
+			}			
+		}
+		return $this->manage_quiz_groups();
+	}
+
+	// Lists all the quizzes in a group and a dropdown to add a quiz not currently in the group
+	function quiz_group_details($group_id=NULL) {
+		$this->EE->load->library('table');
+		$this->EE->load->library('score');
+
+		if( is_null($group_id) ) {
+			$group_id = $this->EE->input->get('id');
+		}
+		$this->_breadcrumbs(array('quiz_group_details'));
+
+		$vars['quiz_details_uri']	= $this->module_url.AMP.'method=edit_quiz'.AMP.'quiz_id=';
+		$vars['action_url_add'] 		= $this->module_url.AMP.'method=add_to_group';
+		$vars['form_hidden'] 		= array(
+										'quiz_group_id' => $group_id
+										);
+		$vars['form_attributes'] 	= FALSE;
+
+		$vars['action_url_delete'] 			= $this->module_url.AMP.'method=remove_from_group';
+		$vars['form_attributes_delete']		= array(
+												'id'	=> 'current_quizzes_form'
+												);
+		$vars['remove_submit_button'] = '<input form="current_quizzes_form" type="button" value="delete" />';
+
+		$vars['quizzes'] 				= $this->EE->score->get_quizzes_in_group($group_id);
+		$vars['quizzes_not_in_group'] 	= $this->EE->score->get_quizzes_not_in_group($group_id);
+		$vars['group_name'] 			= $this->EE->db->select('name')
+														->from('eequiz_quiz_groups')
+														->where(array('id' =>$group_id))
+														->get()
+														->row()
+														->name;
+
+		$vars['quiz_dropdown'] = '';
+
+		foreach( $vars['quizzes_not_in_group'] as $q ) {
+			$vars['quiz_dropdown'].= '<option value="'.$q['quiz_id'].'">'.$q['title'].'</option>';
+		}
+
+		return $this->EE->load->view('quiz_group_details', $vars, TRUE);
+	}
+
+	function add_to_group() {
+		if( !is_null($this->EE->input->post('new_quiz')) ){
+			$data = array(
+				'quiz_id' 		=> $this->EE->input->post('new_quiz'),
+				'quiz_group_id'	=> $this->EE->input->post('quiz_group_id')
+				);
+
+			// Protection from duplicate entries (via page resubmission, etc.)
+			$is_present = $this->EE->db->get_where('eequiz_group_quizzes', $data);
+			$is_present = count( $is_present->result_array() );
+
+			if (!$is_present){
+				$this->EE->db->insert('eequiz_group_quizzes', $data);
+			}
+		}
+
+		return $this->quiz_group_details( $data['quiz_group_id'] );
+	}
+
+	function remove_from_group() {
+		// Delete all rows related to this group
+		if($this->EE->input->post('ALL')) {
+			$this->EE->db->where( array('quiz_group_id' => $this->EE->input->post('quiz_group_id')) )
+						->delete('eequiz_group_quizzes');
+		}
+		else {
+			$quizzes = array();
+			foreach($_POST as $element => $value) {
+			   	// name of checkboxes = eequiz_group_quizzes.id
+			    if(is_numeric($element)) {
+			        $this->EE->db->where( array('id' => $this->EE->input->post($element)) )
+								->delete('eequiz_group_quizzes');
+			    }
+			}			
+		}
+		return $this->quiz_group_details($this->EE->input->post('quiz_group_id'));
+	}
 	
 	// --------------------------------
     //  Questions Functions
@@ -1535,6 +1804,8 @@ EOT;
 		}
 		
 		$this->EE->cp->set_right_nav(array(
+			$this->EE->lang->line('overview') => $this->module_url.AMP.'method=overview',
+			$this->EE->lang->line('manage_quiz_groups') => $this->module_url.AMP.'method=manage_quiz_groups',
 			$this->EE->lang->line('view_questions') => $this->module_url.AMP.'method=view_questions',
 			$this->EE->lang->line('view_quizzes') => $this->module_url.AMP.'method=view_quizzes',
 			$this->EE->lang->line('view_quiz_templates') => $this->module_url.AMP.'method=view_quiz_templates',
