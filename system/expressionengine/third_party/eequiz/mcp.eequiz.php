@@ -130,7 +130,7 @@ class Eequiz_mcp {
 										->result_array();
 		// Get all quiz groups
 		$vars['quiz_groups'] = $this->EE->db->get('eequiz_quiz_groups')->result_array();
-		
+		$rows = array();
 		foreach($vars['quiz_groups'] as &$group) {
 			// Total quizzes in each group
 			$group['total'] 	= $this->EE->score->number_in_group( $group['name'] );
