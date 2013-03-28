@@ -133,13 +133,13 @@ class Eequiz_mcp {
 		$rows = array();
 		foreach($vars['quiz_groups'] as &$group) {
 			// Total quizzes in each group
-			$group['total'] 	= $this->EE->score->number_in_group( $group['name'] );
+			$group['total'] 	= $this->EE->score->number_in_group( $group['id'] );
 
 			foreach($employees as $user) {
 				// Match an employee ID with number of passing quizzes per group
 				$rows[$user['member_id']]['employee'] 		= '<a href="'.$member_uri.$user['member_id'].'">'. $user['username'] .'</a>';
-				$rows[$user['member_id']][$group['name']]	= '<a href="'.$quiz_details_uri.$user['member_id'].AMP.'prefix='.$group['name'].'">'
-																.$this->EE->score->number_passing_in_group( $group['name'], $user['member_id']).' / '.$group['total']
+				$rows[$user['member_id']][$group['name']]	= '<a href="'.$quiz_details_uri.$user['member_id'].AMP.'group_id='.$group['id'].'">'
+																.$this->EE->score->number_passing_in_group( $group['id'], $user['member_id']).' / '.$group['total']
 																.'</a>';
 			}
 		}
@@ -189,10 +189,9 @@ class Eequiz_mcp {
 		$this->_breadcrumbs(array('score_card'));
 
 		if( is_null($prefix) ) {
-			$vars['prefix'] 	= $this->EE->input->get('prefix');
+			$vars['group_id'] 	= $this->EE->input->get('group_id');
 			$vars['member_id'] 	= $this->EE->input->get('id');
 		}
-
 		$vars['headers'] = array(
 							'name' 	=> array('header' => "Quiz Name"),
 							'score' => array('header' => "Score"),
@@ -209,7 +208,7 @@ class Eequiz_mcp {
 	}
 
 	function score_card_datasource($state, $params) {
-		$quizzes = $this->EE->score->score_card2($params['prefix'], $params['member_id']);
+		$quizzes = $this->EE->score->score_card2($params['group_id'], $params['member_id']);
 		$rows = array();
 		foreach($quizzes as $quiz) {
 			if(is_null($quiz['user_grade'])) {

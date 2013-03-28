@@ -54,25 +54,25 @@ class Eequiz {
 		$this->EE->load->library('score');
 		$tagdata = $this->EE->TMPL->tagdata;
 
-		$prefix = $this->EE->db->escape_str( $this->EE->TMPL->fetch_param('prefix') );
+		$group_id = $this->EE->db->escape_str( $this->EE->TMPL->fetch_param('group_id') );
 		$active_member_id = $this->_get_active_member_id($quiz);
 
-		$scores = $this->EE->score->score_card($prefix, $active_member_id);
+		$scores = $this->EE->score->score_card($group_id, $active_member_id);
 
 		$this->return_data = $this->EE->TMPL->parse_variables( $tagdata, $scores );
 		return $this->return_data;
 	}
 	
-	function score_card2($prefix=NULL) {
+	function score_card2($group_id=NULL) {
 		$this->EE->load->library('score');
-		if(is_null($prefix)){
-			$prefix = $this->EE->db->escape_str( $this->EE->TMPL->fetch_param('prefix') );
+		if(is_null($group_id)){
+			$group_id = $this->EE->db->escape_str( $this->EE->TMPL->fetch_param('group_id') );
 		}
 		$active_member_id = $this->_get_active_member_id($quiz);
 
 		$tagdata = $this->EE->TMPL->tagdata;
 
-		$scores = $this->EE->score->score_card2($prefix, $active_member_id);
+		$scores = $this->EE->score->score_card2($group_id, $active_member_id);
 
 		$this->return_data = $this->EE->TMPL->parse_variables( $tagdata, $scores );
 		return $this->return_data;
@@ -80,35 +80,35 @@ class Eequiz {
 	
 	//Returns the number of quizzes that a user is passing in a group
 	//If I trusted the cached_scores table, this would be simpler.
-	//The group is defined as the template tag parameter: prefix
+	//The group is defined as the template tag parameter: group_id
 	//Default behavior is current user
-	function number_passing_in_group($prefix=NULL, $member_id=NULL) {
+	function number_passing_in_group($group_id=NULL, $member_id=NULL) {
 		$this->EE->load->library('score');
-		if(is_null($prefix)){
-			$prefix = $this->EE->db->escape_str( $this->EE->TMPL->fetch_param('prefix') );
+		if(is_null($group_id)){
+			$group_id = $this->EE->db->escape_str( $this->EE->TMPL->fetch_param('group_id') );
 		}
 
 		if(is_null($member_id)) { $member_id = $this->_get_active_member_id($quiz); };
 		
-		return $this->EE->score->number_passing_in_group($prefix, $member_id);
+		return $this->EE->score->number_passing_in_group($group_id, $member_id);
 	}
 
 	//Returns the number of quizzes in a "group"
-	//The group is defined as the template tag parameter: prefix
-	function number_in_group($prefix=NULL, $member_id=NULL) {
+	//The group is defined as the template tag parameter: group_id
+	function number_in_group($group_id=NULL, $member_id=NULL) {
 		$this->EE->load->library('score');
-		$prefix = $this->EE->db->escape_str( $this->EE->TMPL->fetch_param('prefix') );
+		$group_id = $this->EE->db->escape_str( $this->EE->TMPL->fetch_param('group_id') );
 		
-		return $this->EE->score->number_in_group($prefix);
+		return $this->EE->score->number_in_group($group_id);
 	}
 
-	function passing_all_in_group($prefix=NULL, $member_id=NULL){
+	function passing_all_in_group($group_id=NULL, $member_id=NULL){
 		$this->EE->load->library('score');
-		$prefix = $this->EE->db->escape_str( $this->EE->TMPL->fetch_param('prefix') );
+		$group_id = $this->EE->db->escape_str( $this->EE->TMPL->fetch_param('group_id') );
 
 		if(is_null($member_id)) { $member_id = $this->_get_active_member_id($quiz); };
 		
-		return $this->EE->score->number_in_group($prefix, $member_id);
+		return $this->EE->score->number_in_group($group_id, $member_id);
 	}
 	
 	/*
