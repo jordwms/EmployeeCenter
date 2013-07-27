@@ -1,13 +1,13 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 if (NSM_ENV == 'local' || NSM_ENV == 'production') {
-	$config['ax_host'] = 'DC-S-DB-01.applusrtd.net';
-	$config['ax_db']   = 'P-AX30SP3-RTD';
-	$config['ax_user'] = 'sa.usaAccess';
-	$config['ax_pass'] = 'Development12';
+	$config['ax_host'] = 'ax_host_goes_here';
+	$config['ax_db']   = 'AX_DB';
+	$config['ax_user'] = 'username';
+	$config['ax_pass'] = 'password';
 }
 else { // 'development'
-	$config['ax_host'] = 'DC-S-DB-11.applusrtd.net';
+	$config['ax_host'] = 'ax_host_goes_here';
 	$config['ax_db']   = 'TEST';
-	$config['ax_user'] = 'sa.usaAccess';
-	$config['ax_pass'] = 'Development12';
+	$config['ax_user'] = 'username';
+	$config['ax_pass'] = 'password';
 }
